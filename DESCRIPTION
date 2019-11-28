@@ -8,6 +8,7 @@ Maintainer: Boris Leroy <leroy.boris@gmail.com>
 Description: Provides an up-to-date version of the INVACOST database in R, and
     several functions to analyse cost values in the database. 
 License: GPL (>=2.0)
+Encoding: UTF-8
 Depends:
     ggplot2
 Imports:

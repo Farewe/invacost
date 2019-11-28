@@ -48,6 +48,9 @@
 #' \item{\code{fitted.models}: a list of objects the fitted models.}
 #' \item{\code{estimated.annual.costs}}: a data.frame containing the predicted 
 #' cost values for each year for all the fitted models.
+#' \item{\code{RMSE}}: an array containing RMSE of models for the calibration 
+#' data and for all data. NOTE: the RMSE for quantile regression is not an 
+#' relevant metric. 
 #' \item{\code{plot}}: the ggplot object of the output plot.
 #' \item{\code{final.year.cost}}: a vector containing the estimated annual
 #' costs of invasive species based on all models for \code{final.year}.
@@ -159,6 +162,16 @@ estimateAnnualCosts <- function(costdb,
     yearly.cost.calibration <- yearly.cost[-which(yearly.cost[, "Year"] >= incomplete.year.threshold), ]
   }
   
+  model.RMSE <- array(NA, dim = c(7, 2),
+                      dimnames = list(c("regression.linear",
+                                        "regression.quadratic",
+                                        "mars",
+                                        "gam",
+                                        "qt0.1",
+                                        "qt0.5",
+                                        "qt0.9"),
+                                      c("RMSE.calibration", 
+                                        "RMSE.alldata")))
   
   # Linear regression 
   reg.lm <- lm(transf.cost ~ Year, data = yearly.cost.calibration)
@@ -166,6 +179,21 @@ estimateAnnualCosts <- function(costdb,
                      yearly.cost["Year"],
                      interval = "confidence",
                      level = confidence.interval)
+  
+  model.RMSE["regression.linear", "RMSE.calibration"] <- sqrt(mean(residuals(reg.lm)^2))
+  model.RMSE["regression.linear", "RMSE.alldata"] <- sqrt(mean((pred.lm[, "fit"] -
+                                                                  yearly.cost$transf.cost)^2))
+  
+  
+  reg.quad.lm <- lm(transf.cost ~ Year + I(Year^2), data = yearly.cost.calibration)
+  pred.quad.lm <- predict(reg.quad.lm, 
+                          yearly.cost["Year"],
+                          interval = "confidence",
+                          level = confidence.interval)
+  
+  model.RMSE["regression.quadratic", "RMSE.calibration"] <- sqrt(mean(residuals(reg.quad.lm)^2))
+  model.RMSE["regression.quadratic", "RMSE.alldata"] <- sqrt(mean((pred.quad.lm[, "fit"] -
+                                                                     yearly.cost$transf.cost)^2))
   
   # Multiple Adapative Regression splines
   mars <- earth::earth(transf.cost ~ Year, data = yearly.cost.calibration,
@@ -176,6 +204,10 @@ estimateAnnualCosts <- function(costdb,
                        yearly.cost$Year,
                        interval = "pint",
                        level = confidence.interval)
+  model.RMSE["mars", "RMSE.calibration"] <- sqrt(mean(residuals(mars)^2))
+  model.RMSE["mars", "RMSE.alldata"] <- sqrt(mean((pred.mars[, "fit"] -
+                                                     yearly.cost$transf.cost)^2))
+  
   
   # Generalized Additive Models
   igam <- mgcv::gam(transf.cost ~ s(Year), data = yearly.cost.calibration)
@@ -191,11 +223,16 @@ estimateAnnualCosts <- function(costdb,
                            pred.gam$se * qt(confidence.interval + 
                                               (1 - confidence.interval) / 2,
                                             df = nrow(yearly.cost) - 1))
+  model.RMSE["gam", "RMSE.calibration"] <- sqrt(mean(residuals(igam)^2))
+  model.RMSE["gam", "RMSE.alldata"] <- sqrt(mean((pred.gam[, "fit"] -
+                                                    yearly.cost$transf.cost)^2))
+  
   
   # Quantile regression
   qt0.1 <- quantreg::rq(transf.cost ~ Year, 
                         data = yearly.cost.calibration,
                         tau = 0.1)
+
   qt0.5 <- quantreg::rq(transf.cost ~ Year, 
                         data = yearly.cost.calibration,
                         tau = 0.5)
@@ -241,34 +278,48 @@ estimateAnnualCosts <- function(costdb,
       lwr = NA, upr = NA)
   }
   colnames(pred.qt0.9) <- colnames(pred.qt0.5) <- colnames(pred.qt0.1) <- colnames(pred.lm)
+  model.RMSE["qt0.1", "RMSE.calibration"] <- sqrt(mean(residuals(qt0.1)^2))
+  model.RMSE["qt0.1", "RMSE.alldata"] <- sqrt(mean((pred.qt0.1[, "fit"] -
+                                                      yearly.cost$transf.cost)^2))
+  model.RMSE["qt0.5", "RMSE.calibration"] <- sqrt(mean(residuals(qt0.5)^2))
+  model.RMSE["qt0.5", "RMSE.alldata"] <- sqrt(mean((pred.qt0.5[, "fit"] -
+                                                      yearly.cost$transf.cost)^2))
+  model.RMSE["qt0.9", "RMSE.calibration"] <- sqrt(mean(residuals(qt0.9)^2))
+  model.RMSE["qt0.9", "RMSE.alldata"] <- sqrt(mean((pred.qt0.9[, "fit"] -
+                                                      yearly.cost$transf.cost)^2))
+  
+  
   
   model.preds <- rbind.data.frame(data.frame(model = "Linear regression",
                                              Year = yearly.cost$Year,
-                                             Quantile = 0,
+                                             Details = "Linear",
                                              pred.lm),
+                                  data.frame(model = "Linear regression",
+                                             Year = yearly.cost$Year,
+                                             Details = "Quadratic",
+                                             pred.quad.lm),
                                   data.frame(model = "MARS",
                                              Year = yearly.cost$Year,
-                                             Quantile = 0,
+                                             Details = "",
                                              pred.mars),
                                   data.frame(model = "GAM",
                                              Year = yearly.cost$Year,
-                                             Quantile = 0,
+                                             Details = "",
                                              pred.gam),
                                   data.frame(model = "Quantile regression",
                                              Year = yearly.cost$Year,
-                                             Quantile = 0.1,
+                                             Details = "Quantile 0.1",
                                              pred.qt0.1),
                                   data.frame(model = "Quantile regression",
                                              Year = yearly.cost$Year,
-                                             Quantile = 0.5,
+                                             Details = "Quantile 0.5",
                                              pred.qt0.5),
                                   data.frame(model = "Quantile regression",
                                              Year = yearly.cost$Year,
-                                             Quantile = 0.9,
+                                             Details = "Quantile 0.9",
                                              pred.qt0.9))
   
   model.preds$Quantile <- as.factor(model.preds$Quantile)
-  levels(model.preds$Quantile)[1] <- "Not quantile reg."
   
   if(cost.transf == "log10")
   {
@@ -291,18 +342,18 @@ estimateAnnualCosts <- function(costdb,
       geom_line(data = model.preds, 
                 aes(x = Year,
                     y = fit,
-                    linetype = Quantile)) +
+                    linetype = Details)) +
       geom_ribbon(data = model.preds, 
                   aes(x = Year,
                       ymin = lwr,
                       ymax = upr,
-                      group = Quantile),
+                      group = Details),
                   alpha = .1) +
       scale_y_log10(breaks = plotbreaks,
                     labels = scales::comma) +
       theme_bw() +
       annotation_logticks() + 
-      facet_wrap (~ model)
+      facet_wrap (~ model, scales = "free_y")
     print(p)
     
     results <- list(cost.data = yearly.cost,
@@ -314,6 +365,7 @@ estimateAnnualCosts <- function(costdb,
                                                          qt0.5 = qt0.5,
                                                          qt0.9 = qt0.9)),
                     estimated.annual.costs = model.preds,
+                    RMSE = model.RMSE,
                     plot = p,
                     final.year.cost = c(linear = 
                                           10^predict(reg.lm,
@@ -367,6 +419,7 @@ estimateAnnualCosts <- function(costdb,
                                                          qt0.5 = qt0.5,
                                                          qt0.9 = qt0.9)),
                     estimated.annual.costs = model.preds,
+                    RMSE = model.RMSE,
                     plot = p,
                     final.year.cost = c(linear = 
                                           predict(reg.lm,
@@ -398,7 +451,8 @@ estimateAnnualCosts <- function(costdb,
                                          gam = igam,
                                          quantile = list(qt0.1 = qt0.1,
                                                          qt0.5 = qt0.5,
-                                                         qt0.9 = qt0.9)))
+                                                         qt0.9 = qt0.9)),
+                    RMSE = model.RMSE)
   }
   results$parameters <- list()
   class(results) <- append("invacost.annual.est", class(results))

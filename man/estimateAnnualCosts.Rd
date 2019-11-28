@@ -70,6 +70,9 @@ only have data starting from 1970, hence the \code{minimum.year} will be
 \item{\code{fitted.models}: a list of objects the fitted models.}
 \item{\code{estimated.annual.costs}}: a data.frame containing the predicted 
 cost values for each year for all the fitted models.
+\item{\code{RMSE}}: an array containing RMSE of models for the calibration 
+data and for all data. NOTE: the RMSE for quantile regression is not an 
+relevant metric. 
 \item{\code{plot}}: the ggplot object of the output plot.
 \item{\code{final.year.cost}}: a vector containing the estimated annual
 costs of invasive species based on all models for \code{final.year}.

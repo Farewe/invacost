@@ -1,0 +1,23 @@
+Package: invacost
+Type: Package
+Title: INVACOST database and associated calculations
+Version: 0.1
+Date: 2019-11-27
+Author: Boris Leroy [cre, aut], Christophe Diagne [ctb], Anne-Charlotte Vaissière [ctb],
+Maintainer: Boris Leroy <leroy.boris@gmail.com>
+Description: Provides an up-to-date version of the INVACOST database in R, and
+    several functions to analyse cost values in the database. 
+License: GPL (>=2.0)
+Depends:
+    ggplot2
+Imports:
+    dplyr,
+    earth,
+    graphics,
+    grDevices,
+    mgcv,
+    quantreg,
+    scales,
+    stats,
+    utils
+RoxygenNote: 6.1.1

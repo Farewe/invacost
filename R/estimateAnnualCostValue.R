@@ -353,7 +353,8 @@ estimateAnnualCosts <- function(costdb,
                     labels = scales::comma) +
       theme_bw() +
       annotation_logticks() + 
-      facet_wrap (~ model, scales = "free_y")
+      facet_wrap (~ model,
+                  scales = "free_y")
     print(p)
     
     results <- list(cost.data = yearly.cost,
@@ -368,23 +369,23 @@ estimateAnnualCosts <- function(costdb,
                     RMSE = model.RMSE,
                     plot = p,
                     final.year.cost = c(linear = 
-                                          10^predict(reg.lm,
-                                                     newdata = data.frame(Year = final.year)),
+                                          unname(10^predict(reg.lm,
+                                                     newdata = data.frame(Year = final.year))),
                                         mars = 
-                                          10^predict(mars,
-                                                     newdata = data.frame(Year = final.year)),
+                                          unname(10^predict(mars,
+                                                     newdata = data.frame(Year = final.year))),
                                         gam = 
-                                          10^predict(igam,
-                                                     newdata = data.frame(Year = final.year)),
+                                          unname(10^predict(igam,
+                                                     newdata = data.frame(Year = final.year))),
                                         quantile.0.1 = 
-                                          10^predict(qt0.1,
-                                                     newdata = data.frame(Year = final.year)),
+                                          unname(10^predict(qt0.1,
+                                                     newdata = data.frame(Year = final.year))),
                                         quantile.0.5 = 
-                                          10^predict(qt0.5,
-                                                     newdata = data.frame(Year = final.year)),
+                                          unname(10^predict(qt0.5,
+                                                     newdata = data.frame(Year = final.year))),
                                         quantile.0.9 = 
-                                          10^predict(qt0.9,
-                                                     newdata = data.frame(Year = final.year))))
+                                          unname(10^predict(qt0.9,
+                                                     newdata = data.frame(Year = final.year)))))
   } else if(is.null(cost.transf) | is.na(cost.transf))
   {
     p <- ggplot() +
@@ -408,7 +409,8 @@ estimateAnnualCosts <- function(costdb,
                   alpha = .1) +
       theme_bw() +
       annotation_logticks() + 
-      facet_wrap (~ model)
+      facet_wrap (~ model,
+                  scales = "free_y")
     print(p)
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
@@ -422,23 +424,23 @@ estimateAnnualCosts <- function(costdb,
                     RMSE = model.RMSE,
                     plot = p,
                     final.year.cost = c(linear = 
-                                          predict(reg.lm,
-                                                  newdata = data.frame(Year = final.year)),
+                                          unname(predict(reg.lm,
+                                                  newdata = data.frame(Year = final.year))),
                                         mars = 
-                                          predict(mars,
-                                                  newdata = data.frame(Year = final.year)),
+                                          unname(predict(mars,
+                                                  newdata = data.frame(Year = final.year))),
                                         gam = 
-                                          predict(igam,
-                                                  newdata = data.frame(Year = final.year)),
+                                          unname(predict(igam,
+                                                  newdata = data.frame(Year = final.year))),
                                         quantile.0.1 = 
-                                          predict(qt0.1,
-                                                  newdata = data.frame(Year = final.year)),
+                                          unname(predict(qt0.1,
+                                                  newdata = data.frame(Year = final.year))),
                                         quantile.0.5 = 
-                                          predict(qt0.5,
-                                                  newdata = data.frame(Year = final.year)),
+                                          unname(predict(qt0.5,
+                                                  newdata = data.frame(Year = final.year))),
                                         quantile.0.9 = 
-                                          predict(qt0.9,
-                                                  newdata = data.frame(Year = final.year))))
+                                          unname(predict(qt0.9,
+                                                  newdata = data.frame(Year = final.year)))))
   } else
   {
     message("The cost transformation was not in log10, so you will have 
@@ -454,7 +456,6 @@ estimateAnnualCosts <- function(costdb,
                                                          qt0.9 = qt0.9)),
                     RMSE = model.RMSE)
   }
-  results$parameters <- list()
   class(results) <- append("invacost.annual.est", class(results))
   return(results)
 }

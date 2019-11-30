@@ -91,12 +91,9 @@ estimateAnnualCosts <- function(costdb,
 {
   if(any(costdb[, year.column] < minimum.year))
   {
-    warning(paste0("There are cost values for periods earlier than ",
-                   minimum.year, ": ",
-                   length(unique(costdb$Cost.ID[which(costdb[, year.column] < minimum.year)])),
-                   " different cost estimate(s).\nTheir values earlier than ",
-                   minimum.year,
-                   " will be removed.\n"))
+    warning(paste0("There are",  length(unique(costdb$Cost.ID[which(costdb[, year.column] < minimum.year)])),
+                   " cost values for periods earlier than ",
+                   minimum.year, ", which will will be removed.\n"))
     costdb <- costdb[-which(costdb[, year.column] < minimum.year), ]
   }
   
@@ -157,9 +154,13 @@ estimateAnnualCosts <- function(costdb,
                    " years will not be included in model calibrations because\n",
                    "they occurred later than incomplete.year.threshold (", incomplete.year.threshold,
                    ")\n"))
-    yearly.cost$Completeness <- ifelse(yearly.cost$Year < incomplete.year.threshold,
-                                       "Adequate", "Inadequate")
+    yearly.cost$Calibration <- ifelse(yearly.cost$Year < incomplete.year.threshold,
+                                       "Included", "Excluded")
     yearly.cost.calibration <- yearly.cost[-which(yearly.cost[, "Year"] >= incomplete.year.threshold), ]
+  } else
+  {
+    yearly.cost$Calibration <- "Included"
+    yearly.cost.calibration <- yearly.cost
   }
   
   model.RMSE <- array(NA, dim = c(7, 2),
@@ -319,8 +320,6 @@ estimateAnnualCosts <- function(costdb,
                                              Details = "Quantile 0.9",
                                              pred.qt0.9))
   
-  model.preds$Quantile <- as.factor(model.preds$Quantile)
-  
   if(cost.transf == "log10")
   {
     # Transform log10 values back to actual US$
@@ -333,7 +332,7 @@ estimateAnnualCosts <- function(costdb,
       geom_point(data = yearly.cost, 
                  aes(x = Year,
                      y = Annual.cost,
-                     col = Completeness)) +
+                     col = Calibration)) +
       ylab(paste0("Annual cost in US$ ", 
                   ifelse(in.millions, 
                          "millions",
@@ -360,6 +359,7 @@ estimateAnnualCosts <- function(costdb,
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
                     fitted.models = list(linear = reg.lm,
+                                         quadratic = reg.quad.lm,
                                          mars = mars,
                                          gam = igam,
                                          quantile = list(qt0.1 = qt0.1,
@@ -371,6 +371,9 @@ estimateAnnualCosts <- function(costdb,
                     final.year.cost = c(linear = 
                                           unname(10^predict(reg.lm,
                                                      newdata = data.frame(Year = final.year))),
+                                        quadratic = 
+                                          unname(10^predict(reg.quad.lm,
+                                                            newdata = data.frame(Year = final.year))),
                                         mars = 
                                           unname(10^predict(mars,
                                                      newdata = data.frame(Year = final.year))),
@@ -415,6 +418,7 @@ estimateAnnualCosts <- function(costdb,
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
                     fitted.models = list(linear = reg.lm,
+                                         quadratic = reg.quad.lm,
                                          mars = mars,
                                          gam = igam,
                                          quantile = list(qt0.1 = qt0.1,
@@ -426,6 +430,9 @@ estimateAnnualCosts <- function(costdb,
                     final.year.cost = c(linear = 
                                           unname(predict(reg.lm,
                                                   newdata = data.frame(Year = final.year))),
+                                        quadratic = 
+                                          unname(predict(reg.quad.lm,
+                                                         newdata = data.frame(Year = final.year))),
                                         mars = 
                                           unname(predict(mars,
                                                   newdata = data.frame(Year = final.year))),
@@ -449,6 +456,7 @@ estimateAnnualCosts <- function(costdb,
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
                     fitted.models = list(linear = reg.lm,
+                                         quadratic = reg.quad.lm,
                                          mars = mars,
                                          gam = igam,
                                          quantile = list(qt0.1 = qt0.1,

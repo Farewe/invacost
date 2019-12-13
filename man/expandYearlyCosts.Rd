@@ -28,10 +28,10 @@ annualised cost value over each year of the relevant period.
 \examples{
 # Create an example stack with two environmental variables
 data(invacost)
-invacost <- invacost[-which(is.na(invacost$Annualised.cost.estimate..2017.USD.exchange.rate.)), ]
+invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
 db.over.time <- expandYearlyCosts(invacost,
-                                  startcolumn = "Probable.Starting.year.Low.margin",
-                                  endcolumn = "Probable.Ending.year.Low.margin")
+                                  startcolumn = "Probable_Starting_year_Low_margin",
+                                  endcolumn = "Probable_Ending_year_Low_margin")
 }
 \author{
 Boris Leroy \email{leroy.boris@gmail.com}

@@ -34,6 +34,9 @@
 #' data. All years above or equal to this threshold will be excluded from 
 #' model calibration, because of the time-lag between economic impacts of
 #' invasive species and the documentation and publication of these impacts.
+#' @param incomplete.year.weights A named vector containing weights of years
+#' for the regressions. Useful to decrease the weights of incomplete years
+#' in regressions. Names of this vector must correspond to years.
 #' @return a \code{list} with 3 to 6 elements (only the first three will be 
 #' provided if you selected a cost transformation different from log10):
 #'
@@ -68,30 +71,31 @@
 #' # Create an example stack with two environmental variables
 #' data(invacost)
 #' db.over.time <- expandYearlyCosts(invacost,
-#'                                   startcolumn = "Probable.Starting.year.Low.margin",
-#'                                   endcolumn = "Probable.Ending.year.Low.margin")
+#'                                   startcolumn = "Probable_Starting_year_Low_margin",
+#'                                   endcolumn = "Probable_Ending_year_Low_margin")
 #' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
-#' costdb <- costdb[which(costdb$Method.reliability == "High"), ]
-#' costdb <- costdb[-which(costdb$Reference.ID == 8733), ]
-#' res <- estimateAnnualCosts(costdb)
+#' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
+#' res <- costTrendOverTime(costdb)
 
-estimateAnnualCosts <- function(costdb,
-                                cost.column = "Annualised.cost.estimate..2017.USD.exchange.rate.",
-                                year.column = "Applicable.year",
-                                cost.transf = "log10",
-                                in.millions = TRUE,
-                                confidence.interval = 0.95,
-                                plotbreaks = c(0.1, 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000,
-                                               100000000, 1000000000, 10000000000, 100000000000, 1000000000000),
-                                minimum.year = 1960, 
-                                maximum.year = 2017, 
-                                final.year = 2017, 
-                                incomplete.year.threshold = 2010
+costTrendOverTime <- function(costdb,
+                              cost.column = "Cost_estimate_per_year_2017_USD_exchange_rate",
+                              year.column = "Impact_year",
+                              cost.transf = "log10",
+                              in.millions = TRUE,
+                              confidence.interval = 0.95,
+                              plotbreaks = c(0.1, 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000,
+                                             100000000, 1000000000, 10000000000, 100000000000, 1000000000000),
+                              minimum.year = 1960, 
+                              maximum.year = 2017, 
+                              final.year = 2017, 
+                              incomplete.year.threshold = 2015,
+                              incomplete.year.weights = NULL
 )
 {
+
   if(any(costdb[, year.column] < minimum.year))
   {
-    warning(paste0("There are",  length(unique(costdb$Cost.ID[which(costdb[, year.column] < minimum.year)])),
+    warning(paste0("There are ",  length(unique(costdb$Cost_ID[which(costdb[, year.column] < minimum.year)])),
                    " cost values for periods earlier than ",
                    minimum.year, ", which will will be removed.\n"))
     costdb <- costdb[-which(costdb[, year.column] < minimum.year), ]
@@ -101,7 +105,7 @@ estimateAnnualCosts <- function(costdb,
   {
     warning(paste0("There are cost values for periods later than ",
                    maximum.year, ": ",
-                   length(unique(costdb$Cost.ID[which(costdb[, year.column] > maximum.year)])),
+                   length(unique(costdb$Cost_ID[which(costdb[, year.column] > maximum.year)])),
                    " different cost estimate(s).\nTheir values later than ",
                    maximum.year,
                    " will be removed.\n"))
@@ -133,6 +137,22 @@ estimateAnnualCosts <- function(costdb,
                                   Annual.cost = sum(get(cost.column)))
   names(yearly.cost)[1] <- "Year"
   
+  if(!is.null(incomplete.year.weights))
+  {
+    if(!all(names(incomplete.year.weights) %in% 
+            yearly.cost$Year))
+    {
+      stop("The vector provided in incomplete.year.weights does not have all the
+           years in the range of data.")
+    } else
+    {
+      incomplete.year.weights <- incomplete.year.weights[names(incomplete.year.weights) %in%
+                                                           yearly.cost$Year]
+      incomplete.year.weights <- incomplete.year.weights[match(yearly.cost$Year,
+                                                               names(incomplete.year.weights))]
+    }
+  }
+  
   if(in.millions)
   {
     yearly.cost$Annual.cost <- yearly.cost$Annual.cost / 1e6
@@ -157,11 +177,18 @@ estimateAnnualCosts <- function(costdb,
     yearly.cost$Calibration <- ifelse(yearly.cost$Year < incomplete.year.threshold,
                                        "Included", "Excluded")
     yearly.cost.calibration <- yearly.cost[-which(yearly.cost[, "Year"] >= incomplete.year.threshold), ]
+    if(!is.null(incomplete.year.weights))
+    {
+      incomplete.year.weights <- incomplete.year.weights[-which(names(incomplete.year.weights) >= incomplete.year.threshold)]
+    }
   } else
   {
     yearly.cost$Calibration <- "Included"
     yearly.cost.calibration <- yearly.cost
   }
+  # For nicer graphs
+  yearly.cost$Calibration <- factor(yearly.cost$Calibration, levels = c("Excluded",
+                                                                        "Included"))
   
   model.RMSE <- array(NA, dim = c(7, 2),
                       dimnames = list(c("regression.linear",
@@ -175,7 +202,8 @@ estimateAnnualCosts <- function(costdb,
                                         "RMSE.alldata")))
   
   # Linear regression 
-  reg.lm <- lm(transf.cost ~ Year, data = yearly.cost.calibration)
+  reg.lm <- lm(transf.cost ~ Year, data = yearly.cost.calibration,
+               weights = incomplete.year.weights)
   pred.lm <- predict(reg.lm, 
                      yearly.cost["Year"],
                      interval = "confidence",
@@ -186,7 +214,8 @@ estimateAnnualCosts <- function(costdb,
                                                                   yearly.cost$transf.cost)^2))
   
   
-  reg.quad.lm <- lm(transf.cost ~ Year + I(Year^2), data = yearly.cost.calibration)
+  reg.quad.lm <- lm(transf.cost ~ Year + I(Year^2), data = yearly.cost.calibration,
+                    weights = incomplete.year.weights)
   pred.quad.lm <- predict(reg.quad.lm, 
                           yearly.cost["Year"],
                           interval = "confidence",
@@ -200,7 +229,8 @@ estimateAnnualCosts <- function(costdb,
   mars <- earth::earth(transf.cost ~ Year, data = yearly.cost.calibration,
                        varmod.method = "earth",
                        nfold = 5,
-                       ncross = 3)
+                       ncross = 3,
+                       weights = incomplete.year.weights)
   pred.mars <- predict(mars,
                        yearly.cost$Year,
                        interval = "pint",
@@ -211,7 +241,8 @@ estimateAnnualCosts <- function(costdb,
   
   
   # Generalized Additive Models
-  igam <- mgcv::gam(transf.cost ~ s(Year), data = yearly.cost.calibration)
+  igam <- mgcv::gam(transf.cost ~ s(Year), data = yearly.cost.calibration,
+                    weights = incomplete.year.weights)
   pred.gam <- predict(igam,
                       newdata = data.frame(Year = yearly.cost$Year),
                       se.fit = TRUE)
@@ -232,14 +263,16 @@ estimateAnnualCosts <- function(costdb,
   # Quantile regression
   qt0.1 <- quantreg::rq(transf.cost ~ Year, 
                         data = yearly.cost.calibration,
-                        tau = 0.1)
-
+                        tau = 0.1,
+                        weights = incomplete.year.weights)
   qt0.5 <- quantreg::rq(transf.cost ~ Year, 
                         data = yearly.cost.calibration,
-                        tau = 0.5)
+                        tau = 0.5,
+                        weights = incomplete.year.weights)
   qt0.9 <- quantreg::rq(transf.cost ~ Year, 
                         data = yearly.cost.calibration,
-                        tau = 0.9)
+                        tau = 0.9,
+                        weights = incomplete.year.weights)
   
   
   # quantreg sometimes throws errors in the prediction of confidence intervals

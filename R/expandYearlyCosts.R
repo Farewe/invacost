@@ -19,22 +19,35 @@
 #' @examples
 #' # Create an example stack with two environmental variables
 #' data(invacost)
-#' invacost <- invacost[-which(is.na(invacost$Annualised.cost.estimate..2017.USD.exchange.rate.)), ]
+#' invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
 #' db.over.time <- expandYearlyCosts(invacost,
-#'                                   startcolumn = "Probable.Starting.year.Low.margin",
-#'                                   endcolumn = "Probable.Ending.year.Low.margin")
+#'                                   startcolumn = "Probable_Starting_year_Low_margin",
+#'                                   endcolumn = "Probable_Ending_year_Low_margin")
 expandYearlyCosts <- function(costdb, startcolumn, endcolumn)
 {
+  if(!("Cost_ID" %in% colnames(invacost)))
+  {
+    stop("The 'invacost' object does not seem to be the invacost database (lacks cost_ID column)")
+  }
+  if(!(startcolumn %in% colnames(invacost)))
+  {
+    stop("The 'startcolumn' does not exist in the invacost database, please check spelling.")
+  }
+  if(!(endcolumn %in% colnames(invacost)))
+  {
+    stop("The 'endcolumn' does not exist in the invacost database, please check spelling.")
+  }
   return(
     dplyr::bind_rows(
-      lapply(costdb$Cost.ID, function(x, costdb.,
+      lapply(costdb$Cost_ID, function(x, costdb.,
                                       start,
                                       end) { 
-        years <- costdb.[which(costdb.$Cost.ID == x), start]:
-          costdb.[which(costdb.$Cost.ID == x), end]
-        return(data.frame(Impact.year = years,
-                          costdb.[which(costdb.$Cost.ID == x), ][
-                            rep(seq_len(nrow(costdb.[costdb.$Cost.ID == x, ])), each =                               length(years)), ]))
+        years <- costdb.[which(costdb.$Cost_ID == x), start]:
+          costdb.[which(costdb.$Cost_ID == x), end]
+        return(data.frame(Impact_year = years,
+                          costdb.[which(costdb.$Cost_ID == x), ][
+                            rep(seq_len(nrow(costdb.[costdb.$Cost_ID == x, ])), 
+                                each = length(years)), ]))
       }, costdb. = costdb, start = startcolumn, end = endcolumn)
     )
   )

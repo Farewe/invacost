@@ -4,13 +4,21 @@
 \alias{estimateAnnualCosts}
 \title{Estimate the average annual cost value of invasions}
 \usage{
-estimateAnnualCosts(costdb,
-  cost.column = "Annualised.cost.estimate..2017.USD.exchange.rate.",
-  year.column = "Applicable.year", cost.transf = "log10",
-  in.millions = TRUE, confidence.interval = 0.95, plotbreaks = c(0.1,
-  1, 10, 100, 1000, 10000, 1e+05, 1e+06, 1e+07, 1e+08, 1e+09, 1e+10, 1e+11,
-  1e+12), minimum.year = 1960, maximum.year = 2017,
-  final.year = 2017, incomplete.year.threshold = 2010)
+estimateAnnualCosts(
+  costdb,
+  cost.column = "Cost_estimate_per_year_2017_USD_exchange_rate",
+  year.column = "Impact_year",
+  cost.transf = "log10",
+  in.millions = TRUE,
+  confidence.interval = 0.95,
+  plotbreaks = c(0.1, 1, 10, 100, 1000, 10000, 1e+05, 1e+06, 1e+07, 1e+08, 1e+09, 1e+10,
+    1e+11, 1e+12),
+  minimum.year = 1960,
+  maximum.year = 2017,
+  final.year = 2017,
+  incomplete.year.threshold = 2010,
+  incomplete.year.weights = NULL
+)
 }
 \arguments{
 \item{costdb}{The \bold{expanded INVACOST database} output from 
@@ -45,6 +53,10 @@ was chosen as it is the last year for which we have data in INVACOST.}
 data. All years above or equal to this threshold will be excluded from 
 model calibration, because of the time-lag between economic impacts of
 invasive species and the documentation and publication of these impacts.}
+
+\item{incomplete.year.weights}{A named vector containing weights of years
+for the regressions. Useful to decrease the weights of incomplete years
+in regressions. Names of this vector must correspond to years.}
 
 \item{confidence.intervals}{a numeric value between 0 and 1, corresponding
 to the desired confidence intervals around model predictions.}
@@ -90,11 +102,11 @@ estimate the average annual cost of invasive species.
 # Create an example stack with two environmental variables
 data(invacost)
 db.over.time <- expandYearlyCosts(invacost,
-                                  startcolumn = "Probable.Starting.year.Low.margin",
-                                  endcolumn = "Probable.Ending.year.Low.margin")
+                                  startcolumn = "Probable_Starting_year_Low_margin",
+                                  endcolumn = "Probable_Ending_year_Low_margin")
 costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
-costdb <- costdb[which(costdb$Method.reliability == "High"), ]
-costdb <- costdb[-which(costdb$Reference.ID == 8733), ]
+costdb <- costdb[which(costdb$Method_reliability == "High"), ]
+costdb <- costdb[-which(costdb$Reference_ID == 8733), ]
 res <- estimateAnnualCosts(costdb)
 }
 \seealso{

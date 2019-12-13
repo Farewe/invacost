@@ -1,10 +1,13 @@
-invacost <- read.csv("./data-raw/INVACOST_database.csv",
+invacost <- read.csv("./data-raw/INVACOST.csv",
                      header = TRUE, sep = ";",
-                     na.strings = c("NA", "#N/A", "#DIV/0!", "#VALEUR!"),
-                     dec = ",")
+                     na.strings = c("NA", "#N/A", "#DIV/0!", "#VALEUR!", "Unspecified"),
+                     dec = ".")
 
-colnames(invacost) <- gsub("_", "\\.", colnames(invacost))
+# invacost <- invacost[-which(is.na(invacost$Annualised_cost_estimate_2017_USD_exchange_rate)), ]
+invacost[which(invacost$Reference_ID == 8733 & 
+                 invacost$Repository == "WoS"), "Method_reliability"] <- "Low"
+invacost[which(invacost$Cost_ID == 1386), "Method_reliability"] <- "Low"
+invacost[which(invacost$Cost_ID == 1175), "Method_reliability"] <- "Low"
 
-invacost <- invacost[-which(is.na(invacost$Annualised.cost.estimate..2017.USD.exchange.rate.)), ]
+usethis::use_data(invacost, overwrite = TRUE)
 
-usethis::use_data(invacost)

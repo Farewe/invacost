@@ -1,7 +1,7 @@
-#' Estimate the average annual cost value of invasions 
+#' Estimate the trend of invasive species costs over time
 #' 
 #' This function fits different models on annualised INVACOST data in order to
-#' estimate the average annual cost of invasive species.
+#' estimate the average trend over time of invasive species costs.
 #' 
 #' @param costdb The \bold{expanded INVACOST database} output from 
 #' \code{\link{expandYearlyCosts}},
@@ -37,6 +37,15 @@
 #' @param incomplete.year.weights A named vector containing weights of years
 #' for the regressions. Useful to decrease the weights of incomplete years
 #' in regressions. Names of this vector must correspond to years.
+#' @param gam.k The smoothing factor of GAM; default value of -1 will let the
+#' GAM find the smoothing factor automatically. Provide a manual value if you 
+#' have expectations about the shape of the curve and want to avoid overfitting
+#' because of interannual variations.
+#' @param mars.nk The maximum number of model terms in the MARS model. The default 
+#' value of 21 corresponds to the default value calculated in earth package.
+#' Lowering this value will reduce the number of terms in the MARS model, which
+#' can be useful if you have expectations about the shape of the curve and want
+#' to avoid overfitting because of interannual variations.
 #' @return a \code{list} with 3 to 6 elements (only the first three will be 
 #' provided if you selected a cost transformation different from log10):
 #'
@@ -49,14 +58,14 @@
 #' only have data starting from 1970, hence the \code{minimum.year} will be
 #'  1970.)}
 #' \item{\code{fitted.models}: a list of objects the fitted models.}
-#' \item{\code{estimated.annual.costs}}: a data.frame containing the predicted 
-#' cost values for each year for all the fitted models.
-#' \item{\code{RMSE}}: an array containing RMSE of models for the calibration 
+#' \item{\code{estimated.annual.costs}: a data.frame containing the predicted 
+#' cost values for each year for all the fitted models.}
+#' \item{\code{RMSE}: an array containing RMSE of models for the calibration 
 #' data and for all data. NOTE: the RMSE for quantile regression is not an 
-#' relevant metric. 
-#' \item{\code{plot}}: the ggplot object of the output plot.
-#' \item{\code{final.year.cost}}: a vector containing the estimated annual
-#' costs of invasive species based on all models for \code{final.year}.
+#' relevant metric. }
+#' \item{\code{plot}: the ggplot object of the output plot.}
+#' \item{\code{final.year.cost}: a vector containing the estimated annual
+#' costs of invasive species based on all models for \code{final.year}.}
 #' }
 #' The structure of this object can be seen using \code{str()}
 #' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
@@ -76,6 +85,7 @@
 #' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
 #' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
 #' res <- costTrendOverTime(costdb)
+#' res
 
 costTrendOverTime <- function(costdb,
                               cost.column = "Cost_estimate_per_year_2017_USD_exchange_rate",
@@ -89,7 +99,9 @@ costTrendOverTime <- function(costdb,
                               maximum.year = 2017, 
                               final.year = 2017, 
                               incomplete.year.threshold = 2015,
-                              incomplete.year.weights = NULL
+                              incomplete.year.weights = NULL,
+                              gam.k = -1,
+                              mars.nk = 21
 )
 {
 
@@ -139,8 +151,7 @@ costTrendOverTime <- function(costdb,
   
   if(!is.null(incomplete.year.weights))
   {
-    if(!all(names(incomplete.year.weights) %in% 
-            yearly.cost$Year))
+    if(!all(yearly.cost$Year %in% names(incomplete.year.weights)))
     {
       stop("The vector provided in incomplete.year.weights does not have all the
            years in the range of data.")
@@ -228,6 +239,7 @@ costTrendOverTime <- function(costdb,
   # Multiple Adapative Regression splines
   mars <- earth::earth(transf.cost ~ Year, data = yearly.cost.calibration,
                        varmod.method = "earth",
+                       nk = mars.nk,
                        nfold = 5,
                        ncross = 3,
                        weights = incomplete.year.weights)
@@ -241,7 +253,7 @@ costTrendOverTime <- function(costdb,
   
   
   # Generalized Additive Models
-  igam <- mgcv::gam(transf.cost ~ s(Year), data = yearly.cost.calibration,
+  igam <- mgcv::gam(transf.cost ~ s(Year, k = gam.k), data = yearly.cost.calibration,
                     weights = incomplete.year.weights)
   pred.gam <- predict(igam,
                       newdata = data.frame(Year = yearly.cost$Year),
@@ -497,6 +509,6 @@ costTrendOverTime <- function(costdb,
                                                          qt0.9 = qt0.9)),
                     RMSE = model.RMSE)
   }
-  class(results) <- append("invacost.annual.est", class(results))
+  class(results) <- append("invacost.trend.over.time", class(results))
   return(results)
 }

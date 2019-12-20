@@ -11,8 +11,8 @@ costTrendOverTime(
   cost.transf = "log10",
   in.millions = TRUE,
   confidence.interval = 0.95,
-  plotbreaks = c(0.1, 1, 10, 100, 1000, 10000, 1e+05, 1e+06, 1e+07, 1e+08, 1e+09, 1e+10,
-    1e+11, 1e+12),
+  plot.breaks = c(0.1, 1, 10, 100, 1000, 10000, 1e+05, 1e+06, 1e+07, 1e+08, 1e+09,
+    1e+10, 1e+11, 1e+12),
   minimum.year = 1960,
   maximum.year = 2017,
   final.year = 2017,
@@ -44,12 +44,21 @@ transformation.}
 millions (to make graphs easier to read), else if \code{}, cost values will
 not be transformed.}
 
+\item{confidence.interval}{a numeric value between 0 and 1, corresponding
+to the desired confidence intervals around model predictions.}
+
+\item{plot.breaks}{a vector of numeric values indicating the plot breaks 
+for the axis of annual cost values.}
+
 \item{minimum.year}{the starting year of this analysis. By default, 
 1960 was chosen because it marks the period from which world bank data is 
 available for exchange rates and inflation values.}
 
 \item{maximum.year}{the ending year for this analysis. By default, 2017
 was chosen as it is the last year for which we have data in INVACOST.}
+
+\item{final.year}{the year for which you want to obtain the final 
+average cost estimate from models. Default is 2017.}
 
 \item{incomplete.year.threshold}{Estimated threshold for incomplete cost 
 data. All years above or equal to this threshold will be excluded from 
@@ -70,15 +79,6 @@ value of 21 corresponds to the default value calculated in earth package.
 Lowering this value will reduce the number of terms in the MARS model, which
 can be useful if you have expectations about the shape of the curve and want
 to avoid overfitting because of interannual variations.}
-
-\item{confidence.intervals}{a numeric value between 0 and 1, corresponding
-to the desired confidence intervals around model predictions.}
-
-\item{plot.breaks}{a vector of numeric values indicating the plot breaks 
-for the axis of annual cost values.}
-
-\item{final.year.cost}{the year for which you want to obtain the final 
-average cost estimate from models. Default is 2017.}
 }
 \value{
 a \code{list} with 3 to 6 elements (only the first three will be 
@@ -112,11 +112,10 @@ estimate the average trend over time of invasive species costs.
 
 }
 \examples{
-# Create an example stack with two environmental variables
 data(invacost)
 db.over.time <- expandYearlyCosts(invacost,
-                                  startcolumn = "Probable_Starting_year_Low_margin",
-                                  endcolumn = "Probable_Ending_year_Low_margin")
+                                  startcolumn = "Probable_starting_year_low_margin",
+                                  endcolumn = "Probable_ending_year_low_margin")
 costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
 costdb <- costdb[which(costdb$Method_reliability == "High"), ]
 res <- costTrendOverTime(costdb)

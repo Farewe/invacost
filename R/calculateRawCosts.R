@@ -50,11 +50,10 @@
 #' 
 #' with help from C. Diagne & A.-C. Vaissière
 #' @examples
-#' # Create an example stack with two environmental variables
 #' data(invacost)
 #' db.over.time <- expandYearlyCosts(invacost,
-#'                                   startcolumn = "Probable_Starting_year_Low_margin",
-#'                                   endcolumn = "Probable_Ending_year_Low_margin")
+#'                                   startcolumn = "Probable_starting_year_low_margin",
+#'                                   endcolumn = "Probable_ending_year_low_margin")
 #' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
 #' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
 #' res <- calculateRawAvgCosts(costdb)
@@ -69,7 +68,7 @@ calculateRawAvgCosts <- function(
   minimum.year = 1960,
   maximum.year = 2017,
   year.breaks = seq(minimum.year, maximum.year, by = 10),
-  plotbreaks = c(0.1, 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000,
+  plot.breaks = c(0.1, 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000,
                  100000000, 1000000000, 10000000000, 100000000000, 1000000000000)
 )
 {
@@ -164,7 +163,7 @@ calculateRawAvgCosts <- function(
                          ""))) +
       xlab("Year") +
       scale_x_continuous(breaks = year.breaks) +
-      scale_y_log10(breaks = plotbreaks,
+      scale_y_log10(breaks = plot.breaks,
                     labels = scales::comma) +
       annotation_logticks() +
       theme_bw() 
@@ -230,11 +229,10 @@ calculateRawAvgCosts <- function(
 #' 
 #' with help from C. Diagne & A.-C. Vaissière
 #' @examples
-#' # Create an example stack with two environmental variables
 #' data(invacost)
 #' db.over.time <- expandYearlyCosts(invacost,
-#'                                   startcolumn = "Probable_Starting_year_Low_margin",
-#'                                   endcolumn = "Probable_Ending_year_Low_margin")
+#'                                   startcolumn = "Probable_starting_year_low_margin",
+#'                                   endcolumn = "Probable_ending_year_low_margin")
 #' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
 #' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
 #' res <- rawAvgCost(costdb)

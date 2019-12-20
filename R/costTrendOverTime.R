@@ -19,7 +19,7 @@
 #' @param in.millions If \code{TRUE}, cost values will be transformed in 
 #' millions (to make graphs easier to read), else if \code{}, cost values will
 #' not be transformed.
-#' @param confidence.intervals a numeric value between 0 and 1, corresponding
+#' @param confidence.interval a numeric value between 0 and 1, corresponding
 #' to the desired confidence intervals around model predictions.
 #' @param plot.breaks a vector of numeric values indicating the plot breaks 
 #' for the axis of annual cost values. 
@@ -28,7 +28,7 @@
 #' available for exchange rates and inflation values.
 #' @param maximum.year the ending year for this analysis. By default, 2017
 #' was chosen as it is the last year for which we have data in INVACOST.
-#' @param final.year.cost the year for which you want to obtain the final 
+#' @param final.year the year for which you want to obtain the final 
 #' average cost estimate from models. Default is 2017.
 #' @param incomplete.year.threshold Estimated threshold for incomplete cost 
 #' data. All years above or equal to this threshold will be excluded from 
@@ -77,11 +77,10 @@
 #' 
 #' with help from C. Diagne & A.-C. Vaissière
 #' @examples
-#' # Create an example stack with two environmental variables
 #' data(invacost)
 #' db.over.time <- expandYearlyCosts(invacost,
-#'                                   startcolumn = "Probable_Starting_year_Low_margin",
-#'                                   endcolumn = "Probable_Ending_year_Low_margin")
+#'                                   startcolumn = "Probable_starting_year_low_margin",
+#'                                   endcolumn = "Probable_ending_year_low_margin")
 #' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
 #' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
 #' res <- costTrendOverTime(costdb)
@@ -93,7 +92,7 @@ costTrendOverTime <- function(costdb,
                               cost.transf = "log10",
                               in.millions = TRUE,
                               confidence.interval = 0.95,
-                              plotbreaks = c(0.1, 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000,
+                              plot.breaks = c(0.1, 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000,
                                              100000000, 1000000000, 10000000000, 100000000000, 1000000000000),
                               minimum.year = 1960, 
                               maximum.year = 2017, 
@@ -393,7 +392,7 @@ costTrendOverTime <- function(costdb,
                       ymax = upr,
                       group = Details),
                   alpha = .1) +
-      scale_y_log10(breaks = plotbreaks,
+      scale_y_log10(breaks = plot.breaks,
                     labels = scales::comma) +
       theme_bw() +
       annotation_logticks() + 

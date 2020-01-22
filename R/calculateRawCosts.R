@@ -110,8 +110,8 @@ calculateRawAvgCosts <- function(
   
   # Average cost of the entire period of time
   total.cost <-  as.data.frame(rawAvgCost(costdb,
-                                                    cost.column,
-                                                    year.column))
+                                          cost.column,
+                                          year.column))
   
   # Average cost over each interval
   period.costs <- data.frame()
@@ -125,10 +125,13 @@ calculateRawAvgCosts <- function(
     }
     cur.db <- costdb[which(costdb$Impact_year >= period[1] &
                              costdb$Impact_year < period[2]), ]
-    period.costs <- rbind.data.frame(period.costs,
-                                     as.data.frame(rawAvgCost(cur.db,
-                                                              cost.column,
-                                                              year.column)))
+    if(nrow(cur.db))
+    {
+      period.costs <- rbind.data.frame(period.costs,
+                                       as.data.frame(rawAvgCost(cur.db,
+                                                                cost.column,
+                                                                year.column)))
+    }
   }
   
   ggperiods <- period.costs

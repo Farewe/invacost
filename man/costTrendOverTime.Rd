@@ -19,7 +19,8 @@ costTrendOverTime(
   incomplete.year.threshold = 2015,
   incomplete.year.weights = NULL,
   gam.k = -1,
-  mars.nk = 21
+  mars.nk = 21,
+  plot.type = "facets"
 )
 }
 \arguments{
@@ -79,6 +80,9 @@ value of 21 corresponds to the default value calculated in earth package.
 Lowering this value will reduce the number of terms in the MARS model, which
 can be useful if you have expectations about the shape of the curve and want
 to avoid overfitting because of interannual variations.}
+
+\item{plot.type}{\code{"facets"} will make a multi-facet plot (one per model),
+\code{"single"} will make a single plot with colours specific to each model}
 }
 \value{
 a \code{list} with 3 to 6 elements (only the first three will be 

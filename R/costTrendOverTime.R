@@ -46,6 +46,8 @@
 #' Lowering this value will reduce the number of terms in the MARS model, which
 #' can be useful if you have expectations about the shape of the curve and want
 #' to avoid overfitting because of interannual variations.
+#' @param plot.type \code{"facets"} will make a multi-facet plot (one per model),
+#' \code{"single"} will make a single plot with colours specific to each model
 #' @return a \code{list} with 3 to 6 elements (only the first three will be 
 #' provided if you selected a cost transformation different from log10):
 #'
@@ -100,9 +102,11 @@ costTrendOverTime <- function(costdb,
                               incomplete.year.threshold = 2015,
                               incomplete.year.weights = NULL,
                               gam.k = -1,
-                              mars.nk = 21
+                              mars.nk = 21,
+                              plot.type = "facets"
 )
 {
+  
 
   if(any(costdb[, year.column] < minimum.year))
   {
@@ -372,32 +376,66 @@ costTrendOverTime <- function(costdb,
             2,
             function(x) 10^x)
     
-    p <- ggplot() +
-      geom_point(data = yearly.cost, 
-                 aes(x = Year,
-                     y = Annual.cost,
-                     col = Calibration)) +
-      ylab(paste0("Annual cost in US$ ", 
-                  ifelse(in.millions, 
-                         "millions",
-                         ""))) +
-      xlab("Year") +
-      geom_line(data = model.preds, 
-                aes(x = Year,
-                    y = fit,
-                    linetype = Details)) +
-      geom_ribbon(data = model.preds, 
+    if(plot.type == "single")
+    {
+      model.preds$Model <- as.character(model.preds$model)
+      model.preds$Model[model.preds$Details == "Linear"] <- "Linear regression"
+      model.preds$Model[model.preds$Details == "Quadratic"] <- "Quadratic regression"
+      model.preds$Model[model.preds$model == "Quantile regression"] <-
+        paste0(model.preds$Details[model.preds$model == "Quantile regression"],
+               " regression")
+      
+      
+      p <- ggplot() +
+        geom_point(data = yearly.cost, 
+                   aes(x = Year,
+                       y = Annual.cost,
+                       shape = Calibration)) +
+        ylab(paste0("Annual cost in US$ ", 
+                    ifelse(in.millions, 
+                           "millions",
+                           ""))) +
+        xlab("Year") +
+        geom_line(data = model.preds, 
                   aes(x = Year,
-                      ymin = lwr,
-                      ymax = upr,
-                      group = Details),
-                  alpha = .1) +
-      scale_y_log10(breaks = plot.breaks,
-                    labels = scales::comma) +
-      theme_bw() +
-      annotation_logticks() + 
-      facet_wrap (~ model,
-                  scales = "free_y")
+                      y = fit,
+                      col = Model)) +
+        scale_y_log10(breaks = plot.breaks,
+                      labels = scales::comma) +
+        theme_bw() +
+        annotation_logticks()
+    } else if(plot.type == "facets")
+    { 
+      p <- ggplot() +
+        geom_point(data = yearly.cost, 
+                   aes(x = Year,
+                       y = Annual.cost,
+                       col = Calibration)) +
+        ylab(paste0("Annual cost in US$ ", 
+                    ifelse(in.millions, 
+                           "millions",
+                           ""))) +
+        xlab("Year") +
+        geom_line(data = model.preds, 
+                  aes(x = Year,
+                      y = fit,
+                      linetype = Details)) +
+        geom_ribbon(data = model.preds, 
+                    aes(x = Year,
+                        ymin = lwr,
+                        ymax = upr,
+                        group = Details),
+                    alpha = .1) +
+        scale_y_log10(breaks = plot.breaks,
+                      labels = scales::comma) +
+        theme_bw() +
+        annotation_logticks() + 
+        facet_wrap (~ model,
+                    scales = "free_y")
+    } else
+    {
+      p <- NULL
+    }
     print(p)
     
     results <- list(cost.data = yearly.cost,

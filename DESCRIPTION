@@ -1,8 +1,8 @@
 Package: invacost
 Type: Package
 Title: INVACOST database and associated calculations
-Version: 0.2
-Date: 2019-12-13
+Version: 0.2-1
+Date: 2020-01-20
 Author: Boris Leroy [cre, aut], Christophe Diagne [ctb], Anne-Charlotte Vaissière [ctb],
 Maintainer: Boris Leroy <leroy.boris@gmail.com>
 Description: Provides an up-to-date version of the INVACOST database in R, and

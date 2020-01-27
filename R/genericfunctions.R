@@ -1,6 +1,6 @@
 #' @export
-#' @method print invacost.trend.over.time
-print.invacost.trend.over.time <- function(x, ...)
+#' @method print invacost.trendcost
+print.invacost.trendcost <- function(x, ...)
 {
   cat("Estimation of annual cost values of invasive alien species over time\n")
   cat(paste0("\n- Temporal interval of data : [", 
@@ -69,8 +69,8 @@ print.invacost.rawcost <- function(x, ...)
 }
 
 #' @export
-#' @method str invacost.trend.over.time
-str.invacost.trend.over.time <- function(object, ...)
+#' @method str invacost.trendcost
+str.invacost.trendcost <- function(object, ...)
 {
   args <- list(...)
   if(is.null(args$max.level))
@@ -94,8 +94,8 @@ str.invacost.rawcost <- function(object, ...)
 
 
 #' @export
-#' @method plot invacost.trend.over.time
-plot.invacost.trend.over.time <- function(x, ...)
+#' @method plot invacost.trendcost
+plot.invacost.trendcost <- function(x, ...)
 {
   print(x$plot)
 }

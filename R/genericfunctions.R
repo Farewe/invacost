@@ -97,6 +97,7 @@ str.invacost.rawcost <- function(object, ...)
 #' This function provides different plotting methods for the estimated annual
 #' cost of invasive species based on the temporal trend of costs.
 #' 
+#' @param x The output object from \code{\link{costTrendOverTime}}
 #' @param plot.type \code{"single"} or \code{"facets"}. Defines the type of plot
 #' you want to make: a single facet with all models (\code{"single"}), or a 
 #' facet per category of model (\code{"facets"})
@@ -110,6 +111,8 @@ str.invacost.rawcost <- function(object, ...)
 #' will be ignored.
 #' @param ... additional arguments, none implemented for now
 #' @export
+#' @import ggplot2
+#' @importFrom grDevices grey rgb
 #' @note 
 #' If the legend appears empty (no colours) on your computer screen, try to
 #' zoom in the plot, or to write to a file. There is a rare bug where under
@@ -127,7 +130,7 @@ str.invacost.rawcost <- function(object, ...)
 #' plot(res, plot.type = "single")
 #' @export
 #' @method plot invacost.trendcost
-plot.invacost.trendcost <- function(cost.trend,
+plot.invacost.trendcost <- function(x,
                                     plot.breaks = 10^(-15:15),
                                     plot.type = "facets",
                                     graphical.parameters = NULL,
@@ -143,19 +146,19 @@ plot.invacost.trendcost <- function(cost.trend,
     # 2a. If user do not specify graphical parameters we create them here ---------------
     p <- p + 
       ylab(paste0("Annual cost in US$ ", 
-                  ifelse(cost.trend$parameters$in.millions, 
+                  ifelse(x$parameters$in.millions, 
                          "millions",
                          ""))) +
       xlab("Year") +
       theme_bw()
-    if(cost.trend$parameters$cost.transformation == "log10")
+    if(x$parameters$cost.transformation == "log10")
     {
       # 3a. We define axes here for log-transformed data ---------------
       p <- p +
         scale_y_log10(breaks = plot.breaks,
                       labels = scales::comma) +
         annotation_logticks()
-    } else if(cost.trend$parameters$cost.transformation == "none")
+    } else if(x$parameters$cost.transformation == "none")
     {
       # 3b. We define axes here for untransformed data ---------------
       p <- p +
@@ -172,10 +175,10 @@ plot.invacost.trendcost <- function(cost.trend,
   }
   
   # Changing order of factors for points 
-  cost.trend$cost.data$Calibration <- factor(cost.trend$cost.data$Calibration, 
+  x$cost.data$Calibration <- factor(x$cost.data$Calibration, 
                                              levels = c("Included", "Excluded"))
   # Preparing model perdictions for plots
-  model.preds <- cost.trend$estimated.annual.costs
+  model.preds <- x$estimated.annual.costs
   model.preds$Model <- as.character(model.preds$model)
   model.preds$Model[model.preds$Details == "Linear"] <- "Linear regression"
   model.preds$Model[model.preds$Details == "Quadratic"] <- "Quadratic regression"
@@ -213,15 +216,15 @@ plot.invacost.trendcost <- function(cost.trend,
     # 5. Single plot --------------------
     p <-
       p +
-      geom_point(data = cost.trend$cost.data, 
-                 aes(x = Year,
-                     y = Annual.cost,
-                     shape = Calibration),
+      geom_point(data = x$cost.data, 
+                 aes_string(x = "Year",
+                            y = "Annual.cost",
+                            shape = "Calibration"),
                  col = grey(.4)) +
       geom_line(data = model.preds, 
-                aes(x = Year,
-                    y = fit,
-                    col = Model),
+                aes_string(x = "Year",
+                           y = "fit",
+                           col = "Model"),
                 size = 1) +
       scale_discrete_manual(aesthetics = "col",
                             values = cols)
@@ -231,21 +234,21 @@ plot.invacost.trendcost <- function(cost.trend,
     # 6. Facet plot --------------------
     p <-
       p +
-      geom_point(data = cost.trend$cost.data, 
-                 aes(x = Year,
-                     y = Annual.cost,
-                     shape = Calibration),
+      geom_point(data = x$cost.data, 
+                 aes_string(x = "Year",
+                            y = "Annual.cost",
+                            shape = "Calibration"),
                  col = grey(.4)) +
       geom_line(data = model.preds, 
-                aes(x = Year,
-                    y = fit,
-                    col = Model),
+                aes_string(x = "Year",
+                           y = "fit",
+                           col = "Model"),
                 size = 1) +
       geom_ribbon(data = model.preds, 
-                  aes(x = Year,
-                      ymin = lwr,
-                      ymax = upr,
-                      group = Details),
+                  aes_string(x = "Year",
+                             ymin = "lwr",
+                             ymax = "upr",
+                             group = "Details"),
                   alpha = .1) + 
       facet_wrap (~ model,
                   scales = "free_y") +
@@ -262,6 +265,7 @@ plot.invacost.trendcost <- function(cost.trend,
 #' This function provides different plotting methods for the raw average annual 
 #' cost of invasive species over different periods of time
 #' 
+#' @param x The output object from \code{\link{calculateRawAvgCosts}}
 #' @param plot.type \code{"points"} or \code{"bars"}. Defines the type of plot
 #' you want to make; bars are not advised in log scale because the base value (0)
 #' is infinite in log-scale. 
@@ -280,6 +284,7 @@ plot.invacost.trendcost <- function(cost.trend,
 #' will be ignored.
 #' @param ... additional arguments, none implemented for now
 #' @export
+#' @import ggplot2
 #' @examples
 #' data(invacost)
 #' db.over.time <- expandYearlyCosts(invacost,
@@ -291,7 +296,7 @@ plot.invacost.trendcost <- function(cost.trend,
 #' plot(res)
 #' plot(res, plot.type = "bars")
 #' @method plot invacost.rawcost
-plot.invacost.rawcost <- function(costperperiod,
+plot.invacost.rawcost <- function(x,
                                   plot.breaks = 10^(-15:15),
                                   plot.type = "points",
                                   average.annual.values = TRUE,
@@ -303,15 +308,15 @@ plot.invacost.rawcost <- function(costperperiod,
   {
     cost.transf <- "none"
   }
-  costperiod <- costperperiod$average.cost.per.period
+  costperiod <- x$average.cost.per.period
   costperiod$middle.years <- costperiod$initial_year +
     (costperiod$final_year - 
        costperiod$initial_year) / 2 
   
-  ggtext <- data.frame(x = costperperiod$parameters$minimum.year,
-                       y = costperperiod$average.total.cost$annual_cost,
+  ggtext <- data.frame(x = x$parameters$minimum.year,
+                       y = x$average.total.cost$annual_cost,
                        text = paste0("Average over entire period\n",
-                                     scales::comma(costperperiod$average.total.cost$annual_cost)))
+                                     scales::comma(x$average.total.cost$annual_cost)))
   
   if(!average.annual.values)
   {
@@ -332,11 +337,11 @@ plot.invacost.rawcost <- function(costperperiod,
                          "Average annual",
                          "Total"),
                   "cost per period in US$ ", 
-                  ifelse(costperperiod$parameters$in.millions, 
+                  ifelse(x$parameters$in.millions, 
                          "millions",
                          ""))) +
       xlab("Year") +
-      scale_x_continuous(breaks = costperperiod$year.breaks) +
+      scale_x_continuous(breaks = x$year.breaks) +
       theme_bw()
     if(cost.transf == "log10")
     {
@@ -385,32 +390,32 @@ plot.invacost.rawcost <- function(costperperiod,
     ##### 5a. BARPLOTS -------------------------------------------------------------
     p <- p +
       # Bars
-      geom_rect(aes(xmin = initial_year,
-                    xmax = final_year,
-                    ymin = base.val, 
-                    ymax = annual_cost),
+      geom_rect(aes_string(xmin = "initial_year",
+                           xmax = "final_year",
+                           ymin = "base.val", 
+                           ymax = "annual_cost"),
                 col = "black",
                 fill = "white") +
       # Lines between points
-      geom_line(aes(x = middle.years,
-                    y = annual_cost),
+      geom_line(aes_string(x = "middle.years",
+                           y = "annual_cost"),
                 linetype = 2)
   } else if(plot.type == "points")
   {
     ##### 5b. POINT PLOTS ----------------------------------------------------------
     p <- p +
       # Points
-      geom_point(aes(x = middle.years,
-                     y = annual_cost)) +
+      geom_point(aes_string(x = "middle.years",
+                            y = "annual_cost")) +
       # Lines between points
-      geom_line(aes(x = middle.years,
-                    y = annual_cost),
+      geom_line(aes_string(x = "middle.years",
+                           y = "annual_cost"),
                 linetype = 2) +
       # Horizontal bars (year span)
-      geom_segment(aes(x = initial_year,
-                       xend = final_year,
-                       y = annual_cost,
-                       yend = annual_cost))
+      geom_segment(aes_string(x = "initial_year",
+                              xend = "final_year",
+                              y = "annual_cost",
+                              yend = "annual_cost"))
   }
   
   # In case we plot the average annual values, we will add individual years .
@@ -418,27 +423,27 @@ plot.invacost.rawcost <- function(costperperiod,
   # We add them last to show them on top of everything else.
   if(average.annual.values)
   {
-    yeargroups <- dplyr::group_by(costperperiod$cost.data,
-                                  get(costperperiod$parameters$year.column)) 
+    yeargroups <- dplyr::group_by(x$cost.data,
+                                  get(x$parameters$year.column)) 
     
     yearly.cost <- dplyr::summarise(yeargroups, 
-                                    Annual.cost = sum(get(costperperiod$parameters$cost.column)))
+                                    Annual.cost = sum(get(x$parameters$cost.column)))
     names(yearly.cost)[1] <- "Year"
     
     # 6. Individual years and average over entire period --------------
     p <- p +
       # Points
       geom_point(data = yearly.cost,
-                 mapping = aes(x = Year,
-                               y = Annual.cost),
+                 mapping = aes_string(x = "Year",
+                                      y = "Annual.cost"),
                  alpha = .2) + 
       # Text of average annual cost
       geom_text(data = ggtext,
                 hjust = 0,
-                aes(x = x, y = y, label = text)) +
+                aes_string(x = "x", y = "y", label = "text")) +
       # Horizontal line for average annual cost
-      geom_hline(data = costperperiod$average.total.cost,
-                 aes(yintercept = annual_cost),
+      geom_hline(data = x$average.total.cost,
+                 aes_string(yintercept = "annual_cost"),
                  linetype = 3)
   }
   

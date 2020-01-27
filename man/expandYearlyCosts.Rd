@@ -22,9 +22,6 @@ all costs occuring over several years will be repeated for each year.
 For costs that occur over several years, this function will repeat the 
 annualised cost value over each year of the relevant period.
 }
-\details{
-
-}
 \examples{
 data(invacost)
 invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]

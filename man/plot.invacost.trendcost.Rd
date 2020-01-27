@@ -5,7 +5,7 @@
 \title{Plot model predictions of cost trends over time}
 \usage{
 \method{plot}{invacost.trendcost}(
-  cost.trend,
+  x,
   plot.breaks = 10^(-15:15),
   plot.type = "facets",
   graphical.parameters = NULL,
@@ -13,6 +13,8 @@
 )
 }
 \arguments{
+\item{x}{The output object from \code{\link{costTrendOverTime}}}
+
 \item{plot.breaks}{a vector of numeric values indicating the plot breaks 
 for the Y axis (cost values)}
 
@@ -32,6 +34,12 @@ will be ignored.}
 \description{
 This function provides different plotting methods for the estimated annual
 cost of invasive species based on the temporal trend of costs.
+}
+\note{
+If the legend appears empty (no colours) on your computer screen, try to
+zoom in the plot, or to write to a file. There is a rare bug where under
+certain conditions you cannot see the colours in the legend, because of their
+transparency; zooming in or writing to a file are the best workarounds.
 }
 \examples{
 data(invacost)

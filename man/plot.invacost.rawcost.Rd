@@ -5,7 +5,7 @@
 \title{Plot raw cumulated cost of invasive species over different periods of time}
 \usage{
 \method{plot}{invacost.rawcost}(
-  costperperiod,
+  x,
   plot.breaks = 10^(-15:15),
   plot.type = "points",
   average.annual.values = TRUE,
@@ -15,6 +15,8 @@
 )
 }
 \arguments{
+\item{x}{The output object from \code{\link{calculateRawAvgCosts}}}
+
 \item{plot.breaks}{aa vector of numeric values indicating the plot breaks 
 for the Y axis (cost values)}
 
@@ -41,12 +43,6 @@ will be ignored.}
 \description{
 This function provides different plotting methods for the raw average annual 
 cost of invasive species over different periods of time
-}
-\note{
-If the legend appears empty (no colours) on your computer screen, try to
-zoom in the plot, or to write to a file. There is a rare bug where under
-certain conditions you cannot see the colours in the legend, because of their
-transparency; zooming in or writing to a file are the best workarounds.
 }
 \examples{
 data(invacost)

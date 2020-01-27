@@ -162,8 +162,6 @@ calculateRawAvgCosts <- function(
 #' the range of data)
 #' @return a named \code{list} with 5 elements
 #' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
-#' @details
-#' 
 #' @export
 #' @author
 #' Boris Leroy \email{leroy.boris@@gmail.com}

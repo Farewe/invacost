@@ -10,6 +10,7 @@ Description: Provides an up-to-date version of the INVACOST database in R, and
 License: GPL (>=2.0)
 Encoding: UTF-8
 Depends:
+    R (>= 2.10),
     ggplot2
 Imports:
     dplyr,

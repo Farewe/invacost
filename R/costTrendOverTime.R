@@ -66,8 +66,7 @@
 #' }
 #' The structure of this object can be seen using \code{str()}
 #' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
-#' @details
-#' 
+#' @importFrom stats lm predict qt residuals
 #' @export
 #' @author
 #' Boris Leroy \email{leroy.boris@@gmail.com}
@@ -439,9 +438,6 @@ costTrendOverTime <- function(costdb,
                                                   newdata = data.frame(Year = final.year)))))
   } else
   {
-    message("The cost transformation was not in log10, so you will have 
-    to transform the predicted costs in dollars by yourself, and make graphs of
-    your own. The output object will only contains the fitted models.")
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
                     fitted.models = list(linear = reg.lm,

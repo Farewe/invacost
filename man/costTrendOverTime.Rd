@@ -102,9 +102,6 @@ The structure of this object can be seen using \code{str()}
 This function fits different models on annualised INVACOST data in order to
 estimate the average trend over time of invasive species costs.
 }
-\details{
-
-}
 \examples{
 data(invacost)
 db.over.time <- expandYearlyCosts(invacost,

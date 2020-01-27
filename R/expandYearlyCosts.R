@@ -9,8 +9,6 @@
 #' @param endcolumn Name of the column containing ending years.
 #' @return a \code{data.frame} containing the INVACOST database where 
 #' all costs occuring over several years will be repeated for each year.
-#' @details
-#' 
 #' @export
 #' @author
 #' Boris Leroy \email{leroy.boris@@gmail.com}
@@ -24,15 +22,15 @@
 #'                                   endcolumn = "Probable_ending_year_low_margin")
 expandYearlyCosts <- function(costdb, startcolumn, endcolumn)
 {
-  if(!("Cost_ID" %in% colnames(invacost)))
+  if(!("Cost_ID" %in% colnames(costdb)))
   {
     stop("The 'invacost' object does not seem to be the invacost database (lacks cost_ID column)")
   }
-  if(!(startcolumn %in% colnames(invacost)))
+  if(!(startcolumn %in% colnames(costdb)))
   {
     stop("The 'startcolumn' does not exist in the invacost database, please check spelling.")
   }
-  if(!(endcolumn %in% colnames(invacost)))
+  if(!(endcolumn %in% colnames(costdb)))
   {
     stop("The 'endcolumn' does not exist in the invacost database, please check spelling.")
   }

@@ -50,7 +50,6 @@
   \item{Type_of_cost}{}
   \item{Method_reliability}{}
   \item{Details}{}
-  \item{Benefit_value.s.}{}
   \item{Contributors}{}
   \item{Probable_starting_year_low_margin}{}
   \item{Probable_ending_year_low_margin}{}

@@ -35,9 +35,6 @@ a named \code{list} with 5 elements
 This simple function calculates the raw average annual cost of invasive species
 over a single period of time
 }
-\details{
-
-}
 \examples{
 data(invacost)
 db.over.time <- expandYearlyCosts(invacost,

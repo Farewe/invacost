@@ -53,7 +53,6 @@ only have data starting from 1970, hence the \code{minimum.year} will be
 over the entire time period}
 \item{\code{average.cost.per.period}: a data.frame containing the the average 
 annual cost of IAS calculated over each time interval}
-\item{\code{plot}}: the ggplot object of the output plot.
 }
 The structure of this object can be seen using \code{str()}
 }

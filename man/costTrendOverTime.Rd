@@ -11,16 +11,13 @@ costTrendOverTime(
   cost.transf = "log10",
   in.millions = TRUE,
   confidence.interval = 0.95,
-  plot.breaks = c(0.1, 1, 10, 100, 1000, 10000, 1e+05, 1e+06, 1e+07, 1e+08, 1e+09,
-    1e+10, 1e+11, 1e+12),
   minimum.year = 1960,
   maximum.year = 2017,
   final.year = 2017,
   incomplete.year.threshold = 2015,
   incomplete.year.weights = NULL,
   gam.k = -1,
-  mars.nk = 21,
-  plot.type = "facets"
+  mars.nk = 21
 )
 }
 \arguments{
@@ -47,9 +44,6 @@ not be transformed.}
 
 \item{confidence.interval}{a numeric value between 0 and 1, corresponding
 to the desired confidence intervals around model predictions.}
-
-\item{plot.breaks}{a vector of numeric values indicating the plot breaks 
-for the axis of annual cost values.}
 
 \item{minimum.year}{the starting year of this analysis. By default, 
 1960 was chosen because it marks the period from which world bank data is 
@@ -80,9 +74,6 @@ value of 21 corresponds to the default value calculated in earth package.
 Lowering this value will reduce the number of terms in the MARS model, which
 can be useful if you have expectations about the shape of the curve and want
 to avoid overfitting because of interannual variations.}
-
-\item{plot.type}{\code{"facets"} will make a multi-facet plot (one per model),
-\code{"single"} will make a single plot with colours specific to each model}
 }
 \value{
 a \code{list} with 3 to 6 elements (only the first three will be 
@@ -102,7 +93,6 @@ cost values for each year for all the fitted models.}
 \item{\code{RMSE}: an array containing RMSE of models for the calibration 
 data and for all data. NOTE: the RMSE for quantile regression is not an 
 relevant metric. }
-\item{\code{plot}: the ggplot object of the output plot.}
 \item{\code{final.year.cost}: a vector containing the estimated annual
 costs of invasive species based on all models for \code{final.year}.}
 }

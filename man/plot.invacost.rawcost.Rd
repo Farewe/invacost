@@ -15,8 +15,8 @@
 )
 }
 \arguments{
-\item{plot.breaks}{a vector of numeric values indicating the plot breaks 
-for the axis of average annual cost values.}
+\item{plot.breaks}{aa vector of numeric values indicating the plot breaks 
+for the Y axis (cost values)}
 
 \item{plot.type}{\code{"points"} or \code{"bars"}. Defines the type of plot
 you want to make; bars are not advised in log scale because the base value (0)
@@ -33,13 +33,20 @@ for graphical representation.}
 to specify if you want to customise ggplot2 graphs.
 By default, the following layers are configured: ylab, xlab, scale_x_continuous,
 theme_bw and, if \code{cost.transf = "log10"}, scale_y_log10 and 
-annotation_logticks.}
+annotation_logticks. If you specify \code{grahical.parameters}, all defaults
+will be ignored.}
 
 \item{...}{additional arguments, none implemented for now}
 }
 \description{
-This function provides different plotting method for the raw average annual 
+This function provides different plotting methods for the raw average annual 
 cost of invasive species over different periods of time
+}
+\note{
+If the legend appears empty (no colours) on your computer screen, try to
+zoom in the plot, or to write to a file. There is a rare bug where under
+certain conditions you cannot see the colours in the legend, because of their
+transparency; zooming in or writing to a file are the best workarounds.
 }
 \examples{
 data(invacost)

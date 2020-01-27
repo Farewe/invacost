@@ -33,7 +33,6 @@
 #' over the entire time period}
 #' \item{\code{average.cost.per.period}: a data.frame containing the the average 
 #' annual cost of IAS calculated over each time interval}
-#' \item{\code{plot}}: the ggplot object of the output plot.
 #' }
 #' The structure of this object can be seen using \code{str()}
 #' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.

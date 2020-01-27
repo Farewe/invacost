@@ -92,24 +92,181 @@ str.invacost.rawcost <- function(object, ...)
   NextMethod("str", object = object, max.level = args$max.level)
 }
 
-
+#' Plot model predictions of cost trends over time 
+#'
+#' This function provides different plotting methods for the estimated annual
+#' cost of invasive species based on the temporal trend of costs.
+#' 
+#' @param plot.type \code{"single"} or \code{"facets"}. Defines the type of plot
+#' you want to make: a single facet with all models (\code{"single"}), or a 
+#' facet per category of model (\code{"facets"})
+#' @param plot.breaks a vector of numeric values indicating the plot breaks 
+#' for the Y axis (cost values)
+#' @param graphical.parameters ggplot2 layers and other customisation parameters,
+#' to specify if you want to customise ggplot2 graphs.
+#' By default, the following layers are configured: ylab, xlab, scale_x_continuous,
+#' theme_bw and, if \code{cost.transf = "log10"}, scale_y_log10 and 
+#' annotation_logticks. If you specify \code{grahical.parameters}, all defaults
+#' will be ignored.
+#' @param ... additional arguments, none implemented for now
+#' @export
+#' @note 
+#' If the legend appears empty (no colours) on your computer screen, try to
+#' zoom in the plot, or to write to a file. There is a rare bug where under
+#' certain conditions you cannot see the colours in the legend, because of their
+#' transparency; zooming in or writing to a file are the best workarounds.
+#' @examples
+#' data(invacost)
+#' db.over.time <- expandYearlyCosts(invacost,
+#'                                   startcolumn = "Probable_starting_year_low_margin",
+#'                                   endcolumn = "Probable_ending_year_low_margin")
+#' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
+#' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
+#' res <- costTrendOverTime(costdb)
+#' plot(res)
+#' plot(res, plot.type = "single")
 #' @export
 #' @method plot invacost.trendcost
-plot.invacost.trendcost <- function(x, ...)
+plot.invacost.trendcost <- function(cost.trend,
+                                    plot.breaks = 10^(-15:15),
+                                    plot.type = "facets",
+                                    graphical.parameters = NULL,
+                                    ...)
 {
-  print(x$plot)
+  
+  # 1. We create the ggplot here ---------------
+  p <- ggplot()
+  
+  # Setting up graphical.parameters
+  if(is.null(graphical.parameters))
+  {
+    # 2a. If user do not specify graphical parameters we create them here ---------------
+    p <- p + 
+      ylab(paste0("Annual cost in US$ ", 
+                  ifelse(cost.trend$parameters$in.millions, 
+                         "millions",
+                         ""))) +
+      xlab("Year") +
+      theme_bw()
+    if(cost.trend$parameters$cost.transformation == "log10")
+    {
+      # 3a. We define axes here for log-transformed data ---------------
+      p <- p +
+        scale_y_log10(breaks = plot.breaks,
+                      labels = scales::comma) +
+        annotation_logticks()
+    } else if(cost.trend$parameters$cost.transformation == "none")
+    {
+      # 3b. We define axes here for untransformed data ---------------
+      p <- p +
+        scale_y_continuous(labels = scales::comma)
+    } else
+    {
+      stop("If you made a manual transformation (other than log10), then you
+           will have to make the plot by yourself.")
+    }
+  } else 
+  {
+    # 4. Adding user-defined parameters to the plot ---------------
+    p <- p + graphical.parameters
+  }
+  
+  # Changing order of factors for points 
+  cost.trend$cost.data$Calibration <- factor(cost.trend$cost.data$Calibration, 
+                                             levels = c("Included", "Excluded"))
+  # Preparing model perdictions for plots
+  model.preds <- cost.trend$estimated.annual.costs
+  model.preds$Model <- as.character(model.preds$model)
+  model.preds$Model[model.preds$Details == "Linear"] <- "Linear regression"
+  model.preds$Model[model.preds$Details == "Quadratic"] <- "Quadratic regression"
+  model.preds$Model[model.preds$model == "Quantile regression"] <-
+    paste0(model.preds$Details[model.preds$model == "Quantile regression"],
+           " regression")
+  
+  # Ordering model names
+  model.preds$Model <- factor(model.preds$Model,
+                              levels = c("Linear regression", 
+                                         "Quadratic regression",
+                                         "MARS",
+                                         "GAM",
+                                         paste("Quantile", c(0.1, 0.5, 0.9), "regression")))
+  
+  # Creating a colourblind palette (Wong 2011)
+  # to best distinguish models
+  alpha <- round(.8 * 255)
+  cols <- c(`Linear regression` = rgb(86, 180, 233, alpha = alpha,
+                                      maxColorValue = 255), # Sky blue
+            `Quadratic regression` = rgb(230, 159, 0, alpha = alpha,
+                                         maxColorValue = 255), # Orange
+            `MARS` = rgb(204, 121, 167, alpha = alpha,
+                         maxColorValue = 255), # Reddish purple
+            `GAM` = rgb(0, 158, 115, alpha = alpha,
+                        maxColorValue = 255), # Bluish green
+            `Quantile 0.5 regression` = grey(0.5, alpha = alpha / 255),
+            `Quantile 0.1 regression` = grey(0.25, alpha = alpha / 255),
+            `Quantile 0.9 regression` = grey(0, alpha = alpha / 255)
+  )
+  
+  
+  if(plot.type == "single")
+  {
+    # 5. Single plot --------------------
+    p <-
+      p +
+      geom_point(data = cost.trend$cost.data, 
+                 aes(x = Year,
+                     y = Annual.cost,
+                     shape = Calibration),
+                 col = grey(.4)) +
+      geom_line(data = model.preds, 
+                aes(x = Year,
+                    y = fit,
+                    col = Model),
+                size = 1) +
+      scale_discrete_manual(aesthetics = "col",
+                            values = cols)
+      
+  } else if(plot.type == "facets")
+  { 
+    # 6. Facet plot --------------------
+    p <-
+      p +
+      geom_point(data = cost.trend$cost.data, 
+                 aes(x = Year,
+                     y = Annual.cost,
+                     shape = Calibration),
+                 col = grey(.4)) +
+      geom_line(data = model.preds, 
+                aes(x = Year,
+                    y = fit,
+                    col = Model),
+                size = 1) +
+      geom_ribbon(data = model.preds, 
+                  aes(x = Year,
+                      ymin = lwr,
+                      ymax = upr,
+                      group = Details),
+                  alpha = .1) + 
+      facet_wrap (~ model,
+                  scales = "free_y") +
+      scale_discrete_manual(aesthetics = "col",
+                            values = cols)
+  }
+  
+  
+  print(p)
 }
 
 #' Plot raw cumulated cost of invasive species over different periods of time
 #' 
-#' This function provides different plotting method for the raw average annual 
+#' This function provides different plotting methods for the raw average annual 
 #' cost of invasive species over different periods of time
 #' 
 #' @param plot.type \code{"points"} or \code{"bars"}. Defines the type of plot
 #' you want to make; bars are not advised in log scale because the base value (0)
 #' is infinite in log-scale. 
-#' @param plot.breaks a vector of numeric values indicating the plot breaks 
-#' for the axis of average annual cost values. 
+#' @param plot.breaks aa vector of numeric values indicating the plot breaks 
+#' for the Y axis (cost values)
 #' @param average.annual.values if \code{TRUE}, the plot will represent average
 #' annual values rather than cumulative values over the entire period
 #' @param cost.transf Type of transformation you want to apply on cost values.
@@ -119,7 +276,8 @@ plot.invacost.trendcost <- function(x, ...)
 #' to specify if you want to customise ggplot2 graphs.
 #' By default, the following layers are configured: ylab, xlab, scale_x_continuous,
 #' theme_bw and, if \code{cost.transf = "log10"}, scale_y_log10 and 
-#' annotation_logticks.
+#' annotation_logticks. If you specify \code{grahical.parameters}, all defaults
+#' will be ignored.
 #' @param ... additional arguments, none implemented for now
 #' @export
 #' @examples
@@ -134,12 +292,12 @@ plot.invacost.trendcost <- function(x, ...)
 #' plot(res, plot.type = "bars")
 #' @method plot invacost.rawcost
 plot.invacost.rawcost <- function(costperperiod,
-                                           plot.breaks = 10^(-15:15),
-                                           plot.type = "points",
-                                           average.annual.values = TRUE,
-                                           cost.transf = "log10",
-                                           graphical.parameters = NULL,
-                                           ...)
+                                  plot.breaks = 10^(-15:15),
+                                  plot.type = "points",
+                                  average.annual.values = TRUE,
+                                  cost.transf = "log10",
+                                  graphical.parameters = NULL,
+                                  ...)
 {
   if(is.null(cost.transf))
   {

@@ -21,8 +21,6 @@
 #' not be transformed.
 #' @param confidence.interval a numeric value between 0 and 1, corresponding
 #' to the desired confidence intervals around model predictions.
-#' @param plot.breaks a vector of numeric values indicating the plot breaks 
-#' for the axis of annual cost values. 
 #' @param minimum.year the starting year of this analysis. By default, 
 #' 1960 was chosen because it marks the period from which world bank data is 
 #' available for exchange rates and inflation values.
@@ -46,8 +44,6 @@
 #' Lowering this value will reduce the number of terms in the MARS model, which
 #' can be useful if you have expectations about the shape of the curve and want
 #' to avoid overfitting because of interannual variations.
-#' @param plot.type \code{"facets"} will make a multi-facet plot (one per model),
-#' \code{"single"} will make a single plot with colours specific to each model
 #' @return a \code{list} with 3 to 6 elements (only the first three will be 
 #' provided if you selected a cost transformation different from log10):
 #'
@@ -65,7 +61,6 @@
 #' \item{\code{RMSE}: an array containing RMSE of models for the calibration 
 #' data and for all data. NOTE: the RMSE for quantile regression is not an 
 #' relevant metric. }
-#' \item{\code{plot}: the ggplot object of the output plot.}
 #' \item{\code{final.year.cost}: a vector containing the estimated annual
 #' costs of invasive species based on all models for \code{final.year}.}
 #' }
@@ -94,16 +89,13 @@ costTrendOverTime <- function(costdb,
                               cost.transf = "log10",
                               in.millions = TRUE,
                               confidence.interval = 0.95,
-                              plot.breaks = c(0.1, 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000,
-                                             100000000, 1000000000, 10000000000, 100000000000, 1000000000000),
                               minimum.year = 1960, 
                               maximum.year = 2017, 
                               final.year = 2017, 
                               incomplete.year.threshold = 2015,
                               incomplete.year.weights = NULL,
                               gam.k = -1,
-                              mars.nk = 21,
-                              plot.type = "facets"
+                              mars.nk = 21
 )
 {
   if(is.null(cost.transf))
@@ -379,68 +371,6 @@ costTrendOverTime <- function(costdb,
             2,
             function(x) 10^x)
     
-    if(plot.type == "single")
-    {
-      model.preds$Model <- as.character(model.preds$model)
-      model.preds$Model[model.preds$Details == "Linear"] <- "Linear regression"
-      model.preds$Model[model.preds$Details == "Quadratic"] <- "Quadratic regression"
-      model.preds$Model[model.preds$model == "Quantile regression"] <-
-        paste0(model.preds$Details[model.preds$model == "Quantile regression"],
-               " regression")
-      
-      
-      p <- ggplot() +
-        geom_point(data = yearly.cost, 
-                   aes(x = Year,
-                       y = Annual.cost,
-                       shape = Calibration)) +
-        ylab(paste0("Annual cost in US$ ", 
-                    ifelse(in.millions, 
-                           "millions",
-                           ""))) +
-        xlab("Year") +
-        geom_line(data = model.preds, 
-                  aes(x = Year,
-                      y = fit,
-                      col = Model)) +
-        scale_y_log10(breaks = plot.breaks,
-                      labels = scales::comma) +
-        theme_bw() +
-        annotation_logticks()
-    } else if(plot.type == "facets")
-    { 
-      p <- ggplot() +
-        geom_point(data = yearly.cost, 
-                   aes(x = Year,
-                       y = Annual.cost,
-                       col = Calibration)) +
-        ylab(paste0("Annual cost in US$ ", 
-                    ifelse(in.millions, 
-                           "millions",
-                           ""))) +
-        xlab("Year") +
-        geom_line(data = model.preds, 
-                  aes(x = Year,
-                      y = fit,
-                      linetype = Details)) +
-        geom_ribbon(data = model.preds, 
-                    aes(x = Year,
-                        ymin = lwr,
-                        ymax = upr,
-                        group = Details),
-                    alpha = .1) +
-        scale_y_log10(breaks = plot.breaks,
-                      labels = scales::comma) +
-        theme_bw() +
-        annotation_logticks() + 
-        facet_wrap (~ model,
-                    scales = "free_y")
-    } else
-    {
-      p <- NULL
-    }
-    print(p)
-    
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
                     fitted.models = list(linear = reg.lm,
@@ -452,7 +382,6 @@ costTrendOverTime <- function(costdb,
                                                          qt0.9 = qt0.9)),
                     estimated.annual.costs = model.preds,
                     RMSE = model.RMSE,
-                    plot = p,
                     final.year.cost = c(linear = 
                                           unname(10^predict(reg.lm,
                                                      newdata = data.frame(Year = final.year))),
@@ -476,30 +405,6 @@ costTrendOverTime <- function(costdb,
                                                      newdata = data.frame(Year = final.year)))))
   } else if(cost.transf == "none")
   {
-    p <- ggplot() +
-      geom_point(data = yearly.cost, 
-                 aes(x = Year,
-                     y = Annual.cost)) +
-      ylab(paste0("Annual cost in US$ ", 
-                  ifelse(in.millions, 
-                         "millions",
-                         ""))) +
-      xlab("Year") +
-      geom_line(data = model.preds, 
-                aes(x = Year,
-                    y = fit,
-                    linetype = Quantile)) +
-      geom_ribbon(data = model.preds, 
-                  aes(x = Year,
-                      ymin = lwr,
-                      ymax = upr,
-                      group = Quantile),
-                  alpha = .1) +
-      theme_bw() +
-      annotation_logticks() + 
-      facet_wrap (~ model,
-                  scales = "free_y")
-    print(p)
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
                     fitted.models = list(linear = reg.lm,
@@ -511,7 +416,6 @@ costTrendOverTime <- function(costdb,
                                                          qt0.9 = qt0.9)),
                     estimated.annual.costs = model.preds,
                     RMSE = model.RMSE,
-                    plot = p,
                     final.year.cost = c(linear = 
                                           unname(predict(reg.lm,
                                                   newdata = data.frame(Year = final.year))),
@@ -536,7 +440,7 @@ costTrendOverTime <- function(costdb,
   } else
   {
     message("The cost transformation was not in log10, so you will have 
-    to transforme the predicted costs in dollars by yourself, and make graphs of
+    to transform the predicted costs in dollars by yourself, and make graphs of
     your own. The output object will only contains the fitted models.")
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 

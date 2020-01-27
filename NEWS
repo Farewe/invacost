@@ -1,3 +1,39 @@
+virtualspecies v0.2-2 (Release date: unreleased yet)
+==============
+
+Changes:
+
+* Major change in how objects are plotted. Now, basic functions will not make
+any plot, and all plots will be called with plot(object). 
+* Greatly improved plotting of invacost objects, included new possibilities and
+arguments:
+  - choice between bars or points, average or total costs for raw costs
+  - choice of a single or multiple facets for cost trends over time
+
+virtualspecies v0.2-1 (Release date: unreleased yet)
+==============
+
+Changes:
+
+* Fixed an issue with calculateRawAvgCosts: previously the average per period
+was calculated on the basis of effective years (i.e., empty years were excluded
+from the average). Now, the average will always be based on the entire period.
+There is no reason to believe that incomplete year are only those for which
+we have no data at all, so we should not make any tentative correction based on
+so-called "effective years" here. Furthermore, it implied comparing different
+time intervals (e.g., 1 year vs. 10 years), which is generally inadequate. From
+now on, the function will make a raw average per period of time regardless of
+data completion.
+
+
+virtualspecies v0.2 (Release date: unreleased yet)
+==============
+
+Changes:
+
+* Added the calculateRawAvgCosts function
+
+
 virtualspecies v0.1 (Release date: unreleased yet)
 ==============
 

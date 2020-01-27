@@ -7,7 +7,9 @@
 rawAvgCost(
   costdb,
   cost.column = "Cost_estimate_per_year_2017_USD_exchange_rate",
-  year.column = "Impact_year"
+  year.column = "Impact_year",
+  min.year = NULL,
+  max.year = NULL
 )
 }
 \arguments{
@@ -19,6 +21,12 @@ where annual costs occurring over several years are repeated for each year.}
 choose between the exchange rate (default) or PPP annualised cost)}
 
 \item{year.column}{Name of the year column to use in \code{costdb}.}
+
+\item{min.year}{The minimum year of the period (specify only if different from
+the range of data)}
+
+\item{max.year}{The minimum year of the period (specify only if different from
+the range of data)}
 }
 \value{
 a named \code{list} with 5 elements

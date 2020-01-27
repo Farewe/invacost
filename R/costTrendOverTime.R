@@ -106,7 +106,10 @@ costTrendOverTime <- function(costdb,
                               plot.type = "facets"
 )
 {
-  
+  if(is.null(cost.transf))
+  {
+    cost.transf <- "none"
+  }
 
   if(any(costdb[, year.column] < minimum.year))
   {
@@ -174,7 +177,7 @@ costTrendOverTime <- function(costdb,
   
   
   
-  if(!is.null(cost.transf) | !is.na(cost.transf))
+  if(cost.transf != "none")
   {
     yearly.cost$transf.cost <- do.call(cost.transf, list(yearly.cost$Annual.cost))
   } else
@@ -471,7 +474,7 @@ costTrendOverTime <- function(costdb,
                                         quantile.0.9 = 
                                           unname(10^predict(qt0.9,
                                                      newdata = data.frame(Year = final.year)))))
-  } else if(is.null(cost.transf) | is.na(cost.transf))
+  } else if(cost.transf == "none")
   {
     p <- ggplot() +
       geom_point(data = yearly.cost, 
@@ -546,6 +549,6 @@ costTrendOverTime <- function(costdb,
                                                          qt0.9 = qt0.9)),
                     RMSE = model.RMSE)
   }
-  class(results) <- append("invacost.trend.over.time", class(results))
+  class(results) <- append("invacost.trendcost", class(results))
   return(results)
 }

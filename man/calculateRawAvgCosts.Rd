@@ -9,12 +9,9 @@ calculateRawAvgCosts(
   cost.column = "Cost_estimate_per_year_2017_USD_exchange_rate",
   year.column = "Impact_year",
   in.millions = TRUE,
-  cost.transf = "log10",
   minimum.year = 1960,
   maximum.year = 2017,
-  year.breaks = seq(minimum.year, maximum.year, by = 10),
-  plot.breaks = c(0.1, 1, 10, 100, 1000, 10000, 1e+05, 1e+06, 1e+07, 1e+08, 1e+09,
-    1e+10, 1e+11, 1e+12)
+  year.breaks = seq(minimum.year, maximum.year, by = 10)
 )
 }
 \arguments{
@@ -31,10 +28,6 @@ choose between the exchange rate (default) or PPP annualised cost)}
 millions (to make graphs easier to read), else if \code{}, cost values will
 not be transformed.}
 
-\item{cost.transf}{Type of transformation you want to apply on cost values.
-Specify \code{NA} or \code{NULL} to avoid any transformation. Only useful
-for graphical representation.}
-
 \item{minimum.year}{the starting year of this analysis. By default, 
 1960 was chosen because it marks the period from which world bank data is 
 available for exchange rates and inflation values.}
@@ -44,9 +37,6 @@ was chosen as it is the last year for which we have data in INVACOST.}
 
 \item{year.breaks}{a vector of breaks for the year intervals over which
 you want to calculate raw cost values}
-
-\item{plot.breaks}{a vector of numeric values indicating the plot breaks 
-for the axis of average annual cost values.}
 }
 \value{
 a \code{list} with 5 elements:
@@ -72,7 +62,10 @@ This function calculates the raw average annual cost of invasive species
 over different periods of time
 }
 \details{
-
+Missing data for specific years will be considered as zero. 
+For example, if there is only data for 1968 for the 1960-1969 interval,
+then the total cost for the interval will be equal to the cost of 1968, and the
+average annual cost for 1960-1969 will be cost of 1968 / 10.
 }
 \examples{
 data(invacost)

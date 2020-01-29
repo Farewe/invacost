@@ -10,7 +10,8 @@ print.invacost.trendcost <- function(x, ...)
   cat(paste0("\n- Temporal interval used for model calibration: [", 
              x$parameters$minimum.year,
              ", ",
-             x$parameters$incomplete.year.threshold, "]"))
+             min(x$parameters$incomplete.year.threshold,
+                 x$parameters$maximum.year), "]"))
   cat(paste0("\n- Cost transformation: ", 
              x$parameters$cost.transformation))
   cat(paste0("\n- Values transformed in US$ million: ", 
@@ -24,7 +25,7 @@ print.invacost.trendcost <- function(x, ...)
              "\n     . Quadratic: US$ ", 
              ifelse(x$parameters$in.millions, "million ", ""),
              scales::comma(x$final.year.cost["quadratic"]),
-             "\n   o Multiple Adapative Regresssion Splines: US$ ",
+             "\n   o Multiple Adapative Regression Splines: US$ ",
              ifelse(x$parameters$in.millions, "million ", ""),
              scales::comma(x$final.year.cost["mars"]),
              "\n   o Generalized Additive Model: US$ ",

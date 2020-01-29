@@ -106,7 +106,9 @@ calculateRawAvgCosts <- function(
   # Average cost of the entire period of time
   total.cost <-  as.data.frame(rawAvgCost(costdb,
                                           cost.column,
-                                          year.column))
+                                          year.column,
+                                          min.year = minimum.year,
+                                          max.year = maximum.year))
   
   # Average cost over each interval
   period.costs <- data.frame()
@@ -128,6 +130,14 @@ calculateRawAvgCosts <- function(
                                                                 year.column,
                                                                 min.year = period[1],
                                                                 max.year = period[2] - 1)))
+    } else
+    {
+      period.costs <- rbind.data.frame(period.costs,
+                                       list(initial_year = period[1], 
+                                            final_year = period[2] - 1, 
+                                            time_span = length(period[1]:(period[2] - 1)),
+                                            total_cost = NA,
+                                            annual_cost = NA))
     }
     
   }

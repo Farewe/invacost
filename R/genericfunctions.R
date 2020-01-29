@@ -58,13 +58,13 @@ print.invacost.rawcost <- function(x, ...)
              ifelse(x$parameters$in.millions, "millions", ""),
              ":")) 
   cat(paste0("\n    o Total cost over the entire period ",
-             scales::comma(x$average.total.cost$total_cost)))
+             scales::comma(x$average.total.cost$total_cost, accuracy = .01)))
   cat(paste0("\n    o Average annual cost over the entire period ",
-             scales::comma(x$average.total.cost$annual_cost)))
+             scales::comma(x$average.total.cost$annual_cost, accuracy = .01)))
   cat(paste0("\n    o Average annual cost over each period\n\n"))
   x2 <- x$average.cost.per.period
-  x2$total_cost <- scales::comma(x2$total_cost)
-  x2$annual_cost <- scales::comma(x2$annual_cost)
+  x2$total_cost <- scales::comma(x2$total_cost, accuracy = .01)
+  x2$annual_cost <- scales::comma(x2$annual_cost, accuracy = .01)
   print(x2)
 }
 

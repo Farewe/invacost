@@ -21,26 +21,26 @@ print.invacost.trendcost <- function(x, ...)
              "\n   o Linear regression: US$ ",
              "\n     . Linear: US$ ", 
              ifelse(x$parameters$in.millions, "million ", ""),
-             scales::comma(x$final.year.cost["linear"]),
+             scales::comma(x$final.year.cost["linear"], accuracy = .01),
              "\n     . Quadratic: US$ ", 
              ifelse(x$parameters$in.millions, "million ", ""),
-             scales::comma(x$final.year.cost["quadratic"]),
+             scales::comma(x$final.year.cost["quadratic"], accuracy = .01),
              "\n   o Multiple Adapative Regression Splines: US$ ",
              ifelse(x$parameters$in.millions, "million ", ""),
-             scales::comma(x$final.year.cost["mars"]),
+             scales::comma(x$final.year.cost["mars"], accuracy = .01),
              "\n   o Generalized Additive Model: US$ ",
              ifelse(x$parameters$in.millions, "million ", ""),
-             scales::comma(x$final.year.cost["gam"]),
+             scales::comma(x$final.year.cost["gam"], accuracy = .01),
              "\n   o Quantile regression: ",
              "\n     . Quantile 0.1: US$ ", 
              ifelse(x$parameters$in.millions, "million ", ""),
-             scales::comma(x$final.year.cost["quantile.0.1"]),
+             scales::comma(x$final.year.cost["quantile.0.1"], accuracy = .01),
              "\n     . Quantile 0.5: US$ ", 
              ifelse(x$parameters$in.millions, "million ", ""),
-             scales::comma(x$final.year.cost["quantile.0.5"]),
+             scales::comma(x$final.year.cost["quantile.0.5"], accuracy = .01),
              "\n     . Quantile 0.9: US$ ", 
              ifelse(x$parameters$in.millions, "million ", ""),
-             scales::comma(x$final.year.cost["quantile.0.9"])
+             scales::comma(x$final.year.cost["quantile.0.9"], accuracy = .01)
              ))
 }
 
@@ -258,7 +258,7 @@ plot.invacost.trendcost <- function(x,
   }
   
   
-  print(p)
+  return(p)
 }
 
 #' Plot raw cumulated cost of invasive species over different periods of time
@@ -316,8 +316,11 @@ plot.invacost.rawcost <- function(x,
   
   ggtext <- data.frame(x = x$parameters$minimum.year,
                        y = x$average.total.cost$annual_cost,
-                       text = paste0("Average over entire period\n",
-                                     scales::comma(x$average.total.cost$annual_cost)))
+                       text = paste0("Average ",  
+                                     x$parameters$minimum.year, 
+                                     " - ", x$parameters$maximum.year, "\n",
+                                     scales::comma(x$average.total.cost$annual_cost,
+                                                   accuracy = .01)))
   
   if(!average.annual.values)
   {
@@ -448,7 +451,8 @@ plot.invacost.rawcost <- function(x,
                  linetype = 3)
   }
   
-  print(p)
+  
+  return(p)
 }
 
 

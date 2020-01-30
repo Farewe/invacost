@@ -209,29 +209,36 @@ costTrendOverTime <- function(costdb,
                                       c("RMSE.calibration", 
                                         "RMSE.alldata")))
   
+  # Prediction years correspond to the entire range provided by the user
+  prediction.years <- data.frame(Year = minimum.year:maximum.year)
+  
   # Linear regression 
   reg.lm <- lm(transf.cost ~ Year, data = yearly.cost.calibration,
                weights = incomplete.year.weights)
   pred.lm <- predict(reg.lm, 
-                     yearly.cost["Year"],
+                     prediction.years,
                      interval = "confidence",
                      level = confidence.interval)
+  rownames(pred.lm) <- prediction.years[, 1]
   
   model.RMSE["regression.linear", "RMSE.calibration"] <- sqrt(mean(residuals(reg.lm)^2))
-  model.RMSE["regression.linear", "RMSE.alldata"] <- sqrt(mean((pred.lm[, "fit"] -
-                                                                  yearly.cost$transf.cost)^2))
+  model.RMSE["regression.linear", "RMSE.alldata"] <- sqrt(
+    mean((pred.lm[match(yearly.cost$Year, rownames(pred.lm)), "fit"] -
+            yearly.cost$transf.cost)^2))
   
   
   reg.quad.lm <- lm(transf.cost ~ Year + I(Year^2), data = yearly.cost.calibration,
                     weights = incomplete.year.weights)
   pred.quad.lm <- predict(reg.quad.lm, 
-                          yearly.cost["Year"],
+                          prediction.years,
                           interval = "confidence",
                           level = confidence.interval)
+  rownames(pred.quad.lm) <- prediction.years[, 1]
   
   model.RMSE["regression.quadratic", "RMSE.calibration"] <- sqrt(mean(residuals(reg.quad.lm)^2))
-  model.RMSE["regression.quadratic", "RMSE.alldata"] <- sqrt(mean((pred.quad.lm[, "fit"] -
-                                                                     yearly.cost$transf.cost)^2))
+  model.RMSE["regression.quadratic", "RMSE.alldata"] <- sqrt(
+    mean((pred.quad.lm[match(yearly.cost$Year, rownames(pred.quad.lm)), "fit"] -
+            yearly.cost$transf.cost)^2))
   
   # Multiple Adapative Regression splines
   mars <- earth::earth(transf.cost ~ Year, data = yearly.cost.calibration,
@@ -241,19 +248,22 @@ costTrendOverTime <- function(costdb,
                        ncross = 3,
                        weights = incomplete.year.weights)
   pred.mars <- predict(mars,
-                       yearly.cost$Year,
+                       prediction.years,
                        interval = "pint",
                        level = confidence.interval)
+  rownames(pred.mars) <- prediction.years[, 1]
+  
   model.RMSE["mars", "RMSE.calibration"] <- sqrt(mean(residuals(mars)^2))
-  model.RMSE["mars", "RMSE.alldata"] <- sqrt(mean((pred.mars[, "fit"] -
-                                                     yearly.cost$transf.cost)^2))
+  model.RMSE["mars", "RMSE.alldata"] <- sqrt(
+    mean((pred.mars[match(yearly.cost$Year, rownames(pred.mars)), "fit"] -
+            yearly.cost$transf.cost)^2))
   
   
   # Generalized Additive Models
   igam <- mgcv::gam(transf.cost ~ s(Year, k = gam.k), data = yearly.cost.calibration,
                     weights = incomplete.year.weights)
   pred.gam <- predict(igam,
-                      newdata = data.frame(Year = yearly.cost$Year),
+                      newdata = prediction.years,
                       se.fit = TRUE)
   pred.gam <- data.frame(fit = pred.gam$fit,
                          lwr = pred.gam$fit -
@@ -264,9 +274,12 @@ costTrendOverTime <- function(costdb,
                            pred.gam$se * qt(confidence.interval + 
                                               (1 - confidence.interval) / 2,
                                             df = nrow(yearly.cost) - 1))
+  rownames(pred.gam) <- prediction.years[, 1]
+  
   model.RMSE["gam", "RMSE.calibration"] <- sqrt(mean(residuals(igam)^2))
-  model.RMSE["gam", "RMSE.alldata"] <- sqrt(mean((pred.gam[, "fit"] -
-                                                    yearly.cost$transf.cost)^2))
+  model.RMSE["gam", "RMSE.alldata"] <- sqrt(
+    mean((pred.gam[match(yearly.cost$Year, rownames(pred.gam)), "fit"] -
+            yearly.cost$transf.cost)^2))
   
   
   # Quantile regression
@@ -288,77 +301,81 @@ costTrendOverTime <- function(costdb,
   # so we need to adatp the code
   
   pred.qt0.1 <- try(predict(qt0.1,
-                            newdata = data.frame(Year = yearly.cost$Year),
+                            newdata = prediction.years,
                             interval = "confidence"),
                     silent = TRUE)
   if("try-error" %in% class(pred.qt0.1)) 
   {
     pred.qt0.1 <- data.frame(
       fit = predict(qt0.1,
-                    newdata = data.frame(Year = yearly.cost$Year)),
+                    newdata = prediction.years),
       lwr = NA, upr = NA)
   }
   pred.qt0.5 <- try(predict(qt0.5,
-                            newdata = data.frame(Year = yearly.cost$Year),
+                            newdata = prediction.years,
                             interval = "confidence"),
                     silent = TRUE)
   if("try-error" %in% class(pred.qt0.5)) 
   {
     pred.qt0.5 <- data.frame(
       fit = predict(qt0.5,
-                    newdata = data.frame(Year = yearly.cost$Year)),
+                    newdata = prediction.years),
       lwr = NA, upr = NA)
   }
   pred.qt0.9 <- try(predict(qt0.9,
-                            newdata = data.frame(Year = yearly.cost$Year),
+                            newdata = prediction.years,
                             interval = "confidence"),
                     silent = TRUE)
   if("try-error" %in% class(pred.qt0.9)) 
   {
     pred.qt0.9 <- data.frame(
       fit = predict(qt0.9,
-                    newdata = data.frame(Year = yearly.cost$Year)),
+                    newdata = prediction.years),
       lwr = NA, upr = NA)
   }
   colnames(pred.qt0.9) <- colnames(pred.qt0.5) <- colnames(pred.qt0.1) <- colnames(pred.lm)
+  rownames(pred.qt0.9) <- rownames(pred.qt0.5) <- rownames(pred.qt0.1) <- prediction.years[, 1]
   model.RMSE["qt0.1", "RMSE.calibration"] <- sqrt(mean(residuals(qt0.1)^2))
-  model.RMSE["qt0.1", "RMSE.alldata"] <- sqrt(mean((pred.qt0.1[, "fit"] -
-                                                      yearly.cost$transf.cost)^2))
+  model.RMSE["qt0.1", "RMSE.alldata"] <- sqrt(
+    mean((pred.qt0.1[match(yearly.cost$Year, rownames(pred.qt0.1)), "fit"] -
+            yearly.cost$transf.cost)^2))
   model.RMSE["qt0.5", "RMSE.calibration"] <- sqrt(mean(residuals(qt0.5)^2))
-  model.RMSE["qt0.5", "RMSE.alldata"] <- sqrt(mean((pred.qt0.5[, "fit"] -
-                                                      yearly.cost$transf.cost)^2))
+  model.RMSE["qt0.5", "RMSE.alldata"] <- sqrt(
+    mean((pred.qt0.5[match(yearly.cost$Year, rownames(pred.qt0.5)), "fit"] -
+            yearly.cost$transf.cost)^2))
   model.RMSE["qt0.9", "RMSE.calibration"] <- sqrt(mean(residuals(qt0.9)^2))
-  model.RMSE["qt0.9", "RMSE.alldata"] <- sqrt(mean((pred.qt0.9[, "fit"] -
-                                                      yearly.cost$transf.cost)^2))
+  model.RMSE["qt0.9", "RMSE.alldata"] <- sqrt(
+    mean((pred.qt0.9[match(yearly.cost$Year, rownames(pred.qt0.9)), "fit"] -
+            yearly.cost$transf.cost)^2))
   
   
   
   model.preds <- rbind.data.frame(data.frame(model = "Linear regression",
-                                             Year = yearly.cost$Year,
+                                             Year = prediction.years$Year,
                                              Details = "Linear",
                                              pred.lm),
                                   data.frame(model = "Linear regression",
-                                             Year = yearly.cost$Year,
+                                             Year = prediction.years$Year,
                                              Details = "Quadratic",
                                              pred.quad.lm),
                                   data.frame(model = "MARS",
-                                             Year = yearly.cost$Year,
+                                             Year = prediction.years$Year,
                                              Details = "",
                                              pred.mars),
                                   data.frame(model = "GAM",
-                                             Year = yearly.cost$Year,
+                                             Year = prediction.years$Year,
                                              Details = "",
                                              pred.gam),
                                   data.frame(model = "Quantile regression",
-                                             Year = yearly.cost$Year,
+                                             Year = prediction.years$Year,
                                              Details = "Quantile 0.1",
                                              pred.qt0.1),
                                   data.frame(model = "Quantile regression",
-                                             Year = yearly.cost$Year,
+                                             Year = prediction.years$Year,
                                              Details = "Quantile 0.5",
                                              pred.qt0.5),
                                   data.frame(model = "Quantile regression",
-                                             Year = yearly.cost$Year,
+                                             Year = prediction.years$Year,
                                              Details = "Quantile 0.9",
                                              pred.qt0.9))
   

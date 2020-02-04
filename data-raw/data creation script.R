@@ -3,7 +3,7 @@
 #                      na.strings = c("NA", "#N/A", "#DIV/0!", "#VALEUR!", "Unspecified"),
 #                      dec = ".",
 #                      fileEncoding = "UTF-8")
-
+library(readxl)
 invacost <- as.data.frame(read_excel("./data-raw/INVACOST.xlsx",
                                      na = c("NA", "#N/A", "#DIV/0!", "#VALEUR!", "Unspecified")))
 

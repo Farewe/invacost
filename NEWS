@@ -1,3 +1,11 @@
+virtualspecies v0.2-3 (Release date: unreleased yet)
+==============
+
+Changes:
+
+* Added the number of estimates and the number of "year values" (total
+number of individual values spread over all years in raw costs
+
 virtualspecies v0.2-2 (Release date: unreleased yet)
 ==============
 

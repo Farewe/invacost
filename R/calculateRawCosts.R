@@ -89,7 +89,9 @@ calculateRawAvgCosts <- function(
                      year.column = year.column,
                      in.millions = in.millions,
                      minimum.year = minimum.year, 
-                     maximum.year = maximum.year)
+                     maximum.year = maximum.year,
+                     number.of.estimates = length(unique(costdb$Cost_ID)),
+                     number.of.year.values = nrow(costdb))
   
   if(in.millions)
   {
@@ -205,7 +207,9 @@ rawAvgCost <- function(
               time_span = length(initial_year:final_year),
               total_cost = sum(costdb[, cost.column]),
               annual_cost = sum(costdb[, cost.column]) /
-                length(initial_year:final_year)))
+                length(initial_year:final_year),
+              number_estimates = length(unique(costdb$Cost_ID)),
+              number_year_values = nrow(costdb)))
 }
 
     

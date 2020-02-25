@@ -55,6 +55,9 @@ print.invacost.rawcost <- function(x, ...)
              x$parameters$maximum.year, "]"))
   cat(paste0("\n- Values transformed in US$ million: ", 
              ifelse(x$parameters$in.millions, "Yes", "No")))
+  cat(paste0("\n- Number of cost estimates: ",
+             x$parameters$number.of.estimates, " (number of individual year values: ",
+             x$parameters$number.of.year.values, ")"))
   cat(paste0("\n- Cost values in US$ ",
              ifelse(x$parameters$in.millions, "millions", ""),
              ":")) 

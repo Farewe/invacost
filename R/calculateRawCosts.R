@@ -139,7 +139,9 @@ calculateRawAvgCosts <- function(
                                             final_year = period[2] - 1, 
                                             time_span = length(period[1]:(period[2] - 1)),
                                             total_cost = NA,
-                                            annual_cost = NA))
+                                            annual_cost = NA,
+                                            number_estimates = 0,
+                                            number_year_values = 0))
     }
     
   }

@@ -181,7 +181,7 @@ plot.invacost.trendcost <- function(x,
   # Changing order of factors for points 
   x$cost.data$Calibration <- factor(x$cost.data$Calibration, 
                                              levels = c("Included", "Excluded"))
-  # Preparing model perdictions for plots
+  # Preparing model predictions for plots
   model.preds <- x$estimated.annual.costs
   model.preds$Model <- as.character(model.preds$model)
   model.preds$Model[model.preds$Details == "Linear"] <- "Linear regression"
@@ -370,7 +370,7 @@ plot.invacost.rawcost <- function(x,
           scale_y_log10(breaks = plot.breaks,
                         labels = scales::comma,
                         limits = c(base.val, NA)) +
-          annotation_logticks()
+          annotation_logticks(sides = "l")
       } else
       {
         # 3b. We define axes here for log-scale points ---------------
@@ -378,7 +378,7 @@ plot.invacost.rawcost <- function(x,
           p +
           scale_y_log10(breaks = plot.breaks,
                         labels = scales::comma) +
-          annotation_logticks()
+          annotation_logticks(sides = "l")
       }
     } else
     {

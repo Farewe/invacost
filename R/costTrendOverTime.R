@@ -137,7 +137,9 @@ costTrendOverTime <- function(costdb,
                      confidence.interval = confidence.interval,
                      minimum.year = min(costdb[, year.column], na.rm = TRUE), 
                      maximum.year = max(costdb[, year.column], na.rm = TRUE), 
-                     final.year = final.year)
+                     final.year = final.year,
+                     gam.k = gam.k,
+                     mars.nk = mars.nk)
                      
   yeargroups <- dplyr::group_by(costdb,
                                 get(year.column)) 

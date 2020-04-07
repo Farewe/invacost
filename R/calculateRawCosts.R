@@ -76,12 +76,10 @@ calculateRawAvgCosts <- function(
   
   if(any(costdb[, year.column] > maximum.year))
   {
-    warning(paste0("There are cost values for periods later than ",
-                   maximum.year, ": ",
-                   length(unique(costdb$Cost_ID[which(costdb[, year.column] > maximum.year)])),
-                   " different cost estimate(s).\nTheir values later than ",
+    warning(paste0("There are ", length(unique(costdb$Cost_ID[which(costdb[, year.column] > maximum.year)])),
+                   " cost values for periods later than ",
                    maximum.year,
-                   " will be removed.\n"))
+                   " which will be removed.\n"))
     costdb <- costdb[-which(costdb[, year.column] > maximum.year), ]
   }
   

@@ -107,12 +107,12 @@ str.invacost.rawcost <- function(object, ...)
 #' facet per category of model (\code{"facets"})
 #' @param plot.breaks a vector of numeric values indicating the plot breaks 
 #' for the Y axis (cost values)
-#' @param graphical.parameters ggplot2 layers and other customisation parameters,
-#' to specify if you want to customise ggplot2 graphs.
+#' @param graphical.parameters set this to \code{"manual"} if you want to 
+#' customise ggplot2 parameters. 
 #' By default, the following layers are configured: ylab, xlab, scale_x_continuous,
 #' theme_bw and, if \code{cost.transf = "log10"}, scale_y_log10 and 
-#' annotation_logticks. If you specify \code{grahical.parameters}, all defaults
-#' will be ignored.
+#' annotation_logticks. If you specify \code{grahical.parameters = "manual"},
+#' all defaults will be ignored.
 #' @param ... additional arguments, none implemented for now
 #' @export
 #' @import ggplot2
@@ -174,6 +174,11 @@ plot.invacost.trendcost <- function(x,
     }
   } else 
   {
+    # Workaround for retrocompatibility
+    if(graphical.parameters == "manual")
+    {
+      graphical.parameters <- NULL
+    }
     # 4. Adding user-defined parameters to the plot ---------------
     p <- p + graphical.parameters
   }
@@ -278,14 +283,14 @@ plot.invacost.trendcost <- function(x,
 #' @param average.annual.values if \code{TRUE}, the plot will represent average
 #' annual values rather than cumulative values over the entire period
 #' @param cost.transf Type of transformation you want to apply on cost values.
-#' Specify \code{NA} or \code{NULL} to avoid any transformation. Only useful
+#' Specify \code{NULL} to avoid any transformation. Only useful
 #' for graphical representation.
-#' @param graphical.parameters ggplot2 layers and other customisation parameters,
-#' to specify if you want to customise ggplot2 graphs.
+#' @param graphical.parameters set this to \code{"manual"} if you want to 
+#' customise ggplot2 parameters. 
 #' By default, the following layers are configured: ylab, xlab, scale_x_continuous,
 #' theme_bw and, if \code{cost.transf = "log10"}, scale_y_log10 and 
-#' annotation_logticks. If you specify \code{grahical.parameters}, all defaults
-#' will be ignored.
+#' annotation_logticks. If you specify \code{grahical.parameters = "manual"},
+#' all defaults will be ignored.
 #' @param ... additional arguments, none implemented for now
 #' @export
 #' @import ggplot2
@@ -343,7 +348,7 @@ plot.invacost.rawcost <- function(x,
       ylab(paste0(ifelse(average.annual.values,
                          "Average annual",
                          "Total"),
-                  "cost per period in US$ ", 
+                  " cost per period in US$ ", 
                   ifelse(x$parameters$in.millions, 
                          "millions",
                          ""))) +
@@ -388,6 +393,11 @@ plot.invacost.rawcost <- function(x,
     }
   } else
   {
+    # Workaround for retrocompatibility
+    if(graphical.parameters == "manual")
+    {
+      graphical.parameters <- NULL
+    }
     # 4. Adding user-defined graphical parameters to the plot ---------------
     p <- p + graphical.parameters
   }

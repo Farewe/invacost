@@ -442,7 +442,7 @@ raw.costs <- calculateRawAvgCosts(db.over.time)
 
     ## Warning in calculateRawAvgCosts(db.over.time): There are 8 cost values for periods earlier than 1960, which will be removed.
 
-    ## Warning in calculateRawAvgCosts(db.over.time): There are 1cost values for periods later than 2017 which will be removed.
+    ## Warning in calculateRawAvgCosts(db.over.time): There are 1 cost values for periods later than 2017 which will be removed.
 
 We can get a summary of the results by typing the name of the object in
 the console
@@ -635,7 +635,7 @@ raw.costs2 <- calculateRawAvgCosts(db.over.time,
 
     ## Warning in calculateRawAvgCosts(db.over.time, minimum.year = 1970, maximum.year = 2017): There are 11 cost values for periods earlier than 1970, which will be removed.
 
-    ## Warning in calculateRawAvgCosts(db.over.time, minimum.year = 1970, maximum.year = 2017): There are 1cost values for periods later than 2017 which will be removed.
+    ## Warning in calculateRawAvgCosts(db.over.time, minimum.year = 1970, maximum.year = 2017): There are 1 cost values for periods later than 2017 which will be removed.
 
 ``` r
 raw.costs2
@@ -685,7 +685,7 @@ raw.costs3 <- calculateRawAvgCosts(db.over.time,
 
     ## Warning in calculateRawAvgCosts(db.over.time, minimum.year = 1960, maximum.year = 2017, : There are 8 cost values for periods earlier than 1960, which will be removed.
 
-    ## Warning in calculateRawAvgCosts(db.over.time, minimum.year = 1960, maximum.year = 2017, : There are 1cost values for periods later than 2017 which will be removed.
+    ## Warning in calculateRawAvgCosts(db.over.time, minimum.year = 1960, maximum.year = 2017, : There are 1 cost values for periods later than 2017 which will be removed.
 
 ``` r
 plot(raw.costs3)
@@ -1281,258 +1281,35 @@ First, we need to inspect the taxonomic fields of the database to decide
 whether we want to apply changes before running the script.
 
 ``` r
-unique(invacost$Species)
+# Here we just show the first 25
+unique(invacost$Species)[1:25]
 ```
 
-    ##   [1] "Vulpes vulpes"                                                                                                                    
-    ##   [2] "Oryctolagus cuniculus"                                                                                                            
-    ##   [3] "Canis lupus spp."                                                                                                                 
-    ##   [4] "Mus musculus"                                                                                                                     
-    ##   [5] "Capra hircus"                                                                                                                     
-    ##   [6] "Equus caballus"                                                                                                                   
-    ##   [7] "Camelus dromedarius"                                                                                                              
-    ##   [8] "Rattus rattus"                                                                                                                    
-    ##   [9] "Myocastor coypus"                                                                                                                 
-    ##  [10] "Sus scrofa"                                                                                                                       
-    ##  [11] "Erythrocebus patas/Macaca mulatta"                                                                                                
-    ##  [12] "Capra hircus/Sus scrofa"                                                                                                          
-    ##  [13] "Felis catus/Oryctolagus cuniculus/Vulpes vulpes"                                                                                  
-    ##  [14] "Capra hircus/Felis catus/Oryctolagus cuniculus/Sus scrofa/Vulpes vulpes"                                                          
-    ##  [15] "Canis lupus dingo"                                                                                                                
-    ##  [16] "Felis catus"                                                                                                                      
-    ##  [17] "Diverse/Unspecified"                                                                                                              
-    ##  [18] "Trichosurus vulpecula"                                                                                                            
-    ##  [19] "Rattus norvegicus"                                                                                                                
-    ##  [20] "Rattus exulans"                                                                                                                   
-    ##  [21] "Rattus exulans/Rattus norvegicus"                                                                                                 
-    ##  [22] "Rattus exulans/Rattus norvegicus/Rattus rattus"                                                                                   
-    ##  [23] "Mustela erminea"                                                                                                                  
-    ##  [24] "Mustela erminea//Trichosurus vulpecula"                                                                                           
-    ##  [25] "Mus musculus/Oryctolagus cuniculus/Rattus rattus"                                                                                 
-    ##  [26] "Ovis aries"                                                                                                                       
-    ##  [27] "Rattus sp./Mus sp."                                                                                                               
-    ##  [28] "Rattus sp."                                                                                                                       
-    ##  [29] "Gallirallus australis/Rattus sp."                                                                                                 
-    ##  [30] "Neovison vison"                                                                                                                   
-    ##  [31] "Canis lupus familiaris"                                                                                                           
-    ##  [32] "Equus asinus"                                                                                                                     
-    ##  [33] "Canis lupus spp./Vulpes vulpes"                                                                                                   
-    ##  [34] "Bubalus bubalis"                                                                                                                  
-    ##  [35] "Canis lupus familiaris/Canis lupus dingo"                                                                                         
-    ##  [36] "Mustela furo/Trichosurus vulpecula"                                                                                               
-    ##  [37] "Mustela furo"                                                                                                                     
-    ##  [38] "Rattus exulans/Rattus tanezumi"                                                                                                   
-    ##  [39] "Mus musculus/Rattus rattus"                                                                                                       
-    ##  [40] "Dama dama"                                                                                                                        
-    ##  [41] "Sciurus carolinensis"                                                                                                             
-    ##  [42] "Canis lupus/Felis catus/Herpestes javanicus"                                                                                      
-    ##  [43] "Capra hircus/Cervus elaphus/Rupicapra rupicapra"                                                                                  
-    ##  [44] "Erinaceus europaeus/Felis catus/Mus musculus/Mustela erminea/Oryctolagus cuniculus/Rattus norvegicus/Rattus exulans/Rattus rattus"
-    ##  [45] "Canis lupus"                                                                                                                      
-    ##  [46] "Felis catus/Vulpes vulpes"                                                                                                        
-    ##  [47] "Phascolarctos cinereus"                                                                                                           
-    ##  [48] "Rattus exulans/Rattus rattus"                                                                                                     
-    ##  [49] "Hemitragus jemlahicus"                                                                                                            
-    ##  [50] "Cervus nippon/Hydropotes inermis"                                                                                                 
-    ##  [51] "Cervus nippon/Dama dama/Muntiacus reevesi"                                                                                        
-    ##  [52] "Glis glis"                                                                                                                        
-    ##  [53] "Mustela erminea/Rattus rattus/Trichosurus vulpecula"                                                                              
-    ##  [54] "Trichosurus vulpecula/Unspecified"                                                                                                
-    ##  [55] "Herpestes edwardsi"                                                                                                               
-    ##  [56] "Ondatra zibethicus"                                                                                                               
-    ##  [57] "Mus musculus/Rattus norvegicus"                                                                                                   
-    ##  [58] "Equus asinus/Equus caballus"                                                                                                      
-    ##  [59] "Herpestes javanicus"                                                                                                              
-    ##  [60] "Mus sp./Rattus sp."                                                                                                               
-    ##  [61] "Nyctereutes procyonoides"                                                                                                         
-    ##  [62] "Neovison vison/Nyctereutes procyonoides"                                                                                          
-    ##  [63] "Bursaphelenchus xylophilus"                                                                                                       
-    ##  [64] "Pomacea canaliculata"                                                                                                             
-    ##  [65] "Arion vulgaris"                                                                                                                   
-    ##  [66] "Lissachatina fulica"                                                                                                              
-    ##  [67] "Halotydeus destructor"                                                                                                            
-    ##  [68] "Eleutherodactylus coqui"                                                                                                          
-    ##  [69] "Lithobates catesbeianus"                                                                                                          
-    ##  [70] "Rhinella marina"                                                                                                                  
-    ##  [71] "Boiga irregularis"                                                                                                                
-    ##  [72] "Python bivittatus"                                                                                                                
-    ##  [73] "Iguana iguana"                                                                                                                    
-    ##  [74] "Acridotheres tristis"                                                                                                             
-    ##  [75] "Psittacula krameri"                                                                                                               
-    ##  [76] "Myiopsitta monachus"                                                                                                              
-    ##  [77] "Passer domesticus"                                                                                                                
-    ##  [78] "Aquila chrysaetos"                                                                                                                
-    ##  [79] "Meleagris gallopavo"                                                                                                              
-    ##  [80] "Sturnus vulgaris"                                                                                                                 
-    ##  [81] "Branta canadensis"                                                                                                                
-    ##  [82] "Cygnus olor"                                                                                                                      
-    ##  [83] "Myiopsitta monachus/Psittacula krameri"                                                                                           
-    ##  [84] "Columba livia"                                                                                                                    
-    ##  [85] "Phasianus colchicus"                                                                                                              
-    ##  [86] "Columba sp."                                                                                                                      
-    ##  [87] "Branta canadensis/Oxyura jamaicensis/Threskiornis aethiopicus"                                                                    
-    ##  [88] "Mustela erminea/Unspecified"                                                                                                      
-    ##  [89] "Rattus sp./Trichosurus vulpecula"                                                                                                 
-    ##  [90] "Acer negundo/Heracleum sosnowskyi/Lupinus polyphyllus/Neovison vison/Nyctereutes procyonoides/Orconectes limosus"                 
-    ##  [91] "Wasmannia auropunctata"                                                                                                           
-    ##  [92] "Adelges tsugae"                                                                                                                   
-    ##  [93] "Drosophila suzukii"                                                                                                               
-    ##  [94] "Cochliomyia hominivorax"                                                                                                          
-    ##  [95] "Ceratitis capitata"                                                                                                               
-    ##  [96] "Phyllotreta cruciferae"                                                                                                           
-    ##  [97] "Delia spp."                                                                                                                       
-    ##  [98] "Rhagoletis completa"                                                                                                              
-    ##  [99] "Leptinotarsa decemlineata"                                                                                                        
-    ## [100] "Aphis glycines"                                                                                                                   
-    ## [101] "Solenopsis invicta"                                                                                                               
-    ## [102] "Scirtothrips perseae"                                                                                                             
-    ## [103] "Lymantria dispar"                                                                                                                 
-    ## [104] "Chilo suppressalis"                                                                                                               
-    ## [105] "Anoplophora glabripennis"                                                                                                         
-    ## [106] "Anoplophora chinensis"                                                                                                            
-    ## [107] "Agrilus planipennis"                                                                                                              
-    ## [108] "Anthonomus grandis"                                                                                                               
-    ## [109] "Bactrocera philippinensis"                                                                                                        
-    ## [110] "Coptotermes formosanus"                                                                                                           
-    ## [111] "Rhipicephalus microplus"                                                                                                          
-    ## [112] "Culicoides imicola"                                                                                                               
-    ## [113] "Aedes albopictus/Aedes japonicus"                                                                                                 
-    ## [114] "Pheidole megacephala/Solenopsis geminata"                                                                                         
-    ## [115] "Erionota thrax"                                                                                                                   
-    ## [116] "Helicoverpa armigera/Tuta absoluta"                                                                                               
-    ## [117] "Diaprepes sp."                                                                                                                    
-    ## [118] "Phenacoccus manihoti"                                                                                                             
-    ## [119] "Halyomorpha halys"                                                                                                                
-    ## [120] "Plutella xylostella"                                                                                                              
-    ## [121] "Adelges piceae"                                                                                                                   
-    ## [122] "Aedes albopictus"                                                                                                                 
-    ## [123] "Bemisia tabaci"                                                                                                                   
-    ## [124] "Cameraria ohridella"                                                                                                              
-    ## [125] "Ceutorhynchus obstrictus"                                                                                                         
-    ## [126] "Dendroctonus micans"                                                                                                              
-    ## [127] "Elatobium abietinum"                                                                                                              
-    ## [128] "Ephestia kuehniella"                                                                                                              
-    ## [129] "Haematobia irritans"                                                                                                              
-    ## [130] "Helicoverpa armigera"                                                                                                             
-    ## [131] "Stomoxys calcitrans"                                                                                                              
-    ## [132] "Thaumetopoea processionea"                                                                                                        
-    ## [133] "Hypera postica"                                                                                                                   
-    ## [134] "Nasutitermes corniger"                                                                                                            
-    ## [135] "Phenacoccus solenopsis"                                                                                                           
-    ## [136] "Apis mellifera"                                                                                                                   
-    ## [137] "Diuraphis noxia"                                                                                                                  
-    ## [138] "Crematogaster sp."                                                                                                                
-    ## [139] "Oecophylla longinoda"                                                                                                             
-    ## [140] "Zeuzera pyrina"                                                                                                                   
-    ## [141] "Pheidole megacephala"                                                                                                             
-    ## [142] "Pectinophora gossypiella"                                                                                                         
-    ## [143] "Homalodisca vitripennis"                                                                                                          
-    ## [144] "Teia anartoides"                                                                                                                  
-    ## [145] "Orgyia pseudotsugata"                                                                                                             
-    ## [146] "Trialeurodes vaporariorum"                                                                                                        
-    ## [147] "Anoplolepis gracilipes"                                                                                                           
-    ## [148] "Cydia pomonella"                                                                                                                  
-    ## [149] "Chilo partellus"                                                                                                                  
-    ## [150] "Liriomyza spp."                                                                                                                   
-    ## [151] "Tuta absoluta"                                                                                                                    
-    ## [152] "Aleurocanthus woglumi"                                                                                                            
-    ## [153] "Liriomyza sativae"                                                                                                                
-    ## [154] "Anastrepha ludens/Ceratitis capitata"                                                                                             
-    ## [155] "Eoreuma loftini"                                                                                                                  
-    ## [156] "Prostephanus truncatus"                                                                                                           
-    ## [157] "Trogoderma granarium"                                                                                                             
-    ## [158] "Listronotus bonariensis"                                                                                                          
-    ## [159] "Sternochetus frigidus"                                                                                                            
-    ## [160] "Maconellicoccus hirsutus"                                                                                                         
-    ## [161] "Myriophyllum spicatum"                                                                                                            
-    ## [162] "Dreissena polymorpha"                                                                                                             
-    ## [163] "Melaleuca quinquenervia"                                                                                                          
-    ## [164] "Sporobolus alterniflorus"                                                                                                         
-    ## [165] "Dreissena polymorpha/Dreissena bugensis"                                                                                          
-    ## [166] "Azolla filiculoides"                                                                                                              
-    ## [167] "Pseudorasbora parva"                                                                                                              
-    ## [168] "Crassula helmsii"                                                                                                                 
-    ## [169] "Elodea canadensis"                                                                                                                
-    ## [170] "Elodea nuttallii"                                                                                                                 
-    ## [171] "Hydrocotyle ranunculoides"                                                                                                        
-    ## [172] "Lagarosiphon major"                                                                                                               
-    ## [173] "Ludwigia grandiflora"                                                                                                             
-    ## [174] "Myriophyllum aquaticum"                                                                                                           
-    ## [175] "Pacifastacus leniusculus"                                                                                                         
-    ## [176] "Mytilopsis trautwineana"                                                                                                          
-    ## [177] "Nymphoides peltata"                                                                                                               
-    ## [178] "Eichhornia crassipes"                                                                                                             
-    ## [179] "Pomacea maculata/Pomacea canaliculata"                                                                                            
-    ## [180] "Orconectes rusticus"                                                                                                              
-    ## [181] "Teredo navalis"                                                                                                                   
-    ## [182] "Corbicula fluminea"                                                                                                               
-    ## [183] "Procambarus clarkii"                                                                                                              
-    ## [184] "Didymosphenia geminata"                                                                                                           
-    ## [185] "Caulerpa taxifolia"                                                                                                               
-    ## [186] "Petromyzon marinus"                                                                                                               
-    ## [187] "Dressena bugensis"                                                                                                                
-    ## [188] "Channa argus"                                                                                                                     
-    ## [189] "Hydrilla verticillata"                                                                                                            
-    ## [190] "Spartina sp."                                                                                                                     
-    ## [191] "Tamarix spp."                                                                                                                     
-    ## [192] "Cabomba caroliniana"                                                                                                              
-    ## [193] "Ranunculus acris"                                                                                                                 
-    ## [194] "Acacia spp."                                                                                                                      
-    ## [195] "Cereus jamacaru"                                                                                                                  
-    ## [196] "Lantana camara"                                                                                                                   
-    ## [197] "Eucalyptus spp."                                                                                                                  
-    ## [198] "Pinus spp."                                                                                                                       
-    ## [199] "Chromolaena odorata"                                                                                                              
-    ## [200] "Solanum mauritianum"                                                                                                              
-    ## [201] "Prosopis spp."                                                                                                                    
-    ## [202] "Populus spp."                                                                                                                     
-    ## [203] "Hakea spp."                                                                                                                       
-    ## [204] "Melia azedarach"                                                                                                                  
-    ## [205] "Rubus spp."                                                                                                                       
-    ## [206] "Euphorbia esula"                                                                                                                  
-    ## [207] "Centaurea diffusa"                                                                                                                
-    ## [208] "Oxyura jamaicensis"                                                                                                               
-    ## [209] "Ambrosia artemisiifolia"                                                                                                          
-    ## [210] "Heracleum mantegazzianum"                                                                                                         
-    ## [211] "Reynoutria japonica"                                                                                                              
-    ## [212] "Acacia cyclops"                                                                                                                   
-    ## [213] "Acacia dealbata"                                                                                                                  
-    ## [214] "Acacia mearnsii"                                                                                                                  
-    ## [215] "Acacia melanoxylon"                                                                                                               
-    ## [216] "Acacia saligna"                                                                                                                   
-    ## [217] "Arundo donax"                                                                                                                     
-    ## [218] "Caesalpinia decapetala"                                                                                                           
-    ## [219] "Hakea sericea"                                                                                                                    
-    ## [220] "Salix babylonica"                                                                                                                 
-    ## [221] "Hymenachne spp."                                                                                                                  
-    ## [222] "Mimosa pigra"                                                                                                                     
-    ## [223] "Parkinsonia aculeata"                                                                                                             
-    ## [224] "Parthenium hysterophorus"                                                                                                         
-    ## [225] "Acacia nilotica"                                                                                                                  
-    ## [226] "Cryptostegia grandiflora"                                                                                                         
-    ## [227] "Salvinia spp."                                                                                                                    
-    ## [228] "Tamarix aphylla"                                                                                                                  
-    ## [229] "Alternanthera philoxeroides"                                                                                                      
-    ## [230] "Nassella neesiana"                                                                                                                
-    ## [231] "Nassella trichotoma"                                                                                                              
-    ## [232] "Acaciella angustissima/Aeschynomene paniculata/Aeschynomene brasiliana/Indigofera schimperi"                                      
-    ## [233] "Sporobolus pyramidalis"                                                                                                           
-    ## [234] "Parkinsonia aculeata/Cryptostegia grandiflora/Calotropis procera/Ziziphus mauritiana"                                             
-    ## [235] "Acacia nilotica/Parkinsonia aculeata/Jatropha gossypiifolia/Ziziphus mauritiana"                                                  
-    ## [236] "Parkinsonia aculeata//Vachellia farnesiana"                                                                                       
-    ## [237] "Calotropis spp."                                                                                                                  
-    ## [238] "Cenchrus ciliaris"                                                                                                                
-    ## [239] "Xanthium strumarium"                                                                                                              
-    ## [240] "Andropogon gayanus/Cenchrus polystachios/Hymenachne amplexicaulis"                                                                
-    ## [241] "Opuntia aurantiaca"                                                                                                               
-    ## [242] "Hydrilla sp./Unspecified"                                                                                                         
-    ## [243] "Myriophyllum sp."                                                                                                                 
-    ## [244] "Prosopis sp."                                                                                                                     
-    ## [245] "Opuntia stricta"                                                                                                                  
-    ## [246] "Aedes aegypti/Aedes albopictus"                                                                                                   
-    ## [247] "Aedes aegypti"                                                                                                                    
-    ## [248] "aegypti & albopictus"                                                                                                             
-    ## [249] "(aegypti & albopictus)"
+    ##  [1] "Vulpes vulpes"                                                          
+    ##  [2] "Oryctolagus cuniculus"                                                  
+    ##  [3] "Canis lupus spp."                                                       
+    ##  [4] "Mus musculus"                                                           
+    ##  [5] "Capra hircus"                                                           
+    ##  [6] "Equus caballus"                                                         
+    ##  [7] "Camelus dromedarius"                                                    
+    ##  [8] "Rattus rattus"                                                          
+    ##  [9] "Myocastor coypus"                                                       
+    ## [10] "Sus scrofa"                                                             
+    ## [11] "Erythrocebus patas/Macaca mulatta"                                      
+    ## [12] "Capra hircus/Sus scrofa"                                                
+    ## [13] "Felis catus/Oryctolagus cuniculus/Vulpes vulpes"                        
+    ## [14] "Capra hircus/Felis catus/Oryctolagus cuniculus/Sus scrofa/Vulpes vulpes"
+    ## [15] "Canis lupus dingo"                                                      
+    ## [16] "Felis catus"                                                            
+    ## [17] "Diverse/Unspecified"                                                    
+    ## [18] "Trichosurus vulpecula"                                                  
+    ## [19] "Rattus norvegicus"                                                      
+    ## [20] "Rattus exulans"                                                         
+    ## [21] "Rattus exulans/Rattus norvegicus"                                       
+    ## [22] "Rattus exulans/Rattus norvegicus/Rattus rattus"                         
+    ## [23] "Mustela erminea"                                                        
+    ## [24] "Mustela erminea//Trichosurus vulpecula"                                 
+    ## [25] "Mus musculus/Oryctolagus cuniculus/Rattus rattus"
 
 As you can see there are many cases where multiple species are studied
 together. These cases will be difficult to implement/analyse, but we can
@@ -1618,31 +1395,7 @@ for(sp in unique(db.over.time$unique.sp.id))
                                         Number.year.values = cur.raw$average.total.cost$number_year_values
                                       ))
 }
-```
 
-    ## Warning in calculateRawAvgCosts(cur.db, minimum.year = 1970): There are 1 cost values for periods earlier than 1970, which will be removed.
-
-    ## Warning in calculateRawAvgCosts(cur.db, minimum.year = 1970): There are 1 cost values for periods later than 2017 which will be removed.
-
-    ## Warning in calculateRawAvgCosts(cur.db, minimum.year = 1970): There are 1 cost values for periods earlier than 1970, which will be removed.
-    
-    ## Warning in calculateRawAvgCosts(cur.db, minimum.year = 1970): There are 1 cost values for periods earlier than 1970, which will be removed.
-    
-    ## Warning in calculateRawAvgCosts(cur.db, minimum.year = 1970): There are 1 cost values for periods earlier than 1970, which will be removed.
-
-    ## Warning in calculateRawAvgCosts(cur.db, minimum.year = 1970): There are 2 cost values for periods earlier than 1970, which will be removed.
-
-    ## Warning in calculateRawAvgCosts(cur.db, minimum.year = 1970): There are 1 cost values for periods earlier than 1970, which will be removed.
-    
-    ## Warning in calculateRawAvgCosts(cur.db, minimum.year = 1970): There are 1 cost values for periods earlier than 1970, which will be removed.
-    
-    ## Warning in calculateRawAvgCosts(cur.db, minimum.year = 1970): There are 1 cost values for periods earlier than 1970, which will be removed.
-    
-    ## Warning in calculateRawAvgCosts(cur.db, minimum.year = 1970): There are 1 cost values for periods earlier than 1970, which will be removed.
-    
-    ## Warning in calculateRawAvgCosts(cur.db, minimum.year = 1970): There are 1 cost values for periods earlier than 1970, which will be removed.
-
-``` r
 # To make the summary dataframe nicer, we can sort by cost to have the highest groups first
 species.summary <- species.summary[order(species.summary$Cumulated.cost, decreasing = TRUE), ]
 
@@ -1703,9 +1456,8 @@ users are lost in the function usage. Therefore, if you have a very
 specific request that will not be useful to other users, do not hesitate
 to duplicate the source code and adapt the function to your needs. On
 the contrary, if you think of a new thing that could be beneficial to
-many users, please do not hesitate and we will implement it in the next
-versions of the package (of course I will add you as a contributor to
-the package when it will be officially released).
+many users, please do not hesitate and become an officiel contributor to
+the package\!
 
 # Citation
 
@@ -1722,16 +1474,16 @@ citation("invacost")
     ## To cite package 'invacost' in publications use:
     ## 
     ##   Boris Leroy, Christophe Diagne and Anne-Charlotte Vaissière, (2020).
-    ##   invacost: INVACOST database and associated calculations. R package
-    ##   version 0.2-3.
+    ##   invacost: INVACOST Database With Methods To Analyse Invasion Costs. R
+    ##   package version 0.2-4.
     ## 
     ## A BibTeX entry for LaTeX users is
     ## 
     ##   @Manual{,
-    ##     title = {invacost: INVACOST database and associated calculations},
+    ##     title = {invacost: INVACOST Database With Methods To Analyse Invasion Costs},
     ##     author = {Boris Leroy and Christophe Diagne and Anne-Charlotte Vaissière,},
     ##     year = {2020},
-    ##     note = {R package version 0.2-3},
+    ##     note = {R package version 0.2-4},
     ##   }
     ## 
     ## ATTENTION: This citation information has been auto-generated from the

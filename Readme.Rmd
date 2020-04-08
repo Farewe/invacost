@@ -874,7 +874,8 @@ First, we need to inspect the taxonomic fields of the database to decide whether
 we want to apply changes before running the script.
 
 ```{r allsp1}
-unique(invacost$Species)
+# Here we just show the first 25
+unique(invacost$Species)[1:25]
 ```
 
 As you can see there are many cases where multiple species are studied together.
@@ -925,7 +926,7 @@ Finally, we will write a loop that will cycle through all these unique groups,
 and for each group, calculate the raw cumulative cost and average annual cost
 for the 1970-2017 time period. 
 
-```{r allsp5}
+```{r allsp5, warning=FALSE}
 # First we expand the database
 db.over.time <- expandYearlyCosts(invacost,
                                   startcolumn = "Probable_starting_year_low_margin",
@@ -986,9 +987,8 @@ happy; too many parameters and users are lost in the function usage. Therefore,
 if you have a very specific request that will not be useful to other users, do
 not hesitate to duplicate the source code and adapt the function to your needs.
 On the contrary, if you think of a new thing that could be beneficial to many
-users, please do not hesitate and we will implement it in the next versions of 
-the package (of course I will add you as a contributor to the package when it
-will be officially released).
+users, please do not hesitate and become an officiel contributor to the
+package!
 
 # Citation
 

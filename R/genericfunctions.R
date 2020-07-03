@@ -18,13 +18,20 @@ print.invacost.trendcost <- function(x, ...)
              ifelse(x$parameters$in.millions, "Yes", "No")))
   cat(paste0("\n- Estimated average annual cost of invasive alien species in ",
              x$parameters$final.year, ":\n",
-             "\n   o Linear regression: US$ ",
+             "\n   o Linear regression: ",
              "\n     . Linear: US$ ", 
              ifelse(x$parameters$in.millions, "million ", ""),
              scales::comma(x$final.year.cost["linear"], accuracy = .01),
              "\n     . Quadratic: US$ ", 
              ifelse(x$parameters$in.millions, "million ", ""),
              scales::comma(x$final.year.cost["quadratic"], accuracy = .01),
+             "\n   o Robust regression: ",
+             "\n     . Linear: US$ ", 
+             ifelse(x$parameters$in.millions, "million ", ""),
+             scales::comma(x$final.year.cost["robust.linear"], accuracy = .01),
+             "\n     . Quadratic: US$ ", 
+             ifelse(x$parameters$in.millions, "million ", ""),
+             scales::comma(x$final.year.cost["robust.quadratic"], accuracy = .01),
              "\n   o Multiple Adapative Regression Splines: US$ ",
              ifelse(x$parameters$in.millions, "million ", ""),
              scales::comma(x$final.year.cost["mars"], accuracy = .01),
@@ -40,8 +47,10 @@ print.invacost.trendcost <- function(x, ...)
              scales::comma(x$final.year.cost["quantile.0.5"], accuracy = .01),
              "\n     . Quantile 0.9: US$ ", 
              ifelse(x$parameters$in.millions, "million ", ""),
-             scales::comma(x$final.year.cost["quantile.0.9"], accuracy = .01)
+             scales::comma(x$final.year.cost["quantile.0.9"], accuracy = .01),
+             "\n"
              ))
+  cat(paste0("\nYou can inspect the summary of each fitted model with object$model.summary\n"))
 }
 
 #' @export
@@ -71,6 +80,56 @@ print.invacost.rawcost <- function(x, ...)
   x2$annual_cost <- scales::comma(x2$annual_cost, accuracy = .01)
   print(x2)
 }
+
+#' @export
+#' @method print invacost.modelsummary
+print.invacost.modelsummary <- function(x, ...)
+{
+  cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Summary of model fits ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n\n")
+  cat("______________________________     Ordinary Least Square regression models  _______________________________\n\n\n")
+  cat(">>>>>>>>       Linear regression\n\n")
+  cat("R squared: ", x$ols.linear$r.squared, " - Adjusted R squared: ", x$ols.linear$r.squared)
+  print(x$ols.linear$coeftest)
+  cat("------------------------------------------------------------------------------------------------------------\n\n")
+  
+  cat("\n\n>>>>>>>>       Quadratic regression\n\n")
+  cat("R squared: ", x$ols.quadratic$r.squared, " - Adjusted R squared: ", x$ols.quadratic$r.squared)
+  print(x$ols.quadratic$coeftest)
+  cat("------------------------------------------------------------------------------------------------------------\n\n")
+  
+  cat("______________________________           Robust regression models           _______________________________\n\n\n")
+  
+  cat(">>>>>>>>       Linear regression\n\n")
+  print(x$robust.linear)
+  cat("------------------------------------------------------------------------------------------------------------\n\n")
+  
+  cat("\n\n>>>>>>>>       Quadratic regression\n\n")
+  print(x$robust.quadratic)
+  cat("------------------------------------------------------------------------------------------------------------\n\n")
+  
+  cat("______________________________          Generalized Additive Models          _______________________________\n\n\n")
+  print(x$gam)
+  cat("------------------------------------------------------------------------------------------------------------\n\n")
+  
+  cat("______________________________     Multiple Adaptive Regression Splines      _______________________________\n\n\n")
+  print(x$mars)
+  cat("------------------------------------------------------------------------------------------------------------\n\n")
+  
+  cat("______________________________            Quantile regressions               _______________________________\n\n\n")
+  cat(">>>>>>>>       0.1 quantile \n\n")
+  print(x$qt0.1)
+  cat("------------------------------------------------------------------------------------------------------------\n\n")
+  
+  cat(">>>>>>>>       0.5 quantile \n\n")
+  print(x$qt0.5)
+  cat("------------------------------------------------------------------------------------------------------------\n\n")
+  
+  cat(">>>>>>>>       0.9 quantile \n\n")
+  print(x$qt0.9)
+  cat("------------------------------------------------------------------------------------------------------------\n\n")
+  
+}
+
 
 #' @export
 #' @method str invacost.trendcost
@@ -118,6 +177,15 @@ str.invacost.rawcost <- function(object, ...)
 #' @import ggplot2
 #' @importFrom grDevices grey rgb
 #' @note 
+#' Error bands represent 95% confidence intervals for OLS regression, robust
+#' regression, GAM and quantile regression. We cannot construct confidence 
+#' intervals around the mean for MARS techjniques. However, we can estimate
+#' prediction intervals by fitting a variance model to MARS residuals. Hence,
+#' the error bands for MARS model represent 95% prediction intervals estimated
+#' by fitting a linear model to the residuals of the MARS model. To learn more
+#' about this, see \code{\link[earth]{varmod}}
+#' 
+#' 
 #' If the legend appears empty (no colours) on your computer screen, try to
 #' zoom in the plot, or to write to a file. There is a rare bug where under
 #' certain conditions you cannot see the colours in the legend, because of their
@@ -140,7 +208,6 @@ plot.invacost.trendcost <- function(x,
                                     graphical.parameters = NULL,
                                     ...)
 {
-  
   # 1. We create the ggplot here ---------------
   p <- ggplot()
   
@@ -189,27 +256,42 @@ plot.invacost.trendcost <- function(x,
   # Preparing model predictions for plots
   model.preds <- x$estimated.annual.costs
   model.preds$Model <- as.character(model.preds$model)
-  model.preds$Model[model.preds$Details == "Linear"] <- "Linear regression"
-  model.preds$Model[model.preds$Details == "Quadratic"] <- "Quadratic regression"
+  model.preds$Model[model.preds$model == "OLS regression" & 
+                      model.preds$Details == "Linear"] <- "OLS linear regression"
+  model.preds$Model[model.preds$model == "OLS regression" 
+                    & model.preds$Details == "Quadratic"] <- "OLS quadratic regression"
+  model.preds$Model[model.preds$model == "Robust regression" & 
+                      model.preds$Details == "Linear"] <- "Robust linear regression"
+  model.preds$Model[model.preds$model == "Robust regression" & 
+                      model.preds$Details == "Quadratic"] <- "Robust quadratic regression"
   model.preds$Model[model.preds$model == "Quantile regression"] <-
     paste0(model.preds$Details[model.preds$model == "Quantile regression"],
            " regression")
   
   # Ordering model names
   model.preds$Model <- factor(model.preds$Model,
-                              levels = c("Linear regression", 
-                                         "Quadratic regression",
+                              levels = c("OLS linear regression", 
+                                         "OLS quadratic regression",
+                                         "Robust linear regression",
+                                         "Robust quadratic regression",
                                          "MARS",
                                          "GAM",
                                          paste("Quantile", c(0.1, 0.5, 0.9), "regression")))
+  model.preds$model <- factor(model.preds$model,
+                              levels = c("OLS regression", "Robust regression",
+                                         "GAM", "MARS", "Quantile regression"))
   
   # Creating a colourblind palette (Wong 2011)
   # to best distinguish models
   alpha <- round(.8 * 255)
-  cols <- c(`Linear regression` = rgb(86, 180, 233, alpha = alpha,
+  cols <- c(`OLS linear regression` = rgb(86, 180, 233, alpha = alpha,
                                       maxColorValue = 255), # Sky blue
-            `Quadratic regression` = rgb(230, 159, 0, alpha = alpha,
+            `OLS quadratic regression` = rgb(230, 159, 0, alpha = alpha,
                                          maxColorValue = 255), # Orange
+            `Robust linear regression` = rgb(0, 114, 178, alpha = alpha,
+                                          maxColorValue = 255), # Blue
+            `Robust quadratic regression` = rgb(213, 94, 0, alpha = alpha,
+                                             maxColorValue = 255), # Vermillion
             `MARS` = rgb(204, 121, 167, alpha = alpha,
                          maxColorValue = 255), # Reddish purple
             `GAM` = rgb(0, 158, 115, alpha = alpha,
@@ -263,9 +345,11 @@ plot.invacost.trendcost <- function(x,
                   scales = "free_y") +
       scale_discrete_manual(aesthetics = "col",
                             values = cols)
+    message("Note that MARS error bands are prediction intervals and not confidence interval (see ?plot.invacost.trendcost)\n")
+    
   }
   
-  
+
   return(p)
 }
 

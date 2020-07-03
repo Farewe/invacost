@@ -2,6 +2,7 @@
 
 S3method(plot,invacost.rawcost)
 S3method(plot,invacost.trendcost)
+S3method(print,invacost.modelsummary)
 S3method(print,invacost.rawcost)
 S3method(print,invacost.trendcost)
 S3method(str,invacost.rawcost)

@@ -1,9 +1,9 @@
 Package: invacost
 Type: Package
 Title: INVACOST Database With Methods To Analyse Invasion Costs
-Version: 0.2-4
-Date: 2020-04-07
-Author: Boris Leroy [cre, aut], Christophe Diagne [ctb], Anne-Charlotte Vaissière [ctb],
+Version: 0.3
+Date: 2020-07-01
+Author: Boris Leroy [cre, aut], Christophe Diagne [ctb], Anne-Charlotte Vaissière [ctb], Andrew Kramer [ctb]
 Maintainer: Boris Leroy <leroy.boris@gmail.com>
 Description: Provides an up-to-date version of the INVACOST database in R, and
     several functions to analyse cost values in the database. 
@@ -17,9 +17,11 @@ Imports:
     earth,
     graphics,
     grDevices,
+    lmtest,
     mgcv,
     quantreg,
+    sandwich,
     scales,
     stats,
     utils
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0

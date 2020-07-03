@@ -36,6 +36,15 @@ This function provides different plotting methods for the estimated annual
 cost of invasive species based on the temporal trend of costs.
 }
 \note{
+Error bands represent 95% confidence intervals for OLS regression, robust
+regression, GAM and quantile regression. We cannot construct confidence 
+intervals around the mean for MARS techjniques. However, we can estimate
+prediction intervals by fitting a variance model to MARS residuals. Hence,
+the error bands for MARS model represent 95% prediction intervals estimated
+by fitting a linear model to the residuals of the MARS model. To learn more
+about this, see \code{\link[earth]{varmod}}
+
+
 If the legend appears empty (no colours) on your computer screen, try to
 zoom in the plot, or to write to a file. There is a rare bug where under
 certain conditions you cannot see the colours in the legend, because of their

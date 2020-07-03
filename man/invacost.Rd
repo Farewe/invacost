@@ -4,7 +4,8 @@
 \name{invacost}
 \alias{invacost}
 \title{INVACOST database}
-\format{A data frame with 2419 rows and 48 variables:
+\format{
+A data frame with 2419 rows and 48 variables:
 \describe{
   \item{Cost_ID}{}
   \item{Repository}{}
@@ -53,7 +54,8 @@
   \item{Contributors}{}
   \item{Probable_starting_year_low_margin}{}
   \item{Probable_ending_year_low_margin}{}
-}}
+}
+}
 \source{
 Include URL to the original dataset here
 }

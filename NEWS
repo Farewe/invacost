@@ -1,3 +1,15 @@
+virtualspecies v0.3 (Release date: unreleased yet)
+==============
+
+* Major changes to the models in costTrendOverTime(): 
+  - added robust regression models (thanks Andrew Kramer!)
+  - changed error estimations for ordinary least square regressions in order
+  to account for heteroscedasticity and temporal autocorrelation
+  - changed GAM model family to use Gaussian Location-Scale family, in order
+  to account for heteroscedasticity
+  - added the summary of models directly in the output of costTrendOverTime()
+* Added precisions about the error bands for MARS models in the help file
+
 virtualspecies v0.2-4 (Release date: unreleased yet)
 ==============
 

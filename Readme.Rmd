@@ -1,8 +1,12 @@
 ---
 title: "The INVACOST R Package: Global Costs of Biological Invasions"
 author: "INVACOST team"
-date: "03/04/2020"
+date: "20/04/2020"
 output:
+  html_document:
+    df_print: kable
+    toc: yes
+    toc_float: true
   github_document:
     toc: true
     toc_depth: 2
@@ -15,6 +19,13 @@ library(invacost)
 data(invacost)
 
 ```
+
+# WARNING
+
+This page represents work in progress and no third parties are allowed to use
+it under any circumstances. For more information, please write to 
+leroy.boris@gmail.com, christophe.diagne@u-psud.fr and franck.courchamp@u-psud.fr
+
 # Introduction 
 
 The INVACOST R package provides the INVACOST database in R with several 
@@ -24,23 +35,24 @@ There are two main methods developed in this package to estimate the costs
 associated
 to biological invasions.
 
- - The first approach consists in calculating the *raw costs* that occurred over
+ - The first approach consists in calculating the *raw costs* (i.e., observed
+ costs) that occurred over
  specific intervals of time. From this approach you can obtain the *observed*
  cumulated and 
- average annual costs of biological invasions for the chosen tim intervals.  
- This approach is generalisable to any subset of the invacost database,
- regardless of data quantity. However, it does account for the temporal dynamics
+ average annual costs of biological invasions for different time intervals.  
+ This approach is generalisable to any subset of the INVACOST database,
+ regardless of data quantity. However, it does not account for the temporal dynamics
  of costs, and may thus underestimate the costs of invasions, especially for
- recent years for which we have incomplete data.
+ recent years for which we likely have incomplete data.
  
- - The second approach consists in estimating the long-term trend in annual cost 
+ - The second approach consists in **estimating** the long-term trend in annual cost 
  values with an ensemble modelling approach. Because it includes the dynamic 
  nature of cost values, it is probably the most robust approach to estimate 
  average annual costs. However, it requires more data and for data-poor cases it
  will not work or provide inadequate results. We fit several models because the
  trend of costs over time is not necessarily linear.
  This approach requires decisions about  models to keep or remove, on the basis
- of the quality of model fit, or of our *a priori* assumptions. Note that this
+ of the quality of model fit, and/or of our *a priori* assumptions. Note that this
  modelling approach is not designed for extrapolations because there is no
  certainty that the underlying factors of costs will have similar trends in the
  future.
@@ -72,7 +84,7 @@ install from the raw .tar.gz).
 
 For those of you who tried the earlier versions of the package:
 
-- Many bugs arose when working on small subsets of invacost. Most of them have
+- Many bugs arose when working on small subsets of INVACOST. Most of them have
 been corrected. 
 
 - Graphics are no longer included in the functions. They are not provided as
@@ -84,6 +96,8 @@ with ggplot2.
 unique estimates used to compute values.
 
 - Lots of minor changes / quality of life improvement.
+
+- Minor corrections to the database (mainly typos)
 
 # Basic steps to get started
 ## How to load the data in R?
@@ -101,7 +115,7 @@ nrow(invacost)
 ncol(invacost)
 ```
 
-There are `r ncol(invacost)` fields in the invacost database, and I strongly 
+There are `r ncol(invacost)` fields in the INVACOST database, and I strongly 
 recommend you get familiarised with them by inspecting them individually and
 reading the paper describing the database (and its fields) available here:
 `link to be added when available ¯\_(ツ)_/¯`.
@@ -111,7 +125,7 @@ reading the paper describing the database (and its fields) available here:
 There are several fields that contain economic values (they generally contain
 `cost` in their names), but you probably won't
 need most of them. Indeed, we stored raw information from the papers, but this
-raw information is often difficult to compare because it can be based on
+raw information is often difficult to compare because of
 different currencies, different years (inflation) and different periods of time
 (e.g. 1 year vs 10 years). Therefore, we standardised economic values into 
 annual cost values in 2017 US$ with two different methods. We recommend you 
@@ -152,7 +166,7 @@ the most up-to-date and comprehensive compilation of both the published
 and grey literature on the 
 economic costs of biological invasions. Therefore, it includes sound estimations
 of economic costs of invasive species, with detailed sources and reproducible 
-methodology; but it also includes unsourced and irreproducible *guestimates*.
+methodology; but it also includes unsourced and irreproducible "*guestimates*".
 Therefore, we want to apply filters on the database to avoid as much as possible
 the unreliable economic cost estimates. Furthermore, the database includes both
 observed and predicted costs, so depending on our objectives we may or may not
@@ -164,7 +178,7 @@ which provides a simple yet objective evaluation of the reliability of cost
 estimates. It uses the following decision tree:
 `r knitr::include_graphics("./Readme_files/figure-html/reliability.png")`
 Red means categorised as unreliable, green means categorised as reliable. This
-reliability descriptor has limitations. The most important one 
+`Method_reliability` descriptor has some limitations. The most important one 
 is that we decided to not evaluate the methodology for peer-reviewed articles 
 and official reports. This choice was based on experiments where we identified
 strong divergence in reliability decisions between different members of the 
@@ -172,7 +186,7 @@ INVACOST team. We also identified that depending on the study objective,
 different decisions about reliability could be made. Therefore, this
 `Method_reliability` descriptor should be considered as a first approximation of 
 cost reliability, and you should decide whether or not you want to eliminate 
-papers on the basis of thee lack of reproducibility of their methodologies.
+papers on the basis of the lack of reproducibility of their methodologies.
 To do that, take time to investigate the `Details` field (especially for cost
 values that you deem suspiciously high) and potentially go back to the source to
 make your decision. For an example on how to do that, take a look at the 
@@ -184,13 +198,14 @@ unique(invacost$Method_reliability)
 ```
 
 - **Observed vs. Potential costs**: The `Implementation` field in the database
-documents whether the costs correspond to Observed or Potential costs. Choose
-depending on your study objectives. In addition, costs can also be based on
-direct observations or estimations, or can be based on extrpolations: this is 
+documents whether the costs correspond to *Observed* or *Potential* costs. 
+Choosing to keep one or both of them depends on your study objectives. 
+In addition, costs can also be based on
+direct observations or estimations, or can be based on extrapolations: this is 
 documented in the `Acquisition_method` field. Extrapolation does 
-not necessarily mean potential: some Observed costs may have been extrapolated
+not necessarily mean *Potential*: some Observed costs may have been extrapolated
 from a reduced spatial extent. Below is a table showing the number of cases
-of extrapolations and reports/estimation for observed and potential costs.  As 
+of extrapolations and reports/estimation for *Observed* and *Potential* costs.  As 
 you can see, the majority of Observed costs are based on reports / 
 estimations; yet a few are based on extrapolations.
 ```{r obs}
@@ -199,7 +214,7 @@ table(invacost$Acquisition_method, invacost$Implementation)
 
 
 For the rest of this tutorial, we will be working only on costs categorised as
-"reliable" and "observed":
+"High" in `Method_reliability` and "Observed" in `Implementation`:
 
 ```{r filter1}
 invacost <- invacost[which(invacost$Method_reliability == "High"), ]
@@ -212,8 +227,8 @@ nrow(invacost)
 ## How do I know when costs occurred? 
 
 A crucial aspect in analysing cost values is to know the periods of time
-over which costs occurred. Indeed, knowing the period over which a cost occurred
-allows to derive cumulative costs, estimating average annual costs; it also 
+over which costs have occurred. Indeed, knowing the period over which a cost occurred
+allows to derive cumulative costs and to estimate average annual costs; it also 
 enables temporal analyses of costs.  
 We have stored information on the periods of time over which cost occurred
 in two fields: `Probable_starting_year` and `Probable_ending_year`.
@@ -224,14 +239,15 @@ substantial portion of the papers we compiled in the database: for
                       is.na(invacost$Probable_ending_year)), ])` out of 
 `r nrow(invacost)` papers (`r round(nrow(invacost[which(is.na(invacost$Probable_starting_year) |
                       is.na(invacost$Probable_ending_year)), ]) / nrow(invacost), 3) * 100`
-                      % of papers), this information was not available.
+                      % of papers), this information was not available for at
+least one of the two columns.
                       
 Therefore, for papers for which it was not available, we made 
 educated guesses on the probable starting and ending years, on the basis of a 
 set of rules we decided for our main paper (*link to be added when the paper is 
 published*). These educated guesses were based on conservative rules
 (e.g., if no duration information was provided,
-then the impact was reported of one year only). These estimated stgarting and
+then the impact was reported of one year only). These estimated starting and
 ending years are available in
 two new fields in the database called `Probable_starting_year_low_margin` and 
 `Probable_ending_year_low_margin`.
@@ -263,9 +279,9 @@ it, to make it look like this:
 | 3          | Sp 3          | 3           | 1981 | 
 
 
-To do this, we use the function we use the function `expandYearlyCosts`, to
+To do this, we use the function `expandYearlyCosts`, to
 which we provide the starting and ending year columns. It will store the
-years over which economict costs occured in a column named `Impact_year`.
+years over which economic costs have occurred in a column named `Impact_year`.
 
 ```{r i2y, cache = TRUE}
 # Expanding and formating the database
@@ -281,7 +297,7 @@ head(db.over.time[, c("Cost_ID", "Species",
 ## How complete is our economic data?
 
 It is impossible to evaluate the absolute degree of completeness of our 
-invacost - we know that we lack data for many taxonomic groups (e.g. plants are
+INVACOST - we know that we lack data for many taxonomic groups (e.g. plants are
 currently underrepresented) and many places around the earth (most cost data is
 located in North America and Europe). You have to be aware of these 
 potential biases and remember them when interpreting data/analyses.
@@ -351,7 +367,7 @@ Hence, any analysis on recent years will be based on incomplete data and is
 highly likely to provide an underestimation of actual costs.
 
 It is up to you to determine how you desire to include this information in your 
-analyses; here, we will provide examples of how we suggest to do that.
+analyses; here, we will provide examples of how we suggest doing that.
 
 
 One question that may arise for people working on specific subsets of the 
@@ -368,7 +384,7 @@ as we did here.
 
 ## Basic usage
 The first method to analyse economic costs of invasive species consists in
-calculating the observed cumulative and average costs over one specific period 
+calculating the observed cumulative and average costs over a specific period 
 of time, or at different time intervals.
 
 We implemented this method in the function `calculateRawAvgCosts`. It will 
@@ -565,7 +581,7 @@ access them now to know to what years they correspond:
 quantiles
 ```
 
-In the next lines of code we create a vector of weights for each year, which we
+In the next lines of code we will create a vector of weights for each year, which we
 will provide to the function later on.
 
 ```{r lag5, cache = TRUE}
@@ -595,14 +611,14 @@ rules for deciding which model(s) should be finally considered.
 Here are the rules we chose for our main paper:
 • statistical information about the quality of the fit based on the Root Mean
 Square Error (RMSE - lower is better)
-• simplicity: for models with similar performance we prefer the models with 
+• simplicity: for models with similar performance, we prefer the models with 
 less assumptions
 • a qualitative rationale on the probable shape of trends over time: because 
 of the exponential increase in the number of invasive species globally (Seebens 
 et al. 2017), we expect the long-term temporal trend over time to be either 
 increasing or stabilising, but not decreasing. Hence, we assume that a model 
 describing a decreasing trend in recent years (i.e., for years lower than the
-75% completeness treshold) would indicate an effect of the lack of data for 
+75% completeness threshold) would indicate an effect of the lack of data for 
 recent years. Therefore, on the basis of this a priori assumption, we deemed as
 inadequate all models that predicted a decrease in costs after 2006.
 
@@ -632,8 +648,8 @@ scripts for the main paper: `link to be added when available ¯\_(ツ)_/¯`
 
 ## Model fitting
 
-The function called `costTrendOverTime` will fit all models automatically. If
-we want, we can provide several parameters such as 
+The function called `costTrendOverTime` will fit all models automatically. We 
+can also provide several parameters such as 
 
 - starting year (`minimum.year`): defaults to 1960
 - ending year (`maximum.year`): defaults to 2017
@@ -666,7 +682,7 @@ global.trend
 
 
 We can now look at the shape of each model with the `plot` function, which once
-agains does ggplot2 stuff internally in invacost:
+again does ggplot2 stuff internally in INVACOST:
 
 ```{r models2}
 plot(global.trend)
@@ -686,7 +702,7 @@ str(global.trend)
 
 There are several elements in the output object:
 
-- `cost.data` contains total annual costs per year, upon which model are fitted
+- `cost.data` contains total annual costs per year, upon which models were fitted
 - `parameters` contains the parameters used to run the function 
 - `fitted.models` contains all the objects of the fitted models. You can 
 access models individually from here, look at the parameters, etc.
@@ -728,7 +744,7 @@ long-term trends in IAS costs over time. Therefore, we parameterise them to
 avoid overfitting the data and better illustrate the long-term trend. As a 
 consequence, their statistical fit (RMSE) will be lower, but more in adequacy with
 our objectives. I advise you to try different settings and decide for yourself
-which parameters seems best for you.
+which parameters seem best for you.
 
 
 For a more detailed example, see the scripts of our main paper here:
@@ -802,15 +818,15 @@ database. We are not going to analyse it in details.
 We assume here that you have run the code on the first sections of this 
 tutorial: database filtering and completeness.
 
-First, let's inspect the geographic regions of invacost:
+First, let's inspect the geographic regions of INVACOST:
 ```{r example1.1}
 unique(invacost$Geographic_region)
 ```
 
-There seven different regions in invacost, and sometimes cost are spread over 
+There are seven different regions in INVACOST, and sometimes cost are spread over 
 different regions. Indeed, cost estimates in publications and reports often
-correspond to data aggregated over several regions, several taxa at the same 
-time, several types of cost etc. Most of the time, it is not possible to 
+correspond to data aggregated over several regions, several taxa, several types
+of cost etc. Most of the time, it is not possible to 
 split these costs into their respective subsets. Therefore, we have to omit them
 if we want to focus on a single region. Here, we focus on North America only:
 
@@ -821,13 +837,12 @@ invacost.NA <- invacost[which(invacost$Geographic_region == "North America"), ]
 nrow(invacost.NA)
 ```
 
-We have `r nrow(invacost.NA)` lines in the North America subset of invacost. 
-Let's 
+We have `r nrow(invacost.NA)` lines in the North America subset of INVACOST. 
 
 ```{r example1.3}
 # Let's see the content of the Class column
 unique(invacost.NA$Class)
-# Subset the NA invacost database
+# Subset the NA INVACOST database
 invacost.NA.mammals <- invacost.NA[which(invacost.NA$Class == "Mammalia"), ]
 
 # Number of rows
@@ -858,7 +873,7 @@ plot(raw.NAmammals)
 ```
 
 Indeed, looking at the graph it would be ill-advised to calibrate models on this
-subset of invacost (feel free to try it!).
+subset of INVACOST (feel free to try it!).
 We should rather focus on the cumulative cost over time, 
 which in our case amounts to 
 US$ `r scales::comma(raw.NAmammals$average.total.cost$total_cost)` millions for 
@@ -878,10 +893,11 @@ we want to apply changes before running the script.
 unique(invacost$Species)[1:25]
 ```
 
-As you can see there are many cases where multiple species are studied together.
+As you can see, there are many cases where multiple species are studied together.
 These cases will be difficult to implement/analyse, but we can decide to merge
-some of them together. For example, rats and mouses have often been analysed 
-together, and we could decide to merge them in a single group:
+some of them together. For example, rats (genus *Rattus*) and mice (genus *Mus*)
+have been often analysed together, and we could decide to merge them in a single
+group:
 
 ```{r allsp2}
 # First we create new columns in character format to avoid factor errors in R
@@ -910,10 +926,15 @@ invacost$sp.list[which(invacost$Genus == "Canis")] <- "Canis lupus spp."
 ```
 
 Now that our taxon group list is set up, we still need to create a unique identifier 
-for each taxon group, because the generic name "Diverse/Unspecified" in many 
-different cases and for many different taxa. For example, we have cases where 
-we know that the class is *mammals*, but the species is *Diverse/Unspecified*.
-We do not want to merge these cases with e.g. *plants*. So we will create a 
+for each taxon group. Indeed, if we use directly the `Species` column, then
+all taxa that have the generic name *Diverse/Unspecified* will be considered 
+in the same group. However, even if species names were unspecified, we still 
+have information at high taxonomic levels (e.g., mammals, plants, etc.). 
+Therefore, we will use all the taxonomic information to make sure that we do not
+mix costs from e.g. plants with costs of mammals even when the species is 
+marked as *Diverse/Unspecified*.
+
+So we will create a 
 unique identifier which integrates taxonomic data to avoid mixing together 
 different kingdoms/phyla/classes etc.
 
@@ -971,7 +992,7 @@ species.summary[1:10, ]
 
 Of course, many lines in this table are not interesting because they correspond 
 to all studies covering multiple taxa. Notwithstanding, we can see that the 
-winners are mosquitoes with a cumulted cost of US$ 158,622 millions for 1970-
+winners are mosquitoes with a cumulated cost of US$ 158,622 million for 1970-
 2017, based on 208 cost estimates in total.
 
 For a more detailed example, please look at the scripts we provided with the
@@ -987,14 +1008,14 @@ happy; too many parameters and users are lost in the function usage. Therefore,
 if you have a very specific request that will not be useful to other users, do
 not hesitate to duplicate the source code and adapt the function to your needs.
 On the contrary, if you think of a new thing that could be beneficial to many
-users, please do not hesitate and become an officiel contributor to the
+users, please do not hesitate and become an official contributor to the
 package!
 
 # Citation
 
 If you found the package and/or the tutorial useful, please do not hesitate to
-cite the package (in addition to the data paper) as an acknowledgement for the
-time spent in writing the package and this tutoriual. Like all R packages, 
+cite the package (in addition to the papers) as an acknowledgement for the
+time spent in writing the package and this tutorial. Like all R packages, 
 to know how to cite it, type:
 ```{r i4, cache = TRUE}
 citation("invacost")

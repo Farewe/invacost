@@ -39,11 +39,11 @@
 #' GAM find the smoothing factor automatically. Provide a manual value if you 
 #' have expectations about the shape of the curve and want to avoid overfitting
 #' because of interannual variations.
-#' @param mars.nk The maximum number of model terms in the MARS model. The default 
-#' value of 21 corresponds to the default value calculated in earth package.
+#' @param mars.nprune The maximum number of model terms in the MARS model. 
 #' Lowering this value will reduce the number of terms in the MARS model, which
 #' can be useful if you have expectations about the shape of the curve and want
 #' to avoid overfitting because of interannual variations.
+#' @param ... Other arguments (you do not need them!)
 #' @return a \code{list} with 3 to 6 elements (only the first three will be 
 #' provided if you selected a cost transformation different from log10):
 #'
@@ -69,7 +69,7 @@
 #' @importFrom stats lm predict qt residuals
 #' @export
 #' @author
-#' Boris Leroy \email{leroy.boris@@gmail.com}
+#' Boris Leroy \email{leroy.boris@@gmail.com}, Andrew Kramer
 #' 
 #' with help from C. Diagne & A.-C. Vaissière
 #' @examples
@@ -91,22 +91,57 @@ costTrendOverTime <- function(costdb,
                               minimum.year = 1960, 
                               maximum.year = 2017, 
                               final.year = 2017, 
+                              models = c("ols.linear", 
+                                         "ols.quadratic",
+                                         "robust.linear",
+                                         "robust.quadratic",
+                                         "gam",
+                                         "mars",
+                                         "quantile"),
                               incomplete.year.threshold = 2015,
                               incomplete.year.weights = NULL,
                               gam.k = -1,
-                              mars.nk = 21
+                              mars.nprune = NULL,
+                              ...
 )
 {
+
+  # Checking if deprecated mars.nk argument was provided
+  if(hasArg(mars.nk))
+  {
+    stop("Argument mars.nk was specified. If you are looking to reduce model size, please use mars.nprune instead of mars.nk.")
+  }
+  
+  if(any(!(models %in% c("ols.linear", 
+                         "ols.quadratic", 
+                         "gam",
+                         "mars",
+                         "quantile",
+                         "robust.linear",
+                         "robust.quadratic"))))
+  {
+    stop(paste0("Inadequate model(s) specified:'",
+                paste(models[which(!(models %in% c("ols.linear", 
+                                                   "ols.quadratic", 
+                                                   "gam",
+                                                   "mars",
+                                                   "quantile",
+                                                   "robust.linear",
+                                                   "robust.quadratic")))],
+                                    collapse = "', '"),
+                "', please choose among 'ols.linear', 'ols.quadratic', 'robust.linear', 'robust.quadratic', 'gam', 'mars' and 'quantile'"))
+  }
+  
   if(is.null(cost.transf))
   {
     cost.transf <- "none"
   }
-
+  
   if(any(costdb[, year.column] < minimum.year))
   {
     warning(paste0("There are ",  length(unique(costdb$Cost_ID[which(costdb[, year.column] < minimum.year)])),
                    " cost values for periods earlier than ",
-                   minimum.year, ", which will will be removed.\n"))
+                   minimum.year, ", which will be removed.\n"))
     costdb <- costdb[-which(costdb[, year.column] < minimum.year), ]
   }
   
@@ -138,9 +173,9 @@ costTrendOverTime <- function(costdb,
                      minimum.year = min(costdb[, year.column], na.rm = TRUE), 
                      maximum.year = max(costdb[, year.column], na.rm = TRUE), 
                      final.year = final.year,
-                     gam.k = gam.k,
-                     mars.nk = mars.nk)
-                     
+                     gam.k = gam.k)
+  
+
   yeargroups <- dplyr::group_by(costdb,
                                 get(year.column)) 
   
@@ -185,7 +220,7 @@ costTrendOverTime <- function(costdb,
                    "they occurred later than incomplete.year.threshold (", incomplete.year.threshold,
                    ")\n"))
     yearly.cost$Calibration <- ifelse(yearly.cost$Year < incomplete.year.threshold,
-                                       "Included", "Excluded")
+                                      "Included", "Excluded")
     yearly.cost.calibration <- yearly.cost[-which(yearly.cost[, "Year"] >= incomplete.year.threshold), ]
     if(!is.null(incomplete.year.weights))
     {
@@ -199,10 +234,14 @@ costTrendOverTime <- function(costdb,
   # For nicer graphs
   yearly.cost$Calibration <- factor(yearly.cost$Calibration, levels = c("Excluded",
                                                                         "Included"))
+  yearly.cost.calibration <- data.frame(yearly.cost.calibration,
+                                        incomplete.year.weights = incomplete.year.weights)
   
-  model.RMSE <- array(NA, dim = c(7, 2),
-                      dimnames = list(c("regression.linear",
-                                        "regression.quadratic",
+  model.RMSE <- array(NA, dim = c(9, 2),
+                      dimnames = list(c("ols.linear",
+                                        "ols.quadratic",
+                                        "robust.linear",
+                                        "robust.quadratic",
                                         "mars",
                                         "gam",
                                         "qt0.1",
@@ -214,41 +253,120 @@ costTrendOverTime <- function(costdb,
   # Prediction years correspond to the entire range provided by the user
   prediction.years <- data.frame(Year = minimum.year:maximum.year)
   
-  # Linear regression 
-  reg.lm <- lm(transf.cost ~ Year, data = yearly.cost.calibration,
+  # Ordinary least square - linear effect
+  ols.linear <- lm(transf.cost ~ Year, data = yearly.cost.calibration,
                weights = incomplete.year.weights)
-  pred.lm <- predict(reg.lm, 
+
+  pred.ols.linear <- predict(ols.linear, 
                      prediction.years,
                      interval = "confidence",
                      level = confidence.interval)
-  rownames(pred.lm) <- prediction.years[, 1]
+  rownames(pred.ols.linear) <- prediction.years[, 1]
   
-  model.RMSE["regression.linear", "RMSE.calibration"] <- sqrt(mean(residuals(reg.lm)^2))
-  model.RMSE["regression.linear", "RMSE.alldata"] <- sqrt(
-    mean((pred.lm[match(yearly.cost$Year, rownames(pred.lm)), "fit"] -
+  model.RMSE["ols.linear", "RMSE.calibration"] <- sqrt(mean(residuals(ols.linear)^2))
+  model.RMSE["ols.linear", "RMSE.alldata"] <- sqrt(
+    mean((pred.ols.linear[match(yearly.cost$Year, rownames(pred.ols.linear)), "fit"] -
             yearly.cost$transf.cost)^2))
   
+  # Calculation of heteroscedastic- and autocorrelation-robust variance covariance matrix of estimators for errors
+  vcov.HAC.linear <- sandwich::vcovHAC(ols.linear)
   
-  reg.quad.lm <- lm(transf.cost ~ Year + I(Year^2), data = yearly.cost.calibration,
+  # Calculating 95% confidence intervals based on robust variance covariance matrix
+  modelmatrix.linear <- model.matrix(~ Year,
+                                     data = prediction.years)
+  
+  # Variance of prediction years
+  var.years.linear <- modelmatrix.linear %*% vcov.HAC.linear %*% t(modelmatrix.linear)
+  # Standard errors
+  se.years.linear <- sqrt(diag(var.years.linear))
+  
+  # Confidence intervals
+  pred.ols.linear[, "lwr"] <-  pred.ols.linear[, "fit"] -
+    se.years.linear * qt(confidence.interval + 
+                    (1 - confidence.interval) / 2,
+                  df = ols.linear$df.residual)
+  pred.ols.linear[, "upr"] <-  pred.ols.linear[, "fit"] +
+    se.years.linear * qt(confidence.interval + 
+                    (1 - confidence.interval) / 2,
+                  df = ols.linear$df.residual)
+  
+  
+
+  # OLS - quadratic effect
+  ols.quadratic <- lm(transf.cost ~ Year + I(Year^2), data = yearly.cost.calibration,
                     weights = incomplete.year.weights)
-  pred.quad.lm <- predict(reg.quad.lm, 
+  pred.ols.quadratic <- predict(ols.quadratic, 
                           prediction.years,
                           interval = "confidence",
                           level = confidence.interval)
-  rownames(pred.quad.lm) <- prediction.years[, 1]
+  rownames(pred.ols.quadratic) <- prediction.years[, 1]
   
-  model.RMSE["regression.quadratic", "RMSE.calibration"] <- sqrt(mean(residuals(reg.quad.lm)^2))
-  model.RMSE["regression.quadratic", "RMSE.alldata"] <- sqrt(
-    mean((pred.quad.lm[match(yearly.cost$Year, rownames(pred.quad.lm)), "fit"] -
+  model.RMSE["ols.quadratic", "RMSE.calibration"] <- sqrt(mean(residuals(ols.quadratic)^2))
+  model.RMSE["ols.quadratic", "RMSE.alldata"] <- sqrt(
+    mean((pred.ols.quadratic[match(yearly.cost$Year, rownames(pred.ols.quadratic)), "fit"] -
             yearly.cost$transf.cost)^2))
   
+  # Calculation of heteroscedastic- and autocorrelation-robust variance covariance matrix of estimators for errors
+  vcov.HAC.quadratic <- sandwich::vcovHAC(ols.quadratic)
+  
+  # Calculating 95% confidence intervals based on robust variance covariance matrix
+  modelmatrix.quadric <- model.matrix(~ Year + I(Year^2),
+                                     data = prediction.years)
+  # Variance of prediction years
+  var.years.quadratic <- modelmatrix.quadric %*% vcov.HAC.quadratic %*% t(modelmatrix.quadric)
+  # Standard errors
+  se.years.quadratic <- sqrt(diag(var.years.quadratic))
+  
+  
+  # Confidence intervals
+  pred.ols.quadratic[, "lwr"] <-  pred.ols.quadratic[, "fit"] -
+    se.years.quadratic * qt(confidence.interval + 
+                    (1 - confidence.interval) / 2,
+                  df = ols.quadratic$df.residual)
+  pred.ols.linear[, "upr"] <-  pred.ols.linear[, "fit"] +
+    se.years.quadratic * qt(confidence.interval + 
+                    (1 - confidence.interval) / 2,
+                  df = ols.quadratic$df.residual)
+  
+
+  
+  #Robust regression
+  robust.linear <- robustbase::lmrob(transf.cost ~ Year, data = yearly.cost.calibration, 
+                                  weights = incomplete.year.weights)
+  pred.robust.linear <- predict(robust.linear, yearly.cost["Year"], interval = "confidence", 
+                         level = confidence.interval)
+  rownames(pred.robust.linear) <- prediction.years[, 1]
+  
+  model.RMSE["robust.linear", "RMSE.calibration"] <- sqrt(mean(residuals(robust.linear)^2))
+  model.RMSE["robust.linear", "RMSE.alldata"] <- sqrt(mean((pred.robust.linear[, 
+                                                                            "fit"] - yearly.cost$transf.cost)^2))
+  
+  
+
+  #Robust regression - quadratic effect
+  robust.quadratic <- robustbase::lmrob(transf.cost ~ Year + I(Year^2), data = yearly.cost.calibration, 
+                                  weights = incomplete.year.weights,
+                                  cov = ".vcov.w") # Covariance matrix estimated using asymptotic normality of the coefficients 
+                                                   # See ?lmrob and Koller & Stahel 2011 
+  pred.robust.quadratic <- predict(robust.quadratic, yearly.cost["Year"], interval = "confidence", 
+                         level = confidence.interval)
+  rownames(pred.robust.quadratic) <- prediction.years[, 1]
+  
+  model.RMSE["robust.quadratic", "RMSE.calibration"] <- sqrt(mean(residuals(robust.quadratic)^2))
+  model.RMSE["robust.quadratic", "RMSE.alldata"] <- sqrt(mean((pred.robust.quadratic[, 
+                                                                            "fit"] - yearly.cost$transf.cost)^2))
+  
+
   # Multiple Adapative Regression splines
   mars <- earth::earth(transf.cost ~ Year, data = yearly.cost.calibration,
-                       varmod.method = "earth",
-                       nk = mars.nk,
-                       nfold = 5,
-                       ncross = 3,
+                       varmod.method = "lm",
+                       # nk = mars.nk,
+                       nprune = mars.nprune,
+                       nfold = 5, 
+                       ncross = 30, 
+                       pmethod = "backward", # Would probably be better to use cross-validation but it does not work currently (I contacted the package author to fix this issue)
                        weights = incomplete.year.weights)
+
   pred.mars <- predict(mars,
                        prediction.years,
                        interval = "pint",
@@ -260,22 +378,56 @@ costTrendOverTime <- function(costdb,
     mean((pred.mars[match(yearly.cost$Year, rownames(pred.mars)), "fit"] -
             yearly.cost$transf.cost)^2))
   
-  
+
   # Generalized Additive Models
-  igam <- mgcv::gam(transf.cost ~ s(Year, k = gam.k), data = yearly.cost.calibration,
-                    weights = incomplete.year.weights)
+  igam <- mgcv::gam(list(transf.cost ~ s(Year, k = gam.k),
+                         ~ s(Year, k = gam.k)), 
+                    data = yearly.cost.calibration,
+                    weights = incomplete.year.weights,
+                    family = mgcv::gaulss())
+  
+  # Should consider using other distributions than the gaussian one, because
+  # the residuals do not seem adequately distributed.
+  # see gamlss::wp(igam)
+  # Investigate the GAMLSS package in the future
+  
   pred.gam <- predict(igam,
                       newdata = prediction.years,
                       se.fit = TRUE)
-  pred.gam <- data.frame(fit = pred.gam$fit,
-                         lwr = pred.gam$fit -
-                           pred.gam$se * qt(confidence.interval + 
-                                              (1 - confidence.interval) / 2,
-                                            df = nrow(yearly.cost) - 1),
-                         upr = pred.gam$fit +
-                           pred.gam$se * qt(confidence.interval + 
-                                              (1 - confidence.interval) / 2,
-                                            df = nrow(yearly.cost) - 1))
+  # Code for Gaussian location-scale family (advised in case of heteroscedasticity)
+  pred.gam.variance <- data.frame(fit = pred.gam$fit[, 2],
+                                  lwr = pred.gam$fit[, 2] -
+                                    pred.gam$se.fit[, 2] * qt(confidence.interval + 
+                                                                (1 - confidence.interval) / 2,
+                                                              df = nrow(yearly.cost) - 1),
+                                  upr = pred.gam$fit[, 2] +
+                                    pred.gam$se.fit[, 2] * qt(confidence.interval + 
+                                                                (1 - confidence.interval) / 2,
+                                                              df = nrow(yearly.cost) - 1)) 
+  pred.gam <- data.frame(fit = pred.gam$fit[, 1],
+                         lwr = pred.gam$fit[, 1] -
+                           pred.gam$se.fit[, 1] * qt(confidence.interval + 
+                                                       (1 - confidence.interval) / 2,
+                                                     df = nrow(yearly.cost) - 1),
+                         upr = pred.gam$fit[, 1] +
+                           pred.gam$se.fit[, 1] * qt(confidence.interval + 
+                                                       (1 - confidence.interval) / 2,
+                                                     df = nrow(yearly.cost) - 1))
+
+  
+  
+  # Code for gaussian family
+  # pred.gam <- data.frame(fit = pred.gam$fit,
+  #                        lwr = pred.gam$fit -
+  #                          pred.gam$se * qt(confidence.interval +
+  #                                             (1 - confidence.interval) / 2,
+  #                                           df = nrow(yearly.cost) - 1),
+  #                        upr = pred.gam$fit +
+  #                          pred.gam$se * qt(confidence.interval +
+  #                                             (1 - confidence.interval) / 2,
+  #                                           df = nrow(yearly.cost) - 1))
+
+  
   rownames(pred.gam) <- prediction.years[, 1]
   
   model.RMSE["gam", "RMSE.calibration"] <- sqrt(mean(residuals(igam)^2))
@@ -283,7 +435,7 @@ costTrendOverTime <- function(costdb,
     mean((pred.gam[match(yearly.cost$Year, rownames(pred.gam)), "fit"] -
             yearly.cost$transf.cost)^2))
   
-  
+
   # Quantile regression
   qt0.1 <- quantreg::rq(transf.cost ~ Year, 
                         data = yearly.cost.calibration,
@@ -300,7 +452,7 @@ costTrendOverTime <- function(costdb,
   
   
   # quantreg sometimes throws errors in the prediction of confidence intervals
-  # so we need to adatp the code
+  # so we need to adapt the code
   
   pred.qt0.1 <- try(predict(qt0.1,
                             newdata = prediction.years,
@@ -335,7 +487,7 @@ costTrendOverTime <- function(costdb,
                     newdata = prediction.years),
       lwr = NA, upr = NA)
   }
-  colnames(pred.qt0.9) <- colnames(pred.qt0.5) <- colnames(pred.qt0.1) <- colnames(pred.lm)
+  colnames(pred.qt0.9) <- colnames(pred.qt0.5) <- colnames(pred.qt0.1) <- colnames(pred.ols.linear)
   rownames(pred.qt0.9) <- rownames(pred.qt0.5) <- rownames(pred.qt0.1) <- prediction.years[, 1]
   model.RMSE["qt0.1", "RMSE.calibration"] <- sqrt(mean(residuals(qt0.1)^2))
   model.RMSE["qt0.1", "RMSE.alldata"] <- sqrt(
@@ -350,16 +502,22 @@ costTrendOverTime <- function(costdb,
     mean((pred.qt0.9[match(yearly.cost$Year, rownames(pred.qt0.9)), "fit"] -
             yearly.cost$transf.cost)^2))
   
-  
-  
-  model.preds <- rbind.data.frame(data.frame(model = "Linear regression",
+  model.preds <- rbind.data.frame(data.frame(model = "OLS regression",
                                              Year = prediction.years$Year,
                                              Details = "Linear",
-                                             pred.lm),
-                                  data.frame(model = "Linear regression",
+                                             pred.ols.linear),
+                                  data.frame(model = "OLS regression",
                                              Year = prediction.years$Year,
                                              Details = "Quadratic",
-                                             pred.quad.lm),
+                                             pred.ols.quadratic),
+                                  data.frame(model = "Robust regression",
+                                             Year = yearly.cost$Year,
+                                             Details = "Linear",
+                                             pred.robust.linear),
+                                  data.frame(model = "Robust regression",
+                                             Year = yearly.cost$Year,
+                                             Details = "Quadratic",
+                                             pred.robust.quadratic),
                                   data.frame(model = "MARS",
                                              Year = prediction.years$Year,
                                              Details = "",
@@ -381,6 +539,31 @@ costTrendOverTime <- function(costdb,
                                              Details = "Quantile 0.9",
                                              pred.qt0.9))
   
+  
+  # Creating the list containing the summary of model results
+  testsummary <- list()
+  # OLS
+  testsummary$ols.linear$coeftest <- lmtest::coeftest(ols.linear, df = ols.linear$df.residual, vcov = vcov.HAC.linear)
+  testsummary$ols.linear$r.squared <- summary(ols.linear)$r.squared
+  testsummary$ols.linear$adjusted.r.squared <- summary(ols.linear)$adj.r.squared
+  testsummary$ols.quadratic$coeftest <- lmtest::coeftest(ols.quadratic, df = ols.quadratic$df.residual, vcov = vcov.HAC.quadratic)
+  testsummary$ols.quadratic$r.squared <- summary(ols.quadratic)$r.squared
+  testsummary$ols.quadratic$adjusted.r.squared <- summary(ols.quadratic)$adj.r.squared
+  # Robust
+  testsummary$robust.linear <- summary(robust.linear)
+  testsummary$robust.quadratic <- summary(robust.quadratic)
+  # MARS
+  testsummary$mars <- summary(mars)
+  # GAM
+  testsummary$gam <- summary(igam)
+  # Quantile
+  testsummary$qt0.1 <- summary(qt0.1)
+  testsummary$qt0.5 <- summary(qt0.5)
+  testsummary$qt0.9 <- summary(qt0.9)
+  
+  class(testsummary) <- append("invacost.modelsummary", class(testsummary))
+  
+  # Formatting results for output object
   if(cost.transf == "log10")
   {
     # Transform log10 values back to actual US$
@@ -391,81 +574,103 @@ costTrendOverTime <- function(costdb,
     
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
-                    fitted.models = list(linear = reg.lm,
-                                         quadratic = reg.quad.lm,
+                    fitted.models = list(linear = ols.linear,
+                                         quadratic = ols.quadratic,
+                                         robust.linear = robust.linear,
+                                         robust.quadratic = robust.quadratic,
                                          mars = mars,
                                          gam = igam,
                                          quantile = list(qt0.1 = qt0.1,
                                                          qt0.5 = qt0.5,
                                                          qt0.9 = qt0.9)),
                     estimated.annual.costs = model.preds,
+                    gam.predicted.variance = pred.gam.variance,
+                    model.summary = testsummary,
                     RMSE = model.RMSE,
                     final.year.cost = c(linear = 
-                                          unname(10^predict(reg.lm,
-                                                     newdata = data.frame(Year = final.year))),
+                                          unname(10^predict(ols.linear,
+                                                            newdata = data.frame(Year = final.year))),
                                         quadratic = 
-                                          unname(10^predict(reg.quad.lm,
+                                          unname(10^predict(ols.quadratic,
+                                                            newdata = data.frame(Year = final.year))),
+                                        robust.linear = 
+                                          unname(10^predict(robust.linear,
+                                                            newdata = data.frame(Year = final.year))),
+                                        robust.quadratic = 
+                                          unname(10^predict(robust.quadratic,
                                                             newdata = data.frame(Year = final.year))),
                                         mars = 
                                           unname(10^predict(mars,
-                                                     newdata = data.frame(Year = final.year))),
+                                                            newdata = data.frame(Year = final.year))),
                                         gam = 
                                           unname(10^predict(igam,
-                                                     newdata = data.frame(Year = final.year))),
+                                                            newdata = data.frame(Year = final.year))[1, 1]),
                                         quantile.0.1 = 
                                           unname(10^predict(qt0.1,
-                                                     newdata = data.frame(Year = final.year))),
+                                                            newdata = data.frame(Year = final.year))),
                                         quantile.0.5 = 
                                           unname(10^predict(qt0.5,
-                                                     newdata = data.frame(Year = final.year))),
+                                                            newdata = data.frame(Year = final.year))),
                                         quantile.0.9 = 
                                           unname(10^predict(qt0.9,
-                                                     newdata = data.frame(Year = final.year)))))
+                                                            newdata = data.frame(Year = final.year)))))
   } else if(cost.transf == "none")
   {
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
-                    fitted.models = list(linear = reg.lm,
-                                         quadratic = reg.quad.lm,
+                    fitted.models = list(linear = ols.linear,
+                                         quadratic = ols.quadratic,
+                                         robust.linear = robust.linear,
+                                         robust.quadratic = robust.quadratic,
                                          mars = mars,
                                          gam = igam,
                                          quantile = list(qt0.1 = qt0.1,
                                                          qt0.5 = qt0.5,
                                                          qt0.9 = qt0.9)),
                     estimated.annual.costs = model.preds,
+                    model.summary = testsummary,
                     RMSE = model.RMSE,
                     final.year.cost = c(linear = 
-                                          unname(predict(reg.lm,
-                                                  newdata = data.frame(Year = final.year))),
+                                          unname(predict(ols.linear,
+                                                         newdata = data.frame(Year = final.year))),
                                         quadratic = 
-                                          unname(predict(reg.quad.lm,
+                                          unname(predict(ols.quadratic,
+                                                         newdata = data.frame(Year = final.year))),
+                                        robust.linear = 
+                                          unname(predict(robust.linear,
+                                                         newdata = data.frame(Year = final.year))),
+                                        robust.quadratic = 
+                                          unname(predict(robust.quadratic,
                                                          newdata = data.frame(Year = final.year))),
                                         mars = 
                                           unname(predict(mars,
-                                                  newdata = data.frame(Year = final.year))),
+                                                         newdata = data.frame(Year = final.year))),
                                         gam = 
                                           unname(predict(igam,
-                                                  newdata = data.frame(Year = final.year))),
+                                                         newdata = data.frame(Year = final.year))[1, 1]),
                                         quantile.0.1 = 
                                           unname(predict(qt0.1,
-                                                  newdata = data.frame(Year = final.year))),
+                                                         newdata = data.frame(Year = final.year))),
                                         quantile.0.5 = 
                                           unname(predict(qt0.5,
-                                                  newdata = data.frame(Year = final.year))),
+                                                         newdata = data.frame(Year = final.year))),
                                         quantile.0.9 = 
                                           unname(predict(qt0.9,
-                                                  newdata = data.frame(Year = final.year)))))
+                                                         newdata = data.frame(Year = final.year)))))
   } else
   {
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
-                    fitted.models = list(linear = reg.lm,
-                                         quadratic = reg.quad.lm,
+                    fitted.models = list(linear = ols.linear,
+                                         quadratic = ols.quadratic,
+                                         robust.linear = robust.linear,
+                                         robust.quadratic = robust.quadratic,
                                          mars = mars,
                                          gam = igam,
                                          quantile = list(qt0.1 = qt0.1,
                                                          qt0.5 = qt0.5,
                                                          qt0.9 = qt0.9)),
+                    model.summary = testsummary,
                     RMSE = model.RMSE)
   }
   class(results) <- append("invacost.trendcost", class(results))

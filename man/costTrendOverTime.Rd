@@ -14,10 +14,13 @@ costTrendOverTime(
   minimum.year = 1960,
   maximum.year = 2017,
   final.year = 2017,
+  models = c("ols.linear", "ols.quadratic", "robust.linear", "robust.quadratic", "gam",
+    "mars", "quantile"),
   incomplete.year.threshold = 2015,
   incomplete.year.weights = NULL,
   gam.k = -1,
-  mars.nk = 21
+  mars.nprune = NULL,
+  ...
 )
 }
 \arguments{
@@ -69,11 +72,12 @@ GAM find the smoothing factor automatically. Provide a manual value if you
 have expectations about the shape of the curve and want to avoid overfitting
 because of interannual variations.}
 
-\item{mars.nk}{The maximum number of model terms in the MARS model. The default 
-value of 21 corresponds to the default value calculated in earth package.
+\item{mars.nprune}{The maximum number of model terms in the MARS model. 
 Lowering this value will reduce the number of terms in the MARS model, which
 can be useful if you have expectations about the shape of the curve and want
 to avoid overfitting because of interannual variations.}
+
+\item{...}{Other arguments (you do not need them!)}
 }
 \value{
 a \code{list} with 3 to 6 elements (only the first three will be 
@@ -116,7 +120,7 @@ res
 \code{\link{expandYearlyCosts}} to get the database in appropriate format.
 }
 \author{
-Boris Leroy \email{leroy.boris@gmail.com}
+Boris Leroy \email{leroy.boris@gmail.com}, Andrew Kramer
 
 with help from C. Diagne & A.-C. Vaissière
 }

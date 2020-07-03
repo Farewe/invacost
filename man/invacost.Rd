@@ -51,9 +51,22 @@ A data frame with 2419 rows and 48 variables:
   \item{Type_of_cost}{}
   \item{Method_reliability}{}
   \item{Details}{}
+  \item{Benefit_value(s)}{}
   \item{Contributors}{}
+  \item{Island}{}
+  \item{verbatimHabitat}{}
+  \item{Habitat}{}
+  \item{protectedArea}{}
+  \item{Abstract}{}
+  \item{Language}{}
+  \item{Probable_starting_year_high_margin}{}
+  \item{Probable_ending_year_high_margin}{}
   \item{Probable_starting_year_low_margin}{}
   \item{Probable_ending_year_low_margin}{}
+  \item{Impacted_sector_2}{}
+  \item{Type_2}{}
+  \item{To remove}{}
+  \item{Spatial_scale2}{}
 }
 }
 \source{

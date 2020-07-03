@@ -120,6 +120,11 @@ recommend you get familiarised with them by inspecting them individually and
 reading the paper describing the database (and its fields) available here:
 `link to be added when available ¯\_(ツ)_/¯`.
 
+## How to distinguish between invacost v1 and invacost v2?
+
+To be completed
+
+
 ## Where are the economic values I should use?
 
 There are several fields that contain economic values (they generally contain
@@ -172,7 +177,6 @@ the unreliable economic cost estimates. Furthermore, the database includes both
 observed and predicted costs, so depending on our objectives we may or may not
 want to filter out potential costs.
 
-
 - **Reliability**: There is a standard field in the database called `Method_reliability`,
 which provides a simple yet objective evaluation of the reliability of cost 
 estimates. It uses the following decision tree:
@@ -220,6 +224,37 @@ For the rest of this tutorial, we will be working only on costs categorised as
 invacost <- invacost[which(invacost$Method_reliability == "High"), ]
 invacost <- invacost[which(invacost$Implementation == "Observed"), ]
 
+# Number of rows after filtering
+nrow(invacost)
+```
+
+- **Inadequate time period information**: Some studies omitted to provide time 
+periods, which can cause tremendous biases when analysing the temporal trends of
+costs. Sometimes, this is not problematic as we can safely guess when costs 
+occurred (see next section). However, other times, costs spread over 10+ and
+sometimes 100+ years can be presented
+as occurring over a single year or require highly speculative guesses about when 
+they occurred. As a general rule, it is much easier and safer to estimate the
+ending year than the starting year. Therefore, we recommend to remove all 
+estimates that are known to occur over more than 1 year with no information on
+the starting date whatsoever, and also remove estimates for which it is not
+possible to know if they occurred over a single or multiple years.
+
+```{r filter2}
+# Uncertain starting periods
+uncertain.starts <- invacost[which(invacost$Time_range == "Period" &
+                                     is.na(invacost$Probable_starting_year)), ]
+# Number of estimates without adequate information about starting year
+nrow(uncertain.starts)
+
+# No info about whether cost was annual or over a period
+unknown.periods <- invacost[which(is.na(invacost$Time_range)), ]
+# Number of estimates without adequate information about starting year
+nrow(uncertain.starts)
+
+# Applying the filter
+invacost <- invacost[-which(invacost$Cost_ID %in% c(uncertain.starts$Cost_ID,
+                                                    unknown.periods$Cost_ID)), ]
 # Number of rows after filtering
 nrow(invacost)
 ```
@@ -609,8 +644,10 @@ As we fit several models based on different techniques, we suggest to define
 rules for deciding which model(s) should be finally considered.
 
 Here are the rules we chose for our main paper:
-• statistical information about the quality of the fit based on the Root Mean
-Square Error (RMSE - lower is better)
+• statistical information about the quality of the fit:
+adequate error estimations for models, sensitivity to outliers, the Root Mean
+Square Error (RMSE - lower is generally better but it may also 
+be indicative of model overfitting), inspection of model terms and residuals
 • simplicity: for models with similar performance, we prefer the models with 
 less assumptions
 • a qualitative rationale on the probable shape of trends over time: because 
@@ -620,31 +657,77 @@ increasing or stabilising, but not decreasing. Hence, we assume that a model
 describing a decreasing trend in recent years (i.e., for years lower than the
 75% completeness threshold) would indicate an effect of the lack of data for 
 recent years. Therefore, on the basis of this a priori assumption, we deemed as
-inadequate all models that predicted a decrease in costs after 2006.
+inadequate all models that predicted a decrease in costs after `r 2017 - quantiles["25%"] - 1`.
 
 ## Models included in the ensemble modelling
 
 There are several models included in the function. All models are calibrated
-with cost data as the response variable and time as predictive variable.
+with cost data as the response variable and time as predictive variable. Note
+that the economic data have statistical issues typical to *econometric* data:
+heteroscedasticity, temporal autocorrelation and outliers. Therefore, our choice of 
+modelling methods was driven by methods relatively robust to such issues.
 
- - **linear regression** (R package `stats`)
- - **quadratic regression** (R package `stats`)
+ - **ordinary least square regressions** (hereafter called OLS, R package `stats`,
+ function `lm`).
+ OLS regressions are the classical regression methods used in statistics. 
+ Coefficient estimates should be relatively robust to heteroscedasticity &
+ temporal autocorrelation but not to outliers. However, error estimates need to
+ be corrected, so we used the Heteroskedasticity and Autocorrelation Consistent 
+ covariance matrix estimations from the R package `sandwich`, and we 
+ used the function `coeftest` from package `lmtest` to test for the significance
+ of estimates upon this corrected variance covariance matrix. We 
+ implemented two OLS methods: 
+    + **linear OLS regressions** 
+    + **quadratic OLS regressions**
+ - **robust regressions regression** (R package `robustbase`,
+ function `lmrob`). We implemented
+ robust regressions based on iterative weighted least squares since these type 
+ of regressions are less sensitive to outliers than ordinary least square 
+ regressions (and we do have outliers in INVACOST!). In addition, they provide
+ error estimates which are robust to heteroskedasticity as well. *Thanks 
+ Andrew Kramer for this addition*
  - **multiple adaptive regression splines** (Multiple Adaptive Regression 
- Splines, MARS, R package `earth`). It will fit several linear splines, allowing
- to see non-linear patterns in cost trends over time
+ Splines, MARS, R package `earth`, function `earth`). This is a non-parametric 
+ approach which will fit several linear splines, allowing to see non-linear 
+ patterns in cost trends over time.
  - **generalized additive models** (Generalized Additive Models, GAM, R package
- `mgcv`). The GAM model will also show non-linear patterns in cost trends over 
- time.
+ `mgcv`, function `gam`). 
+ The GAM model will also show non-linear patterns in cost trends over 
+ time; however because of its sensitivity to heteroskedasticity, we used a
+ location-scale method which consists in fitting two GAMs, one for the average
+ trend and one for the variance.
  - **quantile regressions** (R package `quantreg`). Contrary to previous models, 
  quantile regressions do not try to estimate the average value, they estimate
  a specific quantile. In the package we asked for quantiles 0.1 (lower boundary
  of costs), 0.5 (median cost value) and 0.9 (upper boundary of costs).
- 
-We suggest to tweak the number of parameters on GAM and MARS model and look at
+
+A few remarks:
+
+Paying attention to the statistical robustness of the model is important. 
+However, remember that even if we had found a model that has an ideal fit to the
+data, with no statistical violations whatsoever, we should absolutely not 
+consider the predictions as accurate values of the annual costs of IAS, because 
+of the assumption that there is a substantial part of costs that have not been
+estimated or reported in INVACOST. The usefulness of these models is to 
+investigate whether the costs are increasing, stabilizing, or decreasing, 
+and how these trends changed over time, and to have an idea of the order of 
+magnitude of annual IAS costs for different depending on time. 
+
+Therefore, remember that the major uncertainty we have on estimated cost values
+does not come from statistical robustness but rather from the unknown missing
+part of data.
+
+It does not seem critical at this stage to have perfect statistics as long as 
+the different methods do converge in their results. This is the general 
+philosophy of fitting multiple models here, which is called an ensemble 
+modelling procedure: compare if different methods converge in their results, 
+so we have confidence that the result we observe is not a statistical artifact. 
+
+
+Notwithstanding, we suggest to take time to carefully inspect your models.
+Consider tweaking the number of parameters on GAM and MARS models, and look at
 how the predicted shape of costs over time change (e.g. start from default 
-parameters and progressively reduce it). This provides insightful information
-about the short-term vs long-term variations in costs. For an example, see our
-scripts for the main paper: `link to be added when available ¯\_(ツ)_/¯`
+parameters and progressively reduce it). 
 
 ## Model fitting
 
@@ -660,7 +743,7 @@ millions so numbers are easier to read
 - threshold (`incomplete.year.threshold`) and/or weights 
 (`incomplete.year.weights`) for incomplete years
 - number of parameters for GAM (dimension basis `gam.k`) and MARS (number of
-model terms `mars.nk`)
+model terms `mars.nprune`)
 - the function will conveniently print the annual cost value estimated by
 all models for a single year, usually the last year. You can change this by
 defining `final.year` (defaults to 2017). Do not worry, values are estimated
@@ -684,7 +767,7 @@ global.trend
 We can now look at the shape of each model with the `plot` function, which once
 again does ggplot2 stuff internally in INVACOST:
 
-```{r models2}
+```{r models2, fig.height=7, fig.width=10}
 plot(global.trend)
 ```
 
@@ -708,6 +791,10 @@ There are several elements in the output object:
 access models individually from here, look at the parameters, etc.
 - `estimated.annual.costs` contains cost values predicted by all models for
 each year, with confidence intervals
+- `gam.predicted.variance` contains the predicted variance values for the
+location-scale GAM model
+- `model.summary` contains useful statistical information about models: r-squared,
+adjusted r-squared, terms, significance, errors, etc.
 - `RMSE` contains the root mean square error of all models, both for the 
 calibration data only and for all data points
 - `final.year.cost` is the cost value predicted by models for `final.year`
@@ -721,6 +808,10 @@ First, we can look at model RMSE:
 
 ```{r models4}
 global.trend$RMSE
+```
+
+```{r models8}
+global.trend$model.summary
 ```
 
 Overall, both GAM and MARS models provide a closer fit to data points than 

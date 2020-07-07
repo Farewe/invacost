@@ -234,8 +234,11 @@ costTrendOverTime <- function(costdb,
   # For nicer graphs
   yearly.cost$Calibration <- factor(yearly.cost$Calibration, levels = c("Excluded",
                                                                         "Included"))
-  yearly.cost.calibration <- data.frame(yearly.cost.calibration,
-                                        incomplete.year.weights = incomplete.year.weights)
+  if(!is.null(incomplete.year.weights))
+  {
+    yearly.cost.calibration <- data.frame(yearly.cost.calibration,
+                                          incomplete.year.weights = incomplete.year.weights)
+  }
   
   model.RMSE <- array(NA, dim = c(9, 2),
                       dimnames = list(c("ols.linear",
@@ -380,11 +383,23 @@ costTrendOverTime <- function(costdb,
   
 
   # Generalized Additive Models
-  igam <- mgcv::gam(list(transf.cost ~ s(Year, k = gam.k),
-                         ~ s(Year, k = gam.k)), 
-                    data = yearly.cost.calibration,
-                    weights = incomplete.year.weights,
-                    family = mgcv::gaulss())
+  # GAM nodes not accept NULL weights so we need to add an if statement
+  if(!is.null(incomplete.year.weights))
+  {
+    igam <- mgcv::gam(list(transf.cost ~ s(Year, k = gam.k),
+                           ~ s(Year, k = gam.k)), 
+                      data = yearly.cost.calibration,
+                      weights = incomplete.year.weights,
+                      family = mgcv::gaulss())
+    
+  } else
+  {
+    igam <- mgcv::gam(list(transf.cost ~ s(Year, k = gam.k),
+                           ~ s(Year, k = gam.k)), 
+                      data = yearly.cost.calibration,
+                      family = mgcv::gaulss())
+    
+  }
   
   # Should consider using other distributions than the gaussian one, because
   # the residuals do not seem adequately distributed.

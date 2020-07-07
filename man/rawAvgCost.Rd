@@ -35,6 +35,16 @@ a named \code{list} with 5 elements
 This simple function calculates the raw average annual cost of invasive species
 over a single period of time
 }
+\note{
+Arguments \code{min.year} and \code{max.year} do not filter the data. Only 
+specify them if you wish to change the interval over which averages are 
+calculated. For example, if your data have values from 1960 to 1964 but you
+want to calculated the average value from 1960 to 1969, set 
+\code{min.year = 1960} and \code{max.year = 1964}.
+
+However, if you want to calculate values for an interval narrower than your
+data, filter the data BEFORE running this function.
+}
 \examples{
 data(invacost)
 db.over.time <- expandYearlyCosts(invacost,

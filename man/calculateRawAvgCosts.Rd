@@ -11,7 +11,8 @@ calculateRawAvgCosts(
   in.millions = TRUE,
   minimum.year = 1960,
   maximum.year = 2017,
-  year.breaks = seq(minimum.year, maximum.year, by = 10)
+  year.breaks = seq(minimum.year, maximum.year, by = 10),
+  include.last.year = TRUE
 )
 }
 \arguments{
@@ -37,6 +38,11 @@ was chosen as it is the last year for which we have data in INVACOST.}
 
 \item{year.breaks}{a vector of breaks for the year intervals over which
 you want to calculate raw cost values}
+
+\item{include.last.year}{\code{TRUE} or \code{FALSE}. Defines if the last
+year of the dataset is included in the last interval (\code{TRUE}) or is
+considered as an interval of its own (\code{FALSE}). Generally only useful
+if the last year is at the limit of an interval.}
 }
 \value{
 a \code{list} with 5 elements:
@@ -73,6 +79,7 @@ db.over.time <- expandYearlyCosts(invacost,
                                   endcolumn = "Probable_ending_year_low_margin")
 costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
 costdb <- costdb[which(costdb$Method_reliability == "High"), ]
+costdb <- costdb[-which(is.na(costdb$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
 res <- calculateRawAvgCosts(costdb)
 res
 }

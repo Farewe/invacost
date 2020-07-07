@@ -19,6 +19,10 @@
 #' was chosen as it is the last year for which we have data in INVACOST.
 #' @param year.breaks a vector of breaks for the year intervals over which
 #' you want to calculate raw cost values
+#' @param include.last.year \code{TRUE} or \code{FALSE}. Defines if the last
+#' year of the dataset is included in the last interval (\code{TRUE}) or is
+#' considered as an interval of its own (\code{FALSE}). Generally only useful
+#' if the last year is at the limit of an interval.
 #' @return a \code{list} with 5 elements:
 #'
 #' \itemize{
@@ -53,6 +57,7 @@
 #'                                   endcolumn = "Probable_ending_year_low_margin")
 #' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
 #' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
+#' costdb <- costdb[-which(is.na(costdb$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
 #' res <- calculateRawAvgCosts(costdb)
 #' res
 
@@ -63,7 +68,8 @@ calculateRawAvgCosts <- function(
   in.millions = TRUE,
   minimum.year = 1960,
   maximum.year = 2017,
-  year.breaks = seq(minimum.year, maximum.year, by = 10)
+  year.breaks = seq(minimum.year, maximum.year, by = 10),
+  include.last.year = TRUE
 )
 {
   if(any(costdb[, year.column] < minimum.year))
@@ -110,43 +116,129 @@ calculateRawAvgCosts <- function(
                                           min.year = minimum.year,
                                           max.year = maximum.year))
   
-  # Average cost over each interval
-  period.costs <- data.frame()
-  for (per in 1:(length(year.breaks) - 1))
+  # Average cost for each year
+  cost.per.year <- data.frame()
+  for (year in minimum.year:maximum.year)
   {
-    period <- c(year.breaks[per:(per + 1)])
-    # Always include the last year in the last period
-    if(per == (length(year.breaks) - 1))
+    
+    cur.db <- costdb[which(costdb$Impact_year == year), ]
+    cost.per.year <- rbind(cost.per.year,
+                           as.data.frame(rawAvgCost(cur.db,
+                                                    cost.column,
+                                                    year.column)))
+  }
+  # In case requested periods are 1-year intervals
+  tmp <- cost.per.year
+  cost.per.year <- cost.per.year[, -which(colnames(cost.per.year) %in%
+                                          c("final_year", 
+                                            "time_span",
+                                            "annual_cost",
+                                            "number_year_values"))]
+  colnames(cost.per.year)[colnames(cost.per.year) == "initial_year"] <- "year"
+  colnames(cost.per.year)[colnames(cost.per.year) == "total_cost"] <- "cost"
+  
+  
+  
+  # Average cost over each interval
+  if(all(diff(year.breaks) == 1))
+  {
+    period.costs <- tmp
+  } else
+  {
+    period.costs <- data.frame()
+    if(include.last.year)
     {
-      period[2] <- period[2] + 1
-    }
-    cur.db <- costdb[which(costdb$Impact_year >= period[1] &
-                             costdb$Impact_year < period[2]), ]
-    if(nrow(cur.db))
-    {
-      period.costs <- rbind.data.frame(period.costs,
-                                       as.data.frame(rawAvgCost(cur.db,
-                                                                cost.column,
-                                                                year.column,
-                                                                min.year = period[1],
-                                                                max.year = period[2] - 1)))
+      for (per in 1:(length(year.breaks) - 1))
+      {
+        period <- c(year.breaks[per:(per + 1)])
+        # Always include the last year in the last period
+        if(per == (length(year.breaks) - 1))
+        {
+          period[2] <- period[2] + 1
+        }
+        cur.db <- costdb[which(costdb$Impact_year >= period[1] &
+                                 costdb$Impact_year < period[2]), ]
+        if(nrow(cur.db))
+        {
+          period.costs <- rbind.data.frame(period.costs,
+                                           as.data.frame(rawAvgCost(cur.db,
+                                                                    cost.column,
+                                                                    year.column,
+                                                                    min.year = period[1],
+                                                                    max.year = period[2] - 1)))
+        } else
+        {
+          period.costs <- rbind.data.frame(period.costs,
+                                           list(initial_year = period[1], 
+                                                final_year = period[2] - 1, 
+                                                time_span = length(period[1]:(period[2] - 1)),
+                                                total_cost = NA,
+                                                annual_cost = NA,
+                                                number_estimates = 0,
+                                                number_year_values = 0))
+        }
+      }
     } else
     {
-      period.costs <- rbind.data.frame(period.costs,
-                                       list(initial_year = period[1], 
-                                            final_year = period[2] - 1, 
-                                            time_span = length(period[1]:(period[2] - 1)),
-                                            total_cost = NA,
-                                            annual_cost = NA,
-                                            number_estimates = 0,
-                                            number_year_values = 0))
+      for (per in 1:length(year.breaks))
+      {
+        
+        if(per != length(year.breaks))
+        { # When we are NOT at the last year: proceed as usual
+          period <- c(year.breaks[per:(per + 1)])
+          cur.db <- costdb[which(costdb$Impact_year >= period[1] &
+                                   costdb$Impact_year < period[2]), ]
+          if(nrow(cur.db))
+          {
+            period.costs <- rbind.data.frame(period.costs,
+                                             as.data.frame(rawAvgCost(cur.db,
+                                                                      cost.column,
+                                                                      year.column,
+                                                                      min.year = period[1],
+                                                                      max.year = period[2] - 1)))
+          } else
+          {
+            period.costs <- rbind.data.frame(period.costs,
+                                             list(initial_year = period[1], 
+                                                  final_year = period[2] - 1, 
+                                                  time_span = length(period[1]:(period[2] - 1)),
+                                                  total_cost = NA,
+                                                  annual_cost = NA,
+                                                  number_estimates = 0,
+                                                  number_year_values = 0))
+          }
+        } else
+        { # When we ARE at the last year: there is only one year so proceed differently
+          period <- c(year.breaks[c(per, per)])
+          cur.db <- costdb[which(costdb$Impact_year == period[1]), ]
+          if(nrow(cur.db))
+          {
+            period.costs <- rbind.data.frame(period.costs,
+                                             as.data.frame(rawAvgCost(cur.db,
+                                                                      cost.column,
+                                                                      year.column,
+                                                                      min.year = period[1],
+                                                                      max.year = period[2])))
+          } else
+          {
+            period.costs <- rbind.data.frame(period.costs,
+                                             list(initial_year = period[1], 
+                                                  final_year = period[2], 
+                                                  time_span = length(period[1]:period[2]),
+                                                  total_cost = NA,
+                                                  annual_cost = NA,
+                                                  number_estimates = 0,
+                                                  number_year_values = 0))
+          }
+        }
+      }
     }
-    
   }
 
   results <- list(cost.data = costdb,
                   parameters = parameters, 
                   year.breaks = year.breaks,
+                  cost.per.year = cost.per.year,
                   average.total.cost = total.cost,
                   average.cost.per.period = period.costs)
   
@@ -175,6 +267,15 @@ calculateRawAvgCosts <- function(
 #' @return a named \code{list} with 5 elements
 #' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
 #' @export
+#' @note
+#' Arguments \code{min.year} and \code{max.year} do not filter the data. Only 
+#' specify them if you wish to change the interval over which averages are 
+#' calculated. For example, if your data have values from 1960 to 1964 but you
+#' want to calculated the average value from 1960 to 1969, set 
+#' \code{min.year = 1960} and \code{max.year = 1964}.
+#' 
+#' However, if you want to calculate values for an interval narrower than your
+#' data, filter the data BEFORE running this function.
 #' @author
 #' Boris Leroy \email{leroy.boris@@gmail.com}
 #' 

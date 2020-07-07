@@ -1,8 +1,8 @@
 Package: invacost
 Type: Package
 Title: INVACOST Database With Methods To Analyse Invasion Costs
-Version: 0.3
-Date: 2020-07-01
+Version: 0.3-1
+Date: 2020-07-07
 Author: Boris Leroy [cre, aut], Christophe Diagne [ctb], Anne-Charlotte Vaissière [ctb], Andrew Kramer [ctb]
 Maintainer: Boris Leroy <leroy.boris@gmail.com>
 Description: Provides an up-to-date version of the INVACOST database in R, and

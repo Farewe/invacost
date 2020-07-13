@@ -20,6 +20,7 @@ Imports:
     lmtest,
     mgcv,
     quantreg,
+    robustbase,
     sandwich,
     scales,
     stats,

@@ -132,6 +132,11 @@ costTrendOverTime <- function(costdb,
                 "', please choose among 'ols.linear', 'ols.quadratic', 'robust.linear', 'robust.quadratic', 'gam', 'mars' and 'quantile'"))
   }
   
+  if(is.null(incomplete.year.threshold))
+  {
+    incomplete.year.threshold <- maximum.year + 1
+  }
+  
   if(is.null(cost.transf))
   {
     cost.transf <- "none"

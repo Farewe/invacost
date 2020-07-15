@@ -112,6 +112,12 @@ costTrendOverTime <- function(costdb,
     stop("Argument mars.nk was specified. If you are looking to reduce model size, please use mars.nprune instead of mars.nk.")
   }
   
+  if(any(is.na(costdb[, cost.column])))
+  {
+    warning("There were NA values in the cost column, they will be excluded from the dataset.\n")
+    costdb <- costdb[-which(is.na(costdb[, cost.column])), ]
+  }
+  
   if(any(!(models %in% c("ols.linear", 
                          "ols.quadratic", 
                          "gam",
@@ -410,6 +416,8 @@ costTrendOverTime <- function(costdb,
   # the residuals do not seem adequately distributed.
   # see gamlss::wp(igam)
   # Investigate the GAMLSS package in the future
+  # Additional note: probalby not enough data for such models. Having only 1 
+  # value per year results in a too small sample size.
   
   pred.gam <- predict(igam,
                       newdata = prediction.years,
@@ -449,8 +457,9 @@ costTrendOverTime <- function(costdb,
 
   
   rownames(pred.gam) <- prediction.years[, 1]
-  
-  model.RMSE["gam", "RMSE.calibration"] <- sqrt(mean(residuals(igam)^2))
+
+  model.RMSE["gam", "RMSE.calibration"] <- sqrt(mean(residuals(igam, # Change residual type to be comparable to other models
+                                                               type = "response")^2))
   model.RMSE["gam", "RMSE.alldata"] <- sqrt(
     mean((pred.gam[match(yearly.cost$Year, rownames(pred.gam)), "fit"] -
             yearly.cost$transf.cost)^2))
@@ -531,11 +540,11 @@ costTrendOverTime <- function(costdb,
                                              Details = "Quadratic",
                                              pred.ols.quadratic),
                                   data.frame(model = "Robust regression",
-                                             Year = yearly.cost$Year,
+                                             Year = prediction.years$Year,
                                              Details = "Linear",
                                              pred.robust.linear),
                                   data.frame(model = "Robust regression",
-                                             Year = yearly.cost$Year,
+                                             Year = prediction.years$Year,
                                              Details = "Quadratic",
                                              pred.robust.quadratic),
                                   data.frame(model = "MARS",
@@ -595,8 +604,8 @@ costTrendOverTime <- function(costdb,
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
                     calibration.data = yearly.cost.calibration,
-                    fitted.models = list(linear = ols.linear,
-                                         quadratic = ols.quadratic,
+                    fitted.models = list(linear = ols.linear, # Inconsistent name, should be corrected (but need to check generic functions)
+                                         quadratic = ols.quadratic, # Inconsistent name, should be corrected (but need to check generic functions)
                                          robust.linear = robust.linear,
                                          robust.quadratic = robust.quadratic,
                                          mars = mars,
@@ -608,10 +617,10 @@ costTrendOverTime <- function(costdb,
                     gam.predicted.variance = pred.gam.variance,
                     model.summary = testsummary,
                     RMSE = model.RMSE,
-                    final.year.cost = c(linear = 
+                    final.year.cost = c(linear =  # Inconsistent name, should be corrected (but need to check generic functions)
                                           unname(10^predict(ols.linear,
                                                             newdata = data.frame(Year = final.year))),
-                                        quadratic = 
+                                        quadratic =  # Inconsistent name, should be corrected (but need to check generic functions)
                                           unname(10^predict(ols.quadratic,
                                                             newdata = data.frame(Year = final.year))),
                                         robust.linear = 
@@ -640,8 +649,8 @@ costTrendOverTime <- function(costdb,
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
                     calibration.data = yearly.cost.calibration,
-                    fitted.models = list(linear = ols.linear,
-                                         quadratic = ols.quadratic,
+                    fitted.models = list(linear = ols.linear, # Inconsistent name, should be corrected (but need to check generic functions)
+                                         quadratic = ols.quadratic, # Inconsistent name, should be corrected (but need to check generic functions)
                                          robust.linear = robust.linear,
                                          robust.quadratic = robust.quadratic,
                                          mars = mars,
@@ -652,10 +661,10 @@ costTrendOverTime <- function(costdb,
                     estimated.annual.costs = model.preds,
                     model.summary = testsummary,
                     RMSE = model.RMSE,
-                    final.year.cost = c(linear = 
+                    final.year.cost = c(linear =  # Inconsistent name, should be corrected (but need to check generic functions)
                                           unname(predict(ols.linear,
                                                          newdata = data.frame(Year = final.year))),
-                                        quadratic = 
+                                        quadratic =  # Inconsistent name, should be corrected (but need to check generic functions)
                                           unname(predict(ols.quadratic,
                                                          newdata = data.frame(Year = final.year))),
                                         robust.linear = 
@@ -684,8 +693,8 @@ costTrendOverTime <- function(costdb,
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
                     calibration.data = yearly.cost.calibration,
-                    fitted.models = list(linear = ols.linear,
-                                         quadratic = ols.quadratic,
+                    fitted.models = list(linear = ols.linear, # Inconsistent name, should be corrected (but need to check generic functions)
+                                         quadratic = ols.quadratic, # Inconsistent name, should be corrected (but need to check generic functions)
                                          robust.linear = robust.linear,
                                          robust.quadratic = robust.quadratic,
                                          mars = mars,

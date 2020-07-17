@@ -122,10 +122,25 @@ calculateRawAvgCosts <- function(
   {
     
     cur.db <- costdb[which(costdb$Impact_year == year), ]
-    cost.per.year <- rbind(cost.per.year,
-                           as.data.frame(rawAvgCost(cur.db,
-                                                    cost.column,
-                                                    year.column)))
+    
+    if(nrow(cur.db))
+    {
+      cost.per.year <- rbind(cost.per.year,
+                             as.data.frame(rawAvgCost(cur.db,
+                                                      cost.column,
+                                                      year.column)))
+    } else
+    {
+      cost.per.year <- rbind.data.frame(cost.per.year,
+                                        list(initial_year = year, 
+                                             final_year = year, 
+                                             time_span = 1,
+                                             total_cost = NA,
+                                             annual_cost = NA,
+                                             number_estimates = 0,
+                                             number_year_values = 0))
+    }
+    
   }
   # In case requested periods are 1-year intervals
   tmp <- cost.per.year

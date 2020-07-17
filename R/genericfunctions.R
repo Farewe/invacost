@@ -166,6 +166,8 @@ str.invacost.rawcost <- function(object, ...)
 #' facet per category of model (\code{"facets"})
 #' @param plot.breaks a vector of numeric values indicating the plot breaks 
 #' for the Y axis (cost values)
+#' @param models the models the user would like to appear in the plots. Can be
+#' any subset of the models included in 'costTrendOverTime'. Default is all models.
 #' @param graphical.parameters set this to \code{"manual"} if you want to 
 #' customise ggplot2 parameters. 
 #' By default, the following layers are configured: ylab, xlab, scale_x_continuous,
@@ -205,6 +207,13 @@ str.invacost.rawcost <- function(object, ...)
 plot.invacost.trendcost <- function(x,
                                     plot.breaks = 10^(-15:15),
                                     plot.type = "facets",
+                                    models = c("ols.linear", 
+                                               "ols.quadratic", 
+                                               "gam",
+                                               "mars",
+                                               "quantile",
+                                               "robust.linear",
+                                               "robust.quadratic"),
                                     graphical.parameters = NULL,
                                     ...)
 {
@@ -280,6 +289,19 @@ plot.invacost.trendcost <- function(x,
   model.preds$model <- factor(model.preds$model,
                               levels = c("OLS regression", "Robust regression",
                                          "GAM", "MARS", "Quantile regression"))
+  
+  # Limiting plots to user selected
+  #Relabel models parameter to match plot labeling from above
+  models[models=="ols.linear"] <- "OLS linear regression"
+  models[models=="ols.quadratic"] <- "OLS quadratic regression"
+  models[models=="gam"] <- "GAM"
+  models[models=="mars"] <- "MARS"
+  models <- rep(models,1+2*(models=="quantile"))
+  models[models=="quantile"] <- c("Quantile 0.1 regression","Quantile 0.5 regression","Quantile 0.9 regression")
+  models[models=="robust.linear"] <- "Robust linear regression"
+  models[models=="robust.quadratic"] <- "Robust quadratic regression"
+  model.preds <- model.preds[model.preds$Model %in% models,]
+  
   
   # Creating a colourblind palette (Wong 2011)
   # to best distinguish models

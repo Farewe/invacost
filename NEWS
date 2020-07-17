@@ -1,3 +1,13 @@
+virtualspecies v0.3-2 (Release date: unreleased yet)
+==============
+
+* Added a feature in plot-method to allow user to select which model outputs are included
+  - This applies to either single plot or facet plot and shares model names
+    costTrendOverTime
+
+Fixed erroneous RMSE of GAM models
+
+
 virtualspecies v0.3-1 (Release date: unreleased yet)
 ==============
 

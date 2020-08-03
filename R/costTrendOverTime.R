@@ -105,7 +105,7 @@ costTrendOverTime <- function(costdb,
                               ...
 )
 {
-
+  
   # Checking if deprecated mars.nk argument was provided
   if(hasArg(mars.nk))
   {
@@ -134,7 +134,7 @@ costTrendOverTime <- function(costdb,
                                                    "quantile",
                                                    "robust.linear",
                                                    "robust.quadratic")))],
-                                    collapse = "', '"),
+                      collapse = "', '"),
                 "', please choose among 'ols.linear', 'ols.quadratic', 'robust.linear', 'robust.quadratic', 'gam', 'mars' and 'quantile'"))
   }
   
@@ -186,7 +186,7 @@ costTrendOverTime <- function(costdb,
                      final.year = final.year,
                      gam.k = gam.k)
   
-
+  
   yeargroups <- dplyr::group_by(costdb,
                                 get(year.column)) 
   
@@ -269,12 +269,12 @@ costTrendOverTime <- function(costdb,
   
   # Ordinary least square - linear effect
   ols.linear <- lm(transf.cost ~ Year, data = yearly.cost.calibration,
-               weights = incomplete.year.weights)
-
+                   weights = incomplete.year.weights)
+  
   pred.ols.linear <- predict(ols.linear, 
-                     prediction.years,
-                     interval = "confidence",
-                     level = confidence.interval)
+                             prediction.years,
+                             interval = "confidence",
+                             level = confidence.interval)
   rownames(pred.ols.linear) <- prediction.years[, 1]
   
   model.RMSE["ols.linear", "RMSE.calibration"] <- sqrt(mean(residuals(ols.linear)^2))
@@ -297,22 +297,22 @@ costTrendOverTime <- function(costdb,
   # Confidence intervals
   pred.ols.linear[, "lwr"] <-  pred.ols.linear[, "fit"] -
     se.years.linear * qt(confidence.interval + 
-                    (1 - confidence.interval) / 2,
-                  df = ols.linear$df.residual)
+                           (1 - confidence.interval) / 2,
+                         df = ols.linear$df.residual)
   pred.ols.linear[, "upr"] <-  pred.ols.linear[, "fit"] +
     se.years.linear * qt(confidence.interval + 
-                    (1 - confidence.interval) / 2,
-                  df = ols.linear$df.residual)
+                           (1 - confidence.interval) / 2,
+                         df = ols.linear$df.residual)
   
   
-
+  
   # OLS - quadratic effect
   ols.quadratic <- lm(transf.cost ~ Year + I(Year^2), data = yearly.cost.calibration,
-                    weights = incomplete.year.weights)
+                      weights = incomplete.year.weights)
   pred.ols.quadratic <- predict(ols.quadratic, 
-                          prediction.years,
-                          interval = "confidence",
-                          level = confidence.interval)
+                                prediction.years,
+                                interval = "confidence",
+                                level = confidence.interval)
   rownames(pred.ols.quadratic) <- prediction.years[, 1]
   
   model.RMSE["ols.quadratic", "RMSE.calibration"] <- sqrt(mean(residuals(ols.quadratic)^2))
@@ -325,7 +325,7 @@ costTrendOverTime <- function(costdb,
   
   # Calculating 95% confidence intervals based on robust variance covariance matrix
   modelmatrix.quadric <- model.matrix(~ Year + I(Year^2),
-                                     data = prediction.years)
+                                      data = prediction.years)
   # Variance of prediction years
   var.years.quadratic <- modelmatrix.quadric %*% vcov.HAC.quadratic %*% t(modelmatrix.quadric)
   # Standard errors
@@ -335,42 +335,48 @@ costTrendOverTime <- function(costdb,
   # Confidence intervals
   pred.ols.quadratic[, "lwr"] <-  pred.ols.quadratic[, "fit"] -
     se.years.quadratic * qt(confidence.interval + 
-                    (1 - confidence.interval) / 2,
-                  df = ols.quadratic$df.residual)
+                              (1 - confidence.interval) / 2,
+                            df = ols.quadratic$df.residual)
   pred.ols.linear[, "upr"] <-  pred.ols.linear[, "fit"] +
     se.years.quadratic * qt(confidence.interval + 
-                    (1 - confidence.interval) / 2,
-                  df = ols.quadratic$df.residual)
+                              (1 - confidence.interval) / 2,
+                            df = ols.quadratic$df.residual)
   
-
+  
   
   #Robust regression
   robust.linear <- robustbase::lmrob(transf.cost ~ Year, data = yearly.cost.calibration, 
-                                  weights = incomplete.year.weights)
-  pred.robust.linear <- predict(robust.linear, yearly.cost["Year"], interval = "confidence", 
-                         level = confidence.interval)
+                                     weights = incomplete.year.weights)
+  pred.robust.linear <- predict(robust.linear, 
+                                prediction.years,
+                                interval = "confidence", 
+                                level = confidence.interval)
   rownames(pred.robust.linear) <- prediction.years[, 1]
   
   model.RMSE["robust.linear", "RMSE.calibration"] <- sqrt(mean(residuals(robust.linear)^2))
-  model.RMSE["robust.linear", "RMSE.alldata"] <- sqrt(mean((pred.robust.linear[, 
-                                                                            "fit"] - yearly.cost$transf.cost)^2))
+  model.RMSE["robust.linear", "RMSE.alldata"] <- 
+    sqrt(mean((pred.robust.linear[match(yearly.cost$Year, rownames(pred.robust.linear)), 
+                                  "fit"] - yearly.cost$transf.cost)^2))
   
   
-
+  
   #Robust regression - quadratic effect
   robust.quadratic <- robustbase::lmrob(transf.cost ~ Year + I(Year^2), data = yearly.cost.calibration, 
-                                  weights = incomplete.year.weights,
-                                  cov = ".vcov.w") # Covariance matrix estimated using asymptotic normality of the coefficients 
-                                                   # See ?lmrob and Koller & Stahel 2011 
-  pred.robust.quadratic <- predict(robust.quadratic, yearly.cost["Year"], interval = "confidence", 
-                         level = confidence.interval)
+                                        weights = incomplete.year.weights,
+                                        cov = ".vcov.w") # Covariance matrix estimated using asymptotic normality of the coefficients 
+  # See ?lmrob and Koller & Stahel 2011 
+  pred.robust.quadratic <- predict(robust.quadratic,
+                                   prediction.years,
+                                   interval = "confidence", 
+                                   level = confidence.interval)
   rownames(pred.robust.quadratic) <- prediction.years[, 1]
   
   model.RMSE["robust.quadratic", "RMSE.calibration"] <- sqrt(mean(residuals(robust.quadratic)^2))
-  model.RMSE["robust.quadratic", "RMSE.alldata"] <- sqrt(mean((pred.robust.quadratic[, 
-                                                                            "fit"] - yearly.cost$transf.cost)^2))
+  model.RMSE["robust.quadratic", "RMSE.alldata"] <- sqrt(
+    mean((pred.robust.quadratic[match(yearly.cost$Year, rownames(pred.robust.quadratic)), 
+                                "fit"] - yearly.cost$transf.cost)^2))
   
-
+  
   # Multiple Adapative Regression splines
   mars <- earth::earth(transf.cost ~ Year, data = yearly.cost.calibration,
                        varmod.method = "lm",
@@ -380,7 +386,7 @@ costTrendOverTime <- function(costdb,
                        ncross = 30, 
                        pmethod = "backward", # Would probably be better to use cross-validation but it does not work currently (I contacted the package author to fix this issue)
                        weights = incomplete.year.weights)
-
+  
   pred.mars <- predict(mars,
                        prediction.years,
                        interval = "pint",
@@ -392,7 +398,7 @@ costTrendOverTime <- function(costdb,
     mean((pred.mars[match(yearly.cost$Year, rownames(pred.mars)), "fit"] -
             yearly.cost$transf.cost)^2))
   
-
+  
   # Generalized Additive Models
   # GAM nodes not accept NULL weights so we need to add an if statement
   if(!is.null(incomplete.year.weights))
@@ -441,7 +447,7 @@ costTrendOverTime <- function(costdb,
                            pred.gam$se.fit[, 1] * qt(confidence.interval + 
                                                        (1 - confidence.interval) / 2,
                                                      df = nrow(yearly.cost) - 1))
-
+  
   
   
   # Code for gaussian family
@@ -454,17 +460,17 @@ costTrendOverTime <- function(costdb,
   #                          pred.gam$se * qt(confidence.interval +
   #                                             (1 - confidence.interval) / 2,
   #                                           df = nrow(yearly.cost) - 1))
-
+  
   
   rownames(pred.gam) <- prediction.years[, 1]
-
+  
   model.RMSE["gam", "RMSE.calibration"] <- sqrt(mean(residuals(igam, # Change residual type to be comparable to other models
                                                                type = "response")^2))
   model.RMSE["gam", "RMSE.alldata"] <- sqrt(
     mean((pred.gam[match(yearly.cost$Year, rownames(pred.gam)), "fit"] -
             yearly.cost$transf.cost)^2))
   
-
+  
   # Quantile regression
   qt0.1 <- quantreg::rq(transf.cost ~ Year, 
                         data = yearly.cost.calibration,
@@ -604,8 +610,8 @@ costTrendOverTime <- function(costdb,
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
                     calibration.data = yearly.cost.calibration,
-                    fitted.models = list(linear = ols.linear, # Inconsistent name, should be corrected (but need to check generic functions)
-                                         quadratic = ols.quadratic, # Inconsistent name, should be corrected (but need to check generic functions)
+                    fitted.models = list(ols.linear = ols.linear,
+                                         ols.quadratic = ols.quadratic,
                                          robust.linear = robust.linear,
                                          robust.quadratic = robust.quadratic,
                                          mars = mars,
@@ -617,10 +623,10 @@ costTrendOverTime <- function(costdb,
                     gam.predicted.variance = pred.gam.variance,
                     model.summary = testsummary,
                     RMSE = model.RMSE,
-                    final.year.cost = c(linear =  # Inconsistent name, should be corrected (but need to check generic functions)
+                    final.year.cost = c(ols.linear = 
                                           unname(10^predict(ols.linear,
                                                             newdata = data.frame(Year = final.year))),
-                                        quadratic =  # Inconsistent name, should be corrected (but need to check generic functions)
+                                        ols.quadratic =  
                                           unname(10^predict(ols.quadratic,
                                                             newdata = data.frame(Year = final.year))),
                                         robust.linear = 
@@ -649,8 +655,8 @@ costTrendOverTime <- function(costdb,
     results <- list(cost.data = yearly.cost,
                     parameters = parameters, 
                     calibration.data = yearly.cost.calibration,
-                    fitted.models = list(linear = ols.linear, # Inconsistent name, should be corrected (but need to check generic functions)
-                                         quadratic = ols.quadratic, # Inconsistent name, should be corrected (but need to check generic functions)
+                    fitted.models = list(linear = ols.linear, 
+                                         quadratic = ols.quadratic, 
                                          robust.linear = robust.linear,
                                          robust.quadratic = robust.quadratic,
                                          mars = mars,
@@ -661,10 +667,10 @@ costTrendOverTime <- function(costdb,
                     estimated.annual.costs = model.preds,
                     model.summary = testsummary,
                     RMSE = model.RMSE,
-                    final.year.cost = c(linear =  # Inconsistent name, should be corrected (but need to check generic functions)
+                    final.year.cost = c(ols.linear =  
                                           unname(predict(ols.linear,
                                                          newdata = data.frame(Year = final.year))),
-                                        quadratic =  # Inconsistent name, should be corrected (but need to check generic functions)
+                                        ols.quadratic =  
                                           unname(predict(ols.quadratic,
                                                          newdata = data.frame(Year = final.year))),
                                         robust.linear = 

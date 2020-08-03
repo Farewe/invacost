@@ -8,6 +8,8 @@
   x,
   plot.breaks = 10^(-15:15),
   plot.type = "facets",
+  models = c("ols.linear", "ols.quadratic", "robust.linear", "robust.quadratic", "gam",
+    "mars", "quantile"),
   graphical.parameters = NULL,
   ...
 )
@@ -21,6 +23,9 @@ for the Y axis (cost values)}
 \item{plot.type}{\code{"single"} or \code{"facets"}. Defines the type of plot
 you want to make: a single facet with all models (\code{"single"}), or a 
 facet per category of model (\code{"facets"})}
+
+\item{models}{the models the user would like to appear in the plots. Can be
+any subset of the models included in 'costTrendOverTime'. Default is all models.}
 
 \item{graphical.parameters}{set this to \code{"manual"} if you want to 
 customise ggplot2 parameters. 

@@ -4,8 +4,9 @@
 #                      dec = ".",
 #                      fileEncoding = "UTF-8")
 library(readxl)
-invacost <- as.data.frame(read_xlsx("./data-raw/INVACOST_v2.xlsx",
-                                     na = c("NA", "#N/A", "#DIV/0!", "#VALEUR!", "Unspecified"),
+invacost <- as.data.frame(read_xlsx("./data-raw/INVACOST_v2-1.xlsx",
+                                     na = c("NA", "#N/A", "#DIV/0!", "#VALEUR!", 
+                                            "Unspecified", "Unknown"),
                                     guess_max = 10000))
 
 invacost$Applicable_year <- as.numeric(invacost$Applicable_year)
@@ -13,6 +14,10 @@ invacost$Publication_year <- as.numeric(invacost$Publication_year)
 invacost$Probable_starting_year <- as.numeric(invacost$Probable_starting_year)
 invacost$Probable_ending_year <- as.numeric(invacost$Probable_ending_year)
 invacost$Probable_starting_year_low_margin <- as.numeric(invacost$Probable_starting_year_low_margin)
+invacost$Probable_ending_year_low_margin <- as.numeric(invacost$Probable_ending_year_low_margin)
+invacost$Version <- "V1"
+invacost$Version[grep("NE", invacost$Cost_ID)] <- "V2"
+invacost$Version[grep("SC", invacost$Cost_ID)] <- "V2-1"
 
 
 # invacost <- invacost[-which(is.na(invacost$Annualised_cost_estimate_2017_USD_exchange_rate)), ]

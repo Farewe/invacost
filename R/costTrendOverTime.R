@@ -91,13 +91,13 @@ costTrendOverTime <- function(costdb,
                               minimum.year = 1960, 
                               maximum.year = 2017, 
                               final.year = 2017, 
-                              models = c("ols.linear", 
-                                         "ols.quadratic",
-                                         "robust.linear",
-                                         "robust.quadratic",
-                                         "gam",
-                                         "mars",
-                                         "quantile"),
+                              # models = c("ols.linear", 
+                              #            "ols.quadratic",
+                              #            "robust.linear",
+                              #            "robust.quadratic",
+                              #            "gam",
+                              #            "mars",
+                              #            "quantile"),
                               incomplete.year.threshold = 2015,
                               incomplete.year.weights = NULL,
                               gam.k = -1,
@@ -105,7 +105,9 @@ costTrendOverTime <- function(costdb,
                               ...
 )
 {
-  
+
+# Argument checking -------------------------------------------------------
+
   # Checking if deprecated mars.nk argument was provided
   if(hasArg(mars.nk))
   {
@@ -118,25 +120,25 @@ costTrendOverTime <- function(costdb,
     costdb <- costdb[-which(is.na(costdb[, cost.column])), ]
   }
   
-  if(any(!(models %in% c("ols.linear", 
-                         "ols.quadratic", 
-                         "gam",
-                         "mars",
-                         "quantile",
-                         "robust.linear",
-                         "robust.quadratic"))))
-  {
-    stop(paste0("Inadequate model(s) specified:'",
-                paste(models[which(!(models %in% c("ols.linear", 
-                                                   "ols.quadratic", 
-                                                   "gam",
-                                                   "mars",
-                                                   "quantile",
-                                                   "robust.linear",
-                                                   "robust.quadratic")))],
-                      collapse = "', '"),
-                "', please choose among 'ols.linear', 'ols.quadratic', 'robust.linear', 'robust.quadratic', 'gam', 'mars' and 'quantile'"))
-  }
+  # if(any(!(models %in% c("ols.linear", 
+  #                        "ols.quadratic", 
+  #                        "gam",
+  #                        "mars",
+  #                        "quantile",
+  #                        "robust.linear",
+  #                        "robust.quadratic"))))
+  # {
+  #   stop(paste0("Inadequate model(s) specified:'",
+  #               paste(models[which(!(models %in% c("ols.linear", 
+  #                                                  "ols.quadratic", 
+  #                                                  "gam",
+  #                                                  "mars",
+  #                                                  "quantile",
+  #                                                  "robust.linear",
+  #                                                  "robust.quadratic")))],
+  #                     collapse = "', '"),
+  #               "', please choose among 'ols.linear', 'ols.quadratic', 'robust.linear', 'robust.quadratic', 'gam', 'mars' and 'quantile'"))
+  # }
   
   if(is.null(incomplete.year.threshold))
   {
@@ -267,6 +269,9 @@ costTrendOverTime <- function(costdb,
   # Prediction years correspond to the entire range provided by the user
   prediction.years <- data.frame(Year = minimum.year:maximum.year)
   
+
+# Ordinary Least Square (OLS) regression ----------------------------------
+
   # Ordinary least square - linear effect
   ols.linear <- lm(transf.cost ~ Year, data = yearly.cost.calibration,
                    weights = incomplete.year.weights)
@@ -344,14 +349,26 @@ costTrendOverTime <- function(costdb,
   
   
   
-  #Robust regression
+# Robust regression -------------------------------------------------------
+  # Robust regression - Linear effect
   robust.linear <- robustbase::lmrob(transf.cost ~ Year, data = yearly.cost.calibration, 
                                      weights = incomplete.year.weights)
-  pred.robust.linear <- predict(robust.linear, 
-                                prediction.years,
-                                interval = "confidence", 
-                                level = confidence.interval)
+  pred.robust.linear <- try(predict(robust.linear, 
+                                    prediction.years,
+                                    interval = "confidence", 
+                                    level = confidence.interval),
+                               silent = TRUE)
+  if("try-error" %in% class(pred.robust.linear)) 
+  {
+    warning("Could not estimate confidence interval for robust linear regression")
+    pred.robust.linear <- data.frame(
+      fit = predict(robust.linear,
+                    newdata = prediction.years),
+      lwr = NA, upr = NA)
+  }
   rownames(pred.robust.linear) <- prediction.years[, 1]
+
+
   
   model.RMSE["robust.linear", "RMSE.calibration"] <- sqrt(mean(residuals(robust.linear)^2))
   model.RMSE["robust.linear", "RMSE.alldata"] <- 
@@ -360,15 +377,25 @@ costTrendOverTime <- function(costdb,
   
   
   
-  #Robust regression - quadratic effect
+  # Robust regression - quadratic effect
   robust.quadratic <- robustbase::lmrob(transf.cost ~ Year + I(Year^2), data = yearly.cost.calibration, 
                                         weights = incomplete.year.weights,
                                         cov = ".vcov.w") # Covariance matrix estimated using asymptotic normality of the coefficients 
   # See ?lmrob and Koller & Stahel 2011 
-  pred.robust.quadratic <- predict(robust.quadratic,
-                                   prediction.years,
-                                   interval = "confidence", 
-                                   level = confidence.interval)
+  pred.robust.quadratic <- try(predict(robust.quadratic,
+                                       prediction.years,
+                                       interval = "confidence", 
+                                       level = confidence.interval),
+                               silent = TRUE)
+  if("try-error" %in% class(pred.robust.quadratic)) 
+  {
+    warning("Could not estimate confidence interval for robust quadratic regression")
+    pred.robust.quadratic <- data.frame(
+      fit = predict(robust.quadratic,
+                    newdata = prediction.years),
+      lwr = NA, upr = NA)
+  }
+
   rownames(pred.robust.quadratic) <- prediction.years[, 1]
   
   model.RMSE["robust.quadratic", "RMSE.calibration"] <- sqrt(mean(residuals(robust.quadratic)^2))
@@ -376,8 +403,9 @@ costTrendOverTime <- function(costdb,
     mean((pred.robust.quadratic[match(yearly.cost$Year, rownames(pred.robust.quadratic)), 
                                 "fit"] - yearly.cost$transf.cost)^2))
   
-  
-  # Multiple Adapative Regression splines
+
+# Multiple Adapative Regression Splines -----------------------------------
+
   mars <- earth::earth(transf.cost ~ Year, data = yearly.cost.calibration,
                        varmod.method = "lm",
                        # nk = mars.nk,
@@ -398,9 +426,9 @@ costTrendOverTime <- function(costdb,
     mean((pred.mars[match(yearly.cost$Year, rownames(pred.mars)), "fit"] -
             yearly.cost$transf.cost)^2))
   
-  
-  # Generalized Additive Models
-  # GAM nodes not accept NULL weights so we need to add an if statement
+
+# Generalized Additive Models ---------------------------------------------
+
   if(!is.null(incomplete.year.weights))
   {
     igam <- mgcv::gam(list(transf.cost ~ s(Year, k = gam.k),
@@ -471,7 +499,9 @@ costTrendOverTime <- function(costdb,
             yearly.cost$transf.cost)^2))
   
   
-  # Quantile regression
+
+# Quantile regression -----------------------------------------------------
+
   qt0.1 <- quantreg::rq(transf.cost ~ Year, 
                         data = yearly.cost.calibration,
                         tau = 0.1,
@@ -495,6 +525,7 @@ costTrendOverTime <- function(costdb,
                     silent = TRUE)
   if("try-error" %in% class(pred.qt0.1)) 
   {
+    warning("Could not estimate confidence interval for quantile 0.1 regression")
     pred.qt0.1 <- data.frame(
       fit = predict(qt0.1,
                     newdata = prediction.years),
@@ -506,6 +537,7 @@ costTrendOverTime <- function(costdb,
                     silent = TRUE)
   if("try-error" %in% class(pred.qt0.5)) 
   {
+    warning("Could not estimate confidence interval for quantile 0.5 regression")
     pred.qt0.5 <- data.frame(
       fit = predict(qt0.5,
                     newdata = prediction.years),
@@ -517,6 +549,7 @@ costTrendOverTime <- function(costdb,
                     silent = TRUE)
   if("try-error" %in% class(pred.qt0.9)) 
   {
+    warning("Could not estimate confidence interval for quantile 0.9 regression")
     pred.qt0.9 <- data.frame(
       fit = predict(qt0.9,
                     newdata = prediction.years),
@@ -537,6 +570,9 @@ costTrendOverTime <- function(costdb,
     mean((pred.qt0.9[match(yearly.cost$Year, rownames(pred.qt0.9)), "fit"] -
             yearly.cost$transf.cost)^2))
   
+
+# Preparing outputs -------------------------------------------------------
+
   model.preds <- rbind.data.frame(data.frame(model = "OLS regression",
                                              Year = prediction.years$Year,
                                              Details = "Linear",

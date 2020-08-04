@@ -14,8 +14,6 @@ costTrendOverTime(
   minimum.year = 1960,
   maximum.year = 2017,
   final.year = 2017,
-  models = c("ols.linear", "ols.quadratic", "robust.linear", "robust.quadratic", "gam",
-    "mars", "quantile"),
   incomplete.year.threshold = 2015,
   incomplete.year.weights = NULL,
   gam.k = -1,

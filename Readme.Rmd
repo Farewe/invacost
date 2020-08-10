@@ -82,6 +82,32 @@ install from the raw .tar.gz).
 
 # Changes to the package
 
+## August 2020
+
+- Andrew Kramer joined the dev team
+
+- Updated all statistical methods in `costTrendOverTime` to better address 
+statistical issues with the data, and notably heteroskedasticity.
+
+- **Important**: new versions of the stats should no longer require you to
+tweak model parameters. Please consider recalibrating models **WITHOUT**
+GAM and MARS arguments.
+
+- Added a new model to mode the trend of costs over time, namely robust
+regressions (addition by Andrew Kramer). Robust regression handle natively
+data heteroskedasticity & reduce the weight of outliers on the regression.
+
+- Some new features have been added in `calculateRawAvgCosts()`, e.g. a table
+in the output list with all values per individual years, with number of
+estimates.
+
+- Added plotting features/capabilities
+
+- Updated invacost data to v2.1. Added a column in invacost to filter out versions
+of the database.
+
+
+## April 2020
 For those of you who tried the earlier versions of the package:
 
 - Many bugs arose when working on small subsets of INVACOST. Most of them have
@@ -98,6 +124,7 @@ unique estimates used to compute values.
 - Lots of minor changes / quality of life improvement.
 
 - Minor corrections to the database (mainly typos)
+
 
 # Basic steps to get started
 ## How to load the data in R?
@@ -120,9 +147,33 @@ recommend you get familiarised with them by inspecting them individually and
 reading the paper describing the database (and its fields) available here:
 `link to be added when available ¯\_(ツ)_/¯`.
 
-## How to distinguish between invacost v1 and invacost v2?
+## How to distinguish between invacost v1 and subsequent versions?
 
-To be completed
+INVACOST v1 only includes the original data we had back in November 2019.
+Later additions to INVACOST have versions such as V2 and V2-1. Later versions
+are supposed to include all data from V1 to V2-1. If you want to roll back to
+earlier versions of INVACOST, use the column `version` to **remove** recent
+entries. 
+
+*NOTE*: YOU SHOULD NOT REMOVE OLDER ENTRIES! They are also part of 
+recent versions. e.g. if you want to use version v2-1, use all entries of the 
+database, not those only with "V2-1"!
+
+
+Here is an example on how to roll back to V1 or V2:
+```{r rollback, cache = TRUE}
+# Versions
+unique(invacost$Version)
+
+# Rollback to V1
+invacost_V1 <- invacost[-which(invacost$Version %in% c("V2", "V2-1")), ]
+nrow(invacost_V1)
+
+# Rollback to V2
+invacost_V2 <- invacost[-which(invacost$Version %in% "V2-1"), ]
+nrow(invacost_V2)
+
+```
 
 
 ## Where are the economic values I should use?
@@ -151,8 +202,9 @@ Therefore, in the following sections we will always use the same column for cost
 values: `Cost_estimate_per_year_2017_USD_exchange_rate`.
 
 
-There is a small number of costs for which we could not derive these estimates,
-so we will exclude them for the rest of this tutorial.
+There is a small number of costs for which we could not derive these estimates
+(e.g. studies that lacked useful information of the periods over which
+costs occurred), so we have to exclude them of our analyses.
 
 ```{r z4, cache = TRUE}
 if(any(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)))
@@ -237,8 +289,9 @@ as occurring over a single year or require highly speculative guesses about when
 they occurred. As a general rule, it is much easier and safer to estimate the
 ending year than the starting year. Therefore, we recommend to remove all 
 estimates that are known to occur over more than 1 year with no information on
-the starting date whatsoever, and also remove estimates for which it is not
-possible to know if they occurred over a single or multiple years.
+the starting date whatsoever, and also remove the remaining estimates for which
+it is not possible to safely estimate if they occurred over a single or multiple 
+years. 
 
 ```{r filter2}
 # Uncertain starting periods
@@ -407,10 +460,10 @@ analyses; here, we will provide examples of how we suggest doing that.
 
 One question that may arise for people working on specific subsets of the 
 database (e.g., only one taxon or one country) is whether you should evaluate 
-the time lag on your subset. I would recommend to avoid that, because your 
+the time lag on your subset. *I would recommend to avoid that, because your 
 subset may be too incomplete to provide a decent estimation of the time lag.
-Therefore, I would suggest to evaluate the time lag only on the global dataset, 
-as we did here.
+**Therefore, I would suggest to evaluate the time lag only on the global dataset, 
+as we did here.***
 
 
 
@@ -427,7 +480,8 @@ calculate the cumulative and average costs for the entire period, as well as
 for different time intervals (by default, 10-year intervals).
 
 ```{r raw1, cache=TRUE}
-raw.costs <- calculateRawAvgCosts(db.over.time)
+raw.costs <- calculateRawAvgCosts(db.over.time,
+                                   maximum.year = 2020)
 ```
 
 We can get a summary of the results by typing the name of the object in the 
@@ -445,10 +499,52 @@ This graph represents the observed annual costs of biological invasions over
 time. Points are total annual costs for every year (i.e., all individual costs
 for a specific year are summed). Horizontal bars represent the average annual
 cost for a specific interval of time (here, 10-year intervals). Notice how 
-average annual costs are driven by a limited number of high-cost years. The 
-dashed line connects average annual cost of each time interval at mid-years
+average annual costs can sometimes be driven by a limited number of high-cost 
+years. The dashed line connects average annual cost of each time interval at mid-years
 (black dots). The horizontal dotted line represents the average cost over the 
 entire period.
+
+The average annual cost seems to suspiciously drop for the most recent years -
+most likely because of the time lag between the occurrence of a cost and its
+reporting. Therefore, caution would be required in interpreting the values of 
+most recent years.
+
+A good way to illustrate this issue would be to look at the number of estimates
+per year.
+
+```{r raw3.}
+ggplot(raw.costs$cost.per.year,
+       aes(x = year, y = number_estimates)) +
+  geom_point() +
+  ylab("Number of estimates") +
+  xlab("Year") +
+  theme_minimal()
+```
+
+We can see that the number of estimates increases exponentially, but this
+increase seems to drops after 2013.
+
+We can refine this graph to add the relationship with annual costs:
+
+```{r raw3..}
+ggplot(raw.costs$cost.per.year,
+       aes(x = year, y = number_estimates,
+           size = cost)) +
+  geom_point() +
+  ylab("Number of estimates") +
+  xlab("Year") +
+  theme_minimal()
+```
+
+
+Use this information, in combination with the quantiles of
+completeness calculated above, to decide how you want to interpret the last years,
+and whether or not you want to omit them in further analyses. Remember that
+no choice will be objective here, but also that objectivity does not emerge from
+the absence of choice (keeping biased data is a choice in itself). 
+I would recommend a transparently explained choice, along with e.g. a
+sensitivity analysis.
+
 
 We can access the content of the output object with
 ```{r raw3.1, cache=TRUE}
@@ -466,6 +562,7 @@ There are also some other important elements in this object:
  - `parameters`: provides arguments you chose and basic information about your
  dataset
  - `year.breaks`: your time intervals
+ - `cost.per.year`: costs for every year in the data with number of estimates
  - `average.total.cost`: contains cumulative and average annual costs for the
  entire time period
  - `average.cost.per.period`: contains cumulative and average annual costs
@@ -492,8 +589,9 @@ raw.costs2 <- calculateRawAvgCosts(db.over.time,
                                   maximum.year = 2017)
 raw.costs2
 ```
-The function tells you how many values  were removed from the 
-dataset because they were outside the 1970-2017 time periods.
+The function tells you how many values were removed from the 
+dataset because they were outside the 1970-2017 time periods. 2017 was chosen
+as the default value as it was the last year for INVACOST V1.
 
  - **time intervals**: set them with the arguments `year.breaks`, where you specify
  the starting year of each interval. For example, if your specify 
@@ -588,26 +686,37 @@ will not work or provide inadequate results.
 ## Correction for data incompleteness due to publication lag
 
 Because the average annual economic cost of invasive species will be determined
-by the trend over time, we should apply a correction to ‘incomplete’ years. 
-This correction could be based on a threshold of incompleteness (e.g., remove 
-from calibration all years with < 75% of data; threshold = 11 years). Another
-possibility includes weighting incomplete years to reduce their importance in
-the estimation of average annual costs of invasions. If we do not apply such a 
-correction, we will underestimate the average annual cost of invasions. 
-Furthermore, many of the economic impacts are never documented; hence, the true
-percentage is likely to be much lower than the values indicated.
+by the trend over time, we should consider applying a correction to ‘incomplete’ 
+years. 
 
-Applying a hard threshold such as 75% (i.e., remove last 11 years) would result 
-in a loss of information because we have been able to obtain considerable amount
-of data for the past 11 years. Hence, we decided to apply a hard threshold to 
-the least-complete years (i.e. exclude years with < 25% completeness: the last 
-2 years). To reduce the negative impact of the incompleteness of recent years, 
-we applied weights proportional to their degree of incompleteness; we suggest
-to apply the following set of rules to our models:
+This is no simple decision and your choice will have to be justified.
+
+There two different methods we can apply here, either independently or in
+combination.
+
+- The first method consists in applying a threshold of incompleteness to remove
+the most incomplete years. For example, remove 
+from calibration all years with < 75% of data; threshold = `r quantiles[3]` years.
+
+- Another possibility includes weighting incomplete years to reduce their importance in
+the estimation of average annual costs of invasions. 
+This approach can be justified if we do not want to underestimate the average annual
+cost of invasions. However, be advised that reviewers may disagree with your 
+choices of weights, so justify them carefully, and consider analysing the 
+difference with / without weights.
+
+
+### Example of a vector of incompleteness weights 
+
+An example
+to reduce the negative impact of the incompleteness of recent years
+would be to apply weights proportional to their degree of incompleteness. For
+example, apply the following set of rules:
 • completeness ≤ 25%: exclusion 
 • 25% < completeness ≤ 50%: weight = 0.25 
 • 50% < completeness ≤ 75%: weight = 0.50 
 • completeness > 75%: weight = 1
+
 
 Remember that we stored quantiles in the beginning of this tutorial, so we can
 access them now to know to what years they correspond:
@@ -617,7 +726,7 @@ quantiles
 ```
 
 In the next lines of code we will create a vector of weights for each year, which we
-will provide to the function later on.
+can provide to the function later on.
 
 ```{r lag5, cache = TRUE}
 # Creating the vector of weights
@@ -638,70 +747,129 @@ year_weights[names(year_weights) >= (2017 - quantiles["75%"]) &
 year_weights
 ```
 
+
+
+
 ## Assumptions
 
 As we fit several models based on different techniques, we suggest to define
 rules for deciding which model(s) should be finally considered.
 
-Here are the rules we chose for our main paper:
-• statistical information about the quality of the fit:
+Here are examples of rules:
+
+  - statistical information about the quality of the fit:
 adequate error estimations for models, sensitivity to outliers, the Root Mean
 Square Error (RMSE - lower is generally better but it may also 
 be indicative of model overfitting), inspection of model terms and residuals
-• simplicity: for models with similar performance, we prefer the models with 
+  
+  - simplicity: for models with similar performance, we prefer the models with 
 less assumptions
-• a qualitative rationale on the probable shape of trends over time: because 
+  
+  - a qualitative rationale on the probable shape of trends over time: because 
 of the exponential increase in the number of invasive species globally (Seebens 
 et al. 2017), we expect the long-term temporal trend over time to be either 
 increasing or stabilising, but not decreasing. Hence, we assume that a model 
 describing a decreasing trend in recent years (i.e., for years lower than the
 75% completeness threshold) would indicate an effect of the lack of data for 
-recent years. Therefore, on the basis of this a priori assumption, we deemed as
-inadequate all models that predicted a decrease in costs after `r 2017 - quantiles["25%"] - 1`.
+recent years. 
 
 ## Models included in the ensemble modelling
 
 There are several models included in the function. All models are calibrated
 with cost data as the response variable and time as predictive variable. Note
 that the economic data have statistical issues typical to *econometric* data:
-heteroscedasticity, temporal autocorrelation and outliers. Therefore, our choice of 
+heteroskedasticity, temporal autocorrelation and outliers. Therefore, our choice of 
 modelling methods was driven by methods relatively robust to such issues.
 
- - **ordinary least square regressions** (hereafter called OLS, R package `stats`,
+**Note: when using the package, please cite the individual model packages.
+Update citations with your package versions! To do that
+type for example `citation(earth)` in R**
+
+ - **Ordinary least square regressions** (hereafter called OLS, R package `stats`,
  function `lm`).
  OLS regressions are the classical regression methods used in statistics. 
  Coefficient estimates should be relatively robust to heteroscedasticity &
  temporal autocorrelation but not to outliers. However, error estimates need to
  be corrected, so we used the Heteroskedasticity and Autocorrelation Consistent 
- covariance matrix estimations from the R package `sandwich`, and we 
- used the function `coeftest` from package `lmtest` to test for the significance
+ covariance matrix estimations from the R package
+ `sandwich` (Andrews 1991, Zeileis 2004), and we 
+ used the function `coeftest` from package `lmtest` (Zeileis & Hothorn 2004) to test for the significance
  of estimates upon this corrected variance covariance matrix. We 
  implemented two OLS methods: 
     + **linear OLS regressions** 
     + **quadratic OLS regressions**
- - **robust regressions regression** (R package `robustbase`,
- function `lmrob`). We implemented
- robust regressions based on iterative weighted least squares since these type 
+ - **Robust regressions regression** (R package `robustbase`,
+ function `lmrob`, Maechler et al. 2020). We implemented MM-type regressions (hereafter called
+ robust regressions) based on iteratively reweighted least squares since these types 
  of regressions are less sensitive to outliers than ordinary least square 
- regressions (and we do have outliers in INVACOST!). In addition, they provide
- error estimates which are robust to heteroskedasticity as well. *Thanks 
- Andrew Kramer for this addition*
- - **multiple adaptive regression splines** (Multiple Adaptive Regression 
- Splines, MARS, R package `earth`, function `earth`). This is a non-parametric 
- approach which will fit several linear splines, allowing to see non-linear 
- patterns in cost trends over time.
- - **generalized additive models** (Generalized Additive Models, GAM, R package
- `mgcv`, function `gam`). 
+ regressions (and we do have outliers in INVACOST!) (Yohai 1987, Koller and 
+ Stahel 2011). In addition, this method estimates standard errors robust to heteroskedasticity and autocorrelation as described in Croux et al. 2003. *Thanks 
+ Andrew Kramer for this addition*. Likewise to OLS regressions, we implemented 
+ two methods:
+    + **Linear robust regressions** 
+    + **quadratic robust regressions**
+ - **Multivariate adaptive regression splines** (Multivariate Adaptive Regression 
+ Splines, MARS, R package `earth`, function `earth`, Milborrow 2018). The MARS 
+ model is a non-parametric regression method which automatically models
+ nonlinearities, using Generalized Cross-Validation to avoid overfitting 
+ (Friedman 1991, Hastie et al. 2009). The default parameters are implemented in
+ order to follow Friedman's default, as described in 
+ [Milborrow (2019a).](http://www.milbo.org/doc/earth-notes.pdf)
+ We account for heteroskedasticity by
+ fitting a linear model on the residuals. This linear model is fitted by 
+ Iteratively Reweighting Least Squares. Note, however, that we have enough
+ data to only approximately model variance, as explained in 
+ [Milborrow (2019b)](http://www.milbo.org/doc/earth-varmod.pdf). Therefore, MARS
+ models will have more uncertainty in the prediction intervals than in the
+ predictions themselves.
+ - **Generalized additive models** (Generalized Additive Models, GAM, R package
+ `mgcv`, function `gam`, Wood et al. 2016). GAM models are automatic flexible statistical methods 
+ used to identify and characterize nonlinear regression effects 
+ (Hastie et al. 2009).
  The GAM model will also show non-linear patterns in cost trends over 
- time; however because of its sensitivity to heteroskedasticity, we used a
+ time. To account for heteroskedasticity, we used a
  location-scale method which consists in fitting two GAMs, one for the average
- trend and one for the variance.
- - **quantile regressions** (R package `quantreg`). Contrary to previous models, 
+ trend and one for the standard deviation. We used a simple Gaussian location
+ scale family because, likewise to GAMs, we have  have enough
+ data to only approximately model variance. 
+ - **Quantile regressions** (R package `quantreg`, Koenker et al. 2020).
+ Contrary to previous models, 
  quantile regressions do not try to estimate the average value, they estimate
- a specific quantile. In the package we asked for quantiles 0.1 (lower boundary
- of costs), 0.5 (median cost value) and 0.9 (upper boundary of costs).
+ a specific quantile. In the package we chose quantiles 0.1 (lower boundary
+ of annual costs), 0.5 (median cost value) and 0.9 (upper boundary of annual costs).
 
-A few remarks:
+**References:**
+
+Andrews DWK (1991), Heteroskedasticity and Autocorrelation Consistent Covariance Matrix Estimation. _Econometrica_, *59*, 817–858.
+
+Croux, C., Dhaene, G. and Hoorelbeke, D. (2003) Robust standard errors for robust estimators, _Discussion Papers Series 03.16_, K.U. Leuven, CES.
+
+Friedman, J. H. (1991). "Multivariate Adaptive Regression Splines". _The Annals of Statistics._ *19* (1): 1–67.
+
+Hastie T, Tibshirani R, Friedman J. (2009)  The elements of statistical learning: data mining, inference, and prediction. Springer, New York City, USA
+
+Koenker, R. quantreg: Quantile Regression. R package version 5.61. Available at 
+http://CRAN.R-project.org/package=quantreg (2020). 
+
+Koller, M. and Stahel, W.A. (2011) Sharpening Wald-type inference in robust regression for small samples. Computational _Statistics & Data Analysis_ *55*(8), 2504–2515
+
+Maechler M, Rousseeuw P, Croux C, Todorov V, Ruckstuhl A, Salibian-Barrera M, Verbeke T, Koller M, Eduardo LT,  Conceicao and di Palma MA (2020). robustbase: Basic Robust Statistics R package version 0.93-6. URL http://CRAN.R-project.org/package=robustbase
+
+Milborrow, S. earth: Multivariate Adaptive regression Splines, R package version 4.6. 3 (2018).
+
+Milborrow S. (2019a) Notes   on   earth   package.   Vignettes   of   the R package ‘earth’, http://www.milbo.org/doc/earth-notes.pdf
+
+Milborrow S. (2019b) Variance models in earth.   Vignettes   of   the R package ‘earth’, http://www.milbo.org/doc/earth-varmod.pdf
+
+Wood, S.N., N. Pya and B. Saefken (2016), Smoothing parameter and model selection for general smooth models. _Journal of the American Statistical Association_ *111*, 1548-1575 
+
+Yohai, V., Stahel, W.A. and Zamar, R. (1991) A procedure for robust estimation and inference in linear regression; in Stahel and Weisberg (eds), _Directions in Robust Statistics and Diagnostics, Part II_, Springer, New York, 365–374
+
+Zeileis A (2004). “Econometric Computing with HC and HAC Covariance Matrix Estimators.” _Journal of Statistical Software_, *11*(10), 1-17.
+
+Zeileis A, Hothorn T (2002). Diagnostic Checking in Regression Relationships. _R News_ *2*(3), 7-10. URL https://CRAN.R-project.org/doc/Rnews/
+
+**A few remarks:**
 
 Paying attention to the statistical robustness of the model is important. 
 However, remember that even if we had found a model that has an ideal fit to the
@@ -714,20 +882,18 @@ and how these trends changed over time, and to have an idea of the order of
 magnitude of annual IAS costs for different depending on time. 
 
 Therefore, remember that the major uncertainty we have on estimated cost values
-does not come from statistical robustness but rather from the unknown missing
-part of data.
+does not necessarily come from statistical robustness but rather from the 
+unknown missing part of data.
 
-It does not seem critical at this stage to have perfect statistics as long as 
+It may not seem critical at this stage to have perfect statistics as long as 
 the different methods do converge in their results. This is the general 
 philosophy of fitting multiple models here, which is called an ensemble 
 modelling procedure: compare if different methods converge in their results, 
 so we have confidence that the result we observe is not a statistical artifact. 
 
 
-Notwithstanding, we suggest to take time to carefully inspect your models.
-Consider tweaking the number of parameters on GAM and MARS models, and look at
-how the predicted shape of costs over time change (e.g. start from default 
-parameters and progressively reduce it). 
+Notwithstanding, we suggest to take time to carefully inspect your models, as 
+we illustrate in the following sections.
 
 ## Model fitting
 
@@ -743,25 +909,33 @@ millions so numbers are easier to read
 - threshold (`incomplete.year.threshold`) and/or weights 
 (`incomplete.year.weights`) for incomplete years
 - number of parameters for GAM (dimension basis `gam.k`) and MARS (number of
-model terms `mars.nprune`)
+model terms `mars.nprune`). **We suggest you should not alter these parameters**
 - the function will conveniently print the annual cost value estimated by
 all models for a single year, usually the last year. You can change this by
 defining `final.year` (defaults to 2017). Do not worry, values are estimated
 for all years, this is mostly to provide a summary inspection in the console. 
+
+
+In following example we have decided to exclude the five most recent years 
+because they are likely to be the least complete years and they also contain 
+obvious outliers as you will see on the graphs. You could also decide to 
+manually exclude specific outliers by setting their weights to zero.
 
 Here is an example in action:
 ```{r models}
 global.trend <- costTrendOverTime(
   db.over.time, # The EXPANDED database
   minimum.year = 1970, 
-  # Some years are so incomplete that we eliminate with our 25% threshold (see above)
-  incomplete.year.threshold = 2017 - quantiles["25%"], 
-  # For the other incomplete years we apply the vector of weights that we defined above
-  incomplete.year.weights = year_weights)
+  maximum.year = 2020,
+  incomplete.year.threshold = 2015, 
+  incomplete.year.weights = NULL)
 
 # Let's see the results in the console
 global.trend
 ```
+
+
+## Model plotting
 
 
 We can now look at the shape of each model with the `plot` function, which once
@@ -771,12 +945,32 @@ again does ggplot2 stuff internally in INVACOST:
 plot(global.trend)
 ```
 
-Linear and quadratic regressions are confounded (first panel), whereas MARS
-and GAM models suggest non-linear patterns in cost trends over time. Quantile
-regressions indicate a median (quantile 0.5) lower than the linear regression,
-suggesting that most years have a lower-than-average cost of invasions, and a 
-few years have very high costs.
+We can see that all models generally converged in their predictions, suggesting
+that the global costs of biological invasions have increased over the past
+50 years. Different models suggest different patterns, as illustrated by 
+the linear vs. quadratic models, the GAM and MARS models.
+The trend illustrated by the MARS model is non-monotonous, suggesting a decrease
+between 2000 and 2010. This apparent decrease provides insight into our data.
+It may either indicate an actual decrease pattern in global invasion costs,
+an illustration of the high dispersion of costs after 2000, or the 
+incompleteness of data after 2000. Given our prior assumptions, we may hypothesise
+that the two latter hypotheses are more probable than the former one. 
 
+**Important** Note that error bands for MARS are 95% prediction intervals, whereas
+for all other models they are 95% confidence intervals. Indeed, we cannot estimate
+confidence intervals for MARS models.
+
+Quantile regressions indicate a median (quantile 0.5) lower than the linear regression,
+suggesting that most years have a lower-than-average cost of invasions, and a 
+few years have very high costs. The 0.1 and 0.9 quantiles have diverging trends,
+suggesting that the amplitude of costs increases over time (more discrepancy
+between high-cost and low-cost years).
+
+Remember to check your model summaries before going into more interpretations.
+Some models may not be significant.
+
+
+## Inspecting model outputs
 
 We can access the content of the output object with
 ```{r models3, cache=TRUE}
@@ -799,7 +993,7 @@ adjusted r-squared, terms, significance, errors, etc.
 calibration data only and for all data points
 - `final.year.cost` is the cost value predicted by models for `final.year`
 
-## How to choose between models?
+## How to  evaluate models?
 
 We provide an example here where we rely on the different assumptions stated 
 above.
@@ -810,38 +1004,72 @@ First, we can look at model RMSE:
 global.trend$RMSE
 ```
 
+Overall, both MARS models provide a closer fit to data points than 
+other models. **Remember that RMSE is irrelevant for quantile regression
+because it does not seek to fit the average trend.**
+
+Hence, purely from a statistical point of view, we would tend to prioritize 
+MARS models over models. However, remember that the MARS model illustrated
+the uncertain behaviour of our data after 2000, and we may decide that,
+based on our a-priori assumptions, this is not the most adequate model, and
+we will also include the other models (who all have similar RMSE) in our predictions.
+
+
+Now, some models may seem to have good fit but may not be significant. This
+is highly critical especially for data-poor subsets of INVACOST. To verify this,
+inspect the model summaries:
+
 ```{r models8}
 global.trend$model.summary
 ```
 
-Overall, both GAM and MARS models provide a closer fit to data points than 
-linear regressions. *Remember that RMSE is irrelevant for quantile regression
-because it does not seek to fit the average trend.*
+This is quite long because of the many models we fitted! Inspecting these
+outputs requires some statistical knowledge, so do not hesitate to read the
+help files and papers mentioned in the **Models included** section.
 
-Hence, purely from a statistical point of view, we would tend to choose the GAM 
-or RMSE models. However, the GAM model predicted a reduction in cost after 2006, 
-followed by an uncertain increase (see confidence interval). Likewise, the MARS
-model predicted a decrease after 2000. We interpret this as an effect of data
-incompleteness for the later years, because of the delay between cost occurrence
-and publication. Therefore, we would suggest to either reduce the number of
-parameters for both MARS and GAM models to increase the focus on the long-term 
-trend, or to remove the incomplete years from calibration. 
+If we start reading from the top, we can see that for OLS regressions, 
+coefficients of the linear model are significant, but coefficients of the
+quadratic model are not! So we should exclude this model from further analysis.
+
+Looking at robust regressions, coefficients seem significant for both linear
+and quadratic terms, and the model outputs also indicate us that some outliers
+were found in both cases (their weight was set to zero). This is useful if your
+dataset has a lot of outliers!
+
+The GAM output states that both the mean and sd model were significant. It is 
+more difficult to interpret GAMs solely based on this output, and you should
+probably inspect model residuals visually etc. However, remember that we probably
+do not have enough data to fit adequate GAMs, so be cautious with the interpretation.
+
+The MARS output illustrates the different hinge functions. We can see the
+years that serve as "breaking" point in the model, as well as the coefficients
+of slopes after these years. It also shows the coefficients used to measure 
+model performance, such as the Generalized Cross-Validation (GCV) which is the
+residual sum of squares penalized by the effective number of model parameters,
+or the GRSq, which is the R² normalizing the GCV (i.e., the higher the GRSq,
+the better it is, and if you have a negative GRSq, it is very bad news). For more
+information, see sections 13.6 and 13.11 in the 
+[earth notes](http://www.milbo.org/doc/earth-notes.pdf).
 
 
-**Important:** The bottom line is, some of the models we fit (MARS, GAM) may
-closely fit the 
-interannual variations in cost values, and thus will not be suitable to the 
-long-term trends in IAS costs over time. Therefore, we parameterise them to
-avoid overfitting the data and better illustrate the long-term trend. As a 
-consequence, their statistical fit (RMSE) will be lower, but more in adequacy with
-our objectives. I advise you to try different settings and decide for yourself
-which parameters seem best for you.
+## Including model summary in your paper
+
+It may be difficult to report these vastly different model summaries in your
+paper, so we have made a convenient function to summarize the important 
+aspects of model summaries into a single table. You can then write this table
+as a CSV file for example, and format it to include in your paper.
+
+```{r models8.1}
+summarized.summary <- prettySummary(global.trend)
+
+summarized.summary
+```
 
 
-For a more detailed example, see the scripts of our main paper here:
-`link to be added when available ¯\_(ツ)_/¯`.
 
 ## Customising graphs
+
+
 
 Customising plots for the modelling approach similar to the raw cost approach: 
 there are two options. 
@@ -859,15 +1087,32 @@ will be fully customisable. Take a look at the scripts from our main paper
 (`link to be added when available ¯\_(ツ)_/¯`) to see how to that.
 
 
+
+
+# Simple customisation
+
 There are two base plots provided with the package; you have already seen the 
 default, and here is another one where all models are on a single facet:
-
 
 ```{r models5}
 plot(global.trend,
      plot.type = "single")
 ```
 
+
+Remember that we found that the OLS quadratic model was not significant?
+
+We can exclude it from model outputs:
+
+
+```{r models52, fig.width = 16, fig.height = 9}
+plot(global.trend,
+     models = c("ols.linear", "robust.linear", "robust.quadratic", "gam",
+    "mars", "quantile"))
+```
+
+
+# Complex customisation
 
 Likewise to the raw cost approach, if you want to customise ggplot parameters,
 you have to set `graphical.parameters = "manual"`.
@@ -1038,7 +1283,7 @@ Finally, we will write a loop that will cycle through all these unique groups,
 and for each group, calculate the raw cumulative cost and average annual cost
 for the 1970-2017 time period. 
 
-```{r allsp5, warning=FALSE}
+```{r allsp5, warning=FALSE, cache = TRUE}
 # First we expand the database
 db.over.time <- expandYearlyCosts(invacost,
                                   startcolumn = "Probable_starting_year_low_margin",

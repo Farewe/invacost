@@ -69,9 +69,8 @@
 #' @importFrom stats lm predict qt residuals
 #' @export
 #' @author
-#' Boris Leroy \email{leroy.boris@@gmail.com}, Andrew Kramer
-#' 
-#' with help from C. Diagne & A.-C. Vaissière
+#' Boris Leroy \email{leroy.boris@@gmail.com}, Andrew Kramer, Anne-Charlotte
+#' Vaissière, Christophe Diagne
 #' @examples
 #' data(invacost)
 #' db.over.time <- expandYearlyCosts(invacost,
@@ -571,7 +570,9 @@ costTrendOverTime <- function(costdb,
             yearly.cost$transf.cost)^2))
   
 
-# Preparing outputs -------------------------------------------------------
+
+# Assembling predictions --------------------------------------------------
+
 
   model.preds <- rbind.data.frame(data.frame(model = "OLS regression",
                                              Year = prediction.years$Year,
@@ -610,6 +611,9 @@ costTrendOverTime <- function(costdb,
                                              Details = "Quantile 0.9",
                                              pred.qt0.9))
   
+
+# Model Summaries ---------------------------------------------------------
+
   
   # Creating the list containing the summary of model results
   testsummary <- list()
@@ -633,6 +637,11 @@ costTrendOverTime <- function(costdb,
   testsummary$qt0.9 <- summary(qt0.9)
   
   class(testsummary) <- append("invacost.modelsummary", class(testsummary))
+  
+  
+  
+  
+# Preparing outputs -------------------------------------------------------
   
   # Formatting results for output object
   if(cost.transf == "log10")

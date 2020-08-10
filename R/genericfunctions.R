@@ -2,7 +2,7 @@
 #' @method print invacost.trendcost
 print.invacost.trendcost <- function(x, ...)
 {
-  cat("Estimation of annual cost values of invasive alien species over time\n")
+  cat("\nEstimation of annual cost values of invasive alien species over time\n")
   cat(paste0("\n- Temporal interval of data : [", 
              x$parameters$minimum.year,
              ", ",
@@ -57,7 +57,7 @@ print.invacost.trendcost <- function(x, ...)
 #' @method print invacost.rawcost
 print.invacost.rawcost <- function(x, ...)
 {
-  cat("Average annual cost of invasive species over time periods\n")
+  cat("\nAverage annual cost of invasive species over time periods\n")
   cat(paste0("\n- Temporal interval of data : [", 
              x$parameters$minimum.year,
              ", ",
@@ -85,7 +85,7 @@ print.invacost.rawcost <- function(x, ...)
 #' @method print invacost.modelsummary
 print.invacost.modelsummary <- function(x, ...)
 {
-  cat("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Summary of model fits ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n\n")
+  cat("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Summary of model fits ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n\n")
   cat("______________________________     Ordinary Least Square regression models  _______________________________\n\n\n")
   cat(">>>>>>>>       Linear regression\n\n")
   cat("R squared: ", x$ols.linear$r.squared, " - Adjusted R squared: ", x$ols.linear$r.squared)
@@ -223,7 +223,7 @@ plot.invacost.trendcost <- function(x,
   # Setting up graphical.parameters
   if(is.null(graphical.parameters))
   {
-    # 2a. If user do not specify graphical parameters we create them here ---------------
+    # 2a. If users do not specify graphical parameters we create them here ---------------
     p <- p + 
       ylab(paste0("Annual cost in US$ ", 
                   ifelse(x$parameters$in.millions, 
@@ -237,7 +237,7 @@ plot.invacost.trendcost <- function(x,
       p <- p +
         scale_y_log10(breaks = plot.breaks,
                       labels = scales::comma) +
-        annotation_logticks()
+        annotation_logticks(sides = "l")
     } else if(x$parameters$cost.transformation == "none")
     {
       # 3b. We define axes here for untransformed data ---------------

@@ -47,9 +47,9 @@
 #' average annual cost for 1960-1969 will be cost of 1968 / 10.
 #' @export
 #' @author
-#' Boris Leroy \email{leroy.boris@@gmail.com}
+#' Boris Leroy \email{leroy.boris@@gmail.com}, Andrew Kramer, Anne-Charlotte
+#' Vaissière, Christophe Diagne
 #' 
-#' with help from C. Diagne & A.-C. Vaissière
 #' @examples
 #' data(invacost)
 #' db.over.time <- expandYearlyCosts(invacost,

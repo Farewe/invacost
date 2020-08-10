@@ -1,15 +1,15 @@
 ---
 title: "The INVACOST R Package: Global Costs of Biological Invasions"
-author: "INVACOST team"
+author: "Leroy B, Kramer A, Vaissière AC & Diagne C"
 date: "20/04/2020"
 output:
+  github_document:
+    toc: true
+    toc_depth: 2
   html_document:
     df_print: kable
     toc: yes
     toc_float: true
-  github_document:
-    toc: true
-    toc_depth: 2
 ---
 
 ```{r hiddenload, echo=FALSE, results="hide", message=FALSE}
@@ -93,7 +93,7 @@ statistical issues with the data, and notably heteroskedasticity.
 tweak model parameters. Please consider recalibrating models **WITHOUT**
 GAM and MARS arguments.
 
-- Added a new model to mode the trend of costs over time, namely robust
+- Added a new model to model the trend of costs over time, namely robust
 regressions (addition by Andrew Kramer). Robust regression handle natively
 data heteroskedasticity & reduce the weight of outliers on the regression.
 

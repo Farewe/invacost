@@ -25,5 +25,6 @@ res <- costTrendOverTime(costdb)
 prettySummary(res)
 }
 \author{
-Boris Leroy \email{leroy.boris@gmail.com}
+Boris Leroy \email{leroy.boris@gmail.com}, Andrew Kramer, Anne-Charlotte
+Vaissière, Christophe Diagne
 }

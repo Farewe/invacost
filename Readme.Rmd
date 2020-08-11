@@ -1,7 +1,7 @@
 ---
 title: "The INVACOST R Package: Global Costs of Biological Invasions"
 author: "Leroy B, Kramer A, Vaissière AC & Diagne C"
-date: "20/04/2020"
+date: "11/08/2020"
 output:
   github_document:
     toc: true
@@ -57,11 +57,28 @@ to biological invasions.
  certainty that the underlying factors of costs will have similar trends in the
  future.
  
+# Acknowledgements
+
+Thanks a lot to Anna Turbelin for her help in correcting mistakes in this 
+tutorial, and to Phillip Haubrock for agreeing to be the "Guinea pig" of 
+various test versions of the INVACOST R package!
  
 # Installation
+
+
+**The package requires at least R 4.0.0.** *FYI, the main difference (for you)
+between R4.0.0+
+and former versions is that data.frame will no longer automatically transform
+character strings into factors.* 
+
+As a reminder in RStudio you can switch between your old cozy R version and the
+brand new one you just installed by clicking on Tools > Global Options > R 
+version: change.
+
+
+
 The easiest method to install the package for now is to install it directly from
 github with the following command line (requires the package devtools).
-
 **DOES NOT WORK UNTIL THE PACKAGE IS RELEASED PUBLICLY ON GITHUB**
 
 ``` {r install, eval = FALSE}
@@ -74,7 +91,9 @@ manually from the .tar.gz file. Before you do that, install the following
 packages:
 
 ```{r i1, eval = FALSE}
-install.packages(c("dplyr", "earth", "mgcv", "quantreg", "scales"))
+install.packages(c("dplyr", "earth", "ggplot2", "lmtest", "mgcv", "quantreg",
+                   "robustbase", "sandwich", "scales"))
+install.packages("invacost_0.3-4.tar.gz", repos = NULL, type="source")
 ```
 
 Then, install the package from the .tar.gz file (do not extract it,
@@ -302,8 +321,8 @@ nrow(uncertain.starts)
 
 # No info about whether cost was annual or over a period
 unknown.periods <- invacost[which(is.na(invacost$Time_range)), ]
-# Number of estimates without adequate information about starting year
-nrow(uncertain.starts)
+# Number of estimates without adequate information about period
+nrow(unknown.periods) # Few! It appears we have none left in INVACOST 2.1!
 
 # Applying the filter
 invacost <- invacost[-which(invacost$Cost_ID %in% c(uncertain.starts$Cost_ID,
@@ -783,7 +802,7 @@ modelling methods was driven by methods relatively robust to such issues.
 
 **Note: when using the package, please cite the individual model packages.
 Update citations with your package versions! To do that
-type for example `citation(earth)` in R**
+type for example `citation("earth")` in R**
 
  - **Ordinary least square regressions** (hereafter called OLS, R package `stats`,
  function `lm`).
@@ -909,7 +928,10 @@ millions so numbers are easier to read
 - threshold (`incomplete.year.threshold`) and/or weights 
 (`incomplete.year.weights`) for incomplete years
 - number of parameters for GAM (dimension basis `gam.k`) and MARS (number of
-model terms `mars.nprune`). **We suggest you should not alter these parameters**
+model terms `mars.nprune`). **We suggest you should not alter these parameters,
+except if you have good reasons to change them.** Notably, in some very rare 
+cases, GAM models can compute forever, in which case, try to define a small 
+value for gam.k (e.g. start from 10 and reduce until the GAM fits).
 - the function will conveniently print the annual cost value estimated by
 all models for a single year, usually the last year. You can change this by
 defining `final.year` (defaults to 2017). Do not worry, values are estimated
@@ -1004,12 +1026,12 @@ First, we can look at model RMSE:
 global.trend$RMSE
 ```
 
-Overall, both MARS models provide a closer fit to data points than 
+Overall, the MARS model provided a closer fit to data points than 
 other models. **Remember that RMSE is irrelevant for quantile regression
 because it does not seek to fit the average trend.**
 
 Hence, purely from a statistical point of view, we would tend to prioritize 
-MARS models over models. However, remember that the MARS model illustrated
+MARS models over other models. However, remember that the MARS model illustrated
 the uncertain behaviour of our data after 2000, and we may decide that,
 based on our a-priori assumptions, this is not the most adequate model, and
 we will also include the other models (who all have similar RMSE) in our predictions.
@@ -1089,7 +1111,7 @@ will be fully customisable. Take a look at the scripts from our main paper
 
 
 
-# Simple customisation
+### Simple customisation
 
 There are two base plots provided with the package; you have already seen the 
 default, and here is another one where all models are on a single facet:
@@ -1112,7 +1134,7 @@ plot(global.trend,
 ```
 
 
-# Complex customisation
+### Complex customisation
 
 Likewise to the raw cost approach, if you want to customise ggplot parameters,
 you have to set `graphical.parameters = "manual"`.

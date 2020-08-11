@@ -1,10 +1,11 @@
 The INVACOST R Package: Global Costs of Biological Invasions
 ================
 Leroy B, Kramer A, Vaissière AC & Diagne C
-20/04/2020
+11/08/2020
 
   - [WARNING](#warning)
   - [Introduction](#introduction)
+  - [Acknowledgements](#acknowledgements)
   - [Installation](#installation)
   - [Changes to the package](#changes-to-the-package)
       - [August 2020](#august-2020)
@@ -40,8 +41,6 @@ Leroy B, Kramer A, Vaissière AC & Diagne C
       - [Including model summary in your
         paper](#including-model-summary-in-your-paper)
       - [Customising graphs](#customising-graphs-1)
-  - [Simple customisation](#simple-customisation)
-  - [Complex customisation](#complex-customisation)
   - [Example on a specific subset: mammals of North
     America](#example-on-a-specific-subset-mammals-of-north-america)
   - [Example on many subsets: all taxons/species in the
@@ -87,13 +86,26 @@ costs associated to biological invasions.
     because there is no certainty that the underlying factors of costs
     will have similar trends in the future.
 
+# Acknowledgements
+
+Thanks a lot to Anna Turbelin for her help in correcting mistakes in
+this tutorial, and to Phillip Haubrock for agreeing to be the “Guinea
+pig” of various test versions of the INVACOST R package\!
+
 # Installation
+
+**The package requires at least R 4.0.0.** *FYI, the main difference
+(for you) between R4.0.0+ and former versions is that data.frame will no
+longer automatically transform character strings into factors.*
+
+As a reminder in RStudio you can switch between your old cozy R version
+and the brand new one you just installed by clicking on Tools \> Global
+Options \> R version: change.
 
 The easiest method to install the package for now is to install it
 directly from github with the following command line (requires the
-package devtools).
-
-**DOES NOT WORK UNTIL THE PACKAGE IS RELEASED PUBLICLY ON GITHUB**
+package devtools). **DOES NOT WORK UNTIL THE PACKAGE IS RELEASED
+PUBLICLY ON GITHUB**
 
 ``` r
 install.packages("devtools")
@@ -105,7 +117,9 @@ it manually from the .tar.gz file. Before you do that, install the
 following packages:
 
 ``` r
-install.packages(c("dplyr", "earth", "mgcv", "quantreg", "scales"))
+install.packages(c("dplyr", "earth", "ggplot2", "lmtest", "mgcv", "quantreg",
+                   "robustbase", "sandwich", "scales"))
+install.packages("invacost_0.3-4.tar.gz", repos = NULL, type="source")
 ```
 
 Then, install the package from the .tar.gz file (do not extract it,
@@ -175,7 +189,7 @@ The database is now loaded in R memory under a very original name:
 nrow(invacost)
 ```
 
-    ## [1] 10003
+    ## [1] 10001
 
 ``` r
 # Number of columns (database fields)
@@ -265,7 +279,7 @@ if(any(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)))
 nrow(invacost)
 ```
 
-    ## [1] 9818
+    ## [1] 9816
 
 ## How do we filter out unreliable costs?
 
@@ -332,8 +346,8 @@ table(invacost$Acquisition_method, invacost$Implementation)
 
     ##                    
     ##                     Observed Potential
-    ##   Extrapolation          256       759
-    ##   Report/Estimation     8024       779
+    ##   Extrapolation          255       759
+    ##   Report/Estimation     8024       778
 
 For the rest of this tutorial, we will be working only on costs
 categorised as “High” in `Method_reliability` and “Observed” in
@@ -347,7 +361,7 @@ invacost <- invacost[which(invacost$Implementation == "Observed"), ]
 nrow(invacost)
 ```
 
-    ## [1] 7567
+    ## [1] 7566
 
   - **Inadequate time period information**: Some studies omitted to
     provide time periods, which can cause tremendous biases when
@@ -378,11 +392,11 @@ nrow(uncertain.starts)
 ``` r
 # No info about whether cost was annual or over a period
 unknown.periods <- invacost[which(is.na(invacost$Time_range)), ]
-# Number of estimates without adequate information about starting year
-nrow(uncertain.starts)
+# Number of estimates without adequate information about period
+nrow(unknown.periods) # Few! It appears we have none left in INVACOST 2.1!
 ```
 
-    ## [1] 14
+    ## [1] 0
 
 ``` r
 # Applying the filter
@@ -392,7 +406,7 @@ invacost <- invacost[-which(invacost$Cost_ID %in% c(uncertain.starts$Cost_ID,
 nrow(invacost)
 ```
 
-    ## [1] 7553
+    ## [1] 7552
 
 ## How do I know when costs occurred?
 
@@ -405,7 +419,7 @@ occurred in two fields: `Probable_starting_year` and
 `Probable_ending_year`.
 
 However, this information was not readily available in a substantial
-portion of the papers we compiled in the database: for 1238 out of 7553
+portion of the papers we compiled in the database: for 1237 out of 7552
 papers (16.4 % of papers), this information was not available for at
 least one of the two columns.
 
@@ -584,14 +598,15 @@ the console
 raw.costs
 ```
 
+    ## 
     ## Average annual cost of invasive species over time periods
     ## 
     ## - Temporal interval of data : [1960, 2020]
     ## - Values transformed in US$ million: Yes
-    ## - Number of cost estimates: 7547 (number of individual year values: 14793)
+    ## - Number of cost estimates: 7546 (number of individual year values: 14792)
     ## - Cost values in US$ millions:
-    ##     o Total cost over the entire period 2,028,768.41
-    ##     o Average annual cost over the entire period 33,258.50
+    ##     o Total cost over the entire period 2,028,748.33
+    ##     o Average annual cost over the entire period 33,258.17
     ##     o Average annual cost over each period
     ## 
     ##   initial_year final_year time_span   total_cost annual_cost number_estimates
@@ -599,14 +614,14 @@ raw.costs
     ## 2         1970       1979        10    25,791.54    2,579.15               46
     ## 3         1980       1989        10    33,244.01    3,324.40              176
     ## 4         1990       1999        10   225,330.15   22,533.01              671
-    ## 5         2000       2009        10 1,003,894.16  100,389.42             1990
+    ## 5         2000       2009        10 1,003,874.08  100,387.41             1989
     ## 6         2010       2020        11   719,160.58   65,378.23             5294
     ##   number_year_values
     ## 1                 64
     ## 2                161
     ## 3                511
     ## 4               1753
-    ## 5               5277
+    ## 5               5276
     ## 6               7027
 
 And we can have a graphical output with:
@@ -678,79 +693,79 @@ str(raw.costs)
 ```
 
     ## List of 6
-    ##  $ cost.data              :'data.frame': 14793 obs. of  64 variables:
-    ##   ..$ Impact_year                                  : int [1:14793] 2004 2004 2000 2004 2004 2004 2004 2004 1996 1993 ...
-    ##   ..$ Cost_ID                                      : chr [1:14793] "1" "2" "3" "11" ...
-    ##   ..$ Repository                                   : chr [1:14793] "TC" "TC" "TC" "TC" ...
-    ##   ..$ Reference_ID                                 : chr [1:14793] "2" "2" "2" "559" ...
-    ##   ..$ Reference_title                              : chr [1:14793] "Counting the Cost: Impact of Invasive Animals in Australia" "Counting the Cost: Impact of Invasive Animals in Australia" "Counting the Cost: Impact of Invasive Animals in Australia" "The economic benefits of rabbit control in Australian temperate pastures by the introduction of rabbit haemorrhagic disease" ...
-    ##   ..$ Authors                                      : chr [1:14793] "McLeod" "McLeod" "McLeod" "Vere et al" ...
-    ##   ..$ Publication_year                             : num [1:14793] 2004 2004 2004 2004 2004 ...
-    ##   ..$ Type_of_material                             : chr [1:14793] "Official report" "Official report" "Official report" "Peer-reviewed article" ...
-    ##   ..$ Previous_materials                           : chr [1:14793] "Rolfe, J., & Windle, J. (2014). Public preferences for controlling an invasive species in public and private sp"| __truncated__ "Rolfe, J., & Windle, J. (2014). Public preferences for controlling an invasive species in public and private sp"| __truncated__ "Rolfe, J., & Windle, J. (2014). Public preferences for controlling an invasive species in public and private sp"| __truncated__ "McLeod, R. (2004). Counting the Cost: Impact of Invasive Animals in Australia, 2004. Canberra. Retrieved from h"| __truncated__ ...
-    ##   ..$ Availability                                 : chr [1:14793] "Yes" "Yes" "Yes" "Yes" ...
-    ##   ..$ Kingdom                                      : chr [1:14793] "Animalia" "Animalia" "Animalia" "Animalia" ...
-    ##   ..$ Phylum                                       : chr [1:14793] "Chordata" "Chordata" "Chordata" "Chordata" ...
-    ##   ..$ Class                                        : chr [1:14793] "Mammalia" "Mammalia" "Mammalia" "Mammalia" ...
-    ##   ..$ Order                                        : chr [1:14793] "Carnivora" "Carnivora" "Carnivora" "Lagomorpha" ...
-    ##   ..$ Family                                       : chr [1:14793] "Canidae" "Canidae" "Canidae" "Leporidae" ...
-    ##   ..$ Genus                                        : chr [1:14793] "Vulpes" "Vulpes" "Vulpes" "Oryctolagus" ...
-    ##   ..$ Species                                      : chr [1:14793] "Vulpes vulpes" "Vulpes vulpes" "Vulpes vulpes" "Oryctolagus cuniculus" ...
-    ##   ..$ Common_name                                  : chr [1:14793] "Red fox" "Red fox" "Red fox" "European (common) rabbit" ...
-    ##   ..$ Environment                                  : chr [1:14793] "Terrestrial" "Terrestrial" "Terrestrial" "Terrestrial" ...
-    ##   ..$ Geographic_region                            : chr [1:14793] "Oceania" "Oceania" "Oceania" "Oceania" ...
-    ##   ..$ Official_country                             : chr [1:14793] "Australia" "Australia" "Australia" "Australia" ...
-    ##   ..$ State.Province                               : chr [1:14793] NA NA NA NA ...
-    ##   ..$ Location                                     : chr [1:14793] NA NA "Tasmania" NA ...
-    ##   ..$ Spatial_scale                                : chr [1:14793] "Country" "Country" "Site" "Country" ...
-    ##   ..$ Period_of_estimation                         : chr [1:14793] "2004" "2004" "2000" "2004" ...
-    ##   ..$ Time_range                                   : chr [1:14793] "Year" "Year" "Year" "Year" ...
-    ##   ..$ Probable_starting_year                       : num [1:14793] 2004 2004 2000 2004 2004 ...
-    ##   ..$ Probable_ending_year                         : num [1:14793] NA NA NA NA NA NA NA NA NA NA ...
-    ##   ..$ Occurrence                                   : chr [1:14793] "Potentially ongoing" "Potentially ongoing" "Potentially ongoing" "Potentially ongoing" ...
-    ##   ..$ Raw_cost_estimate_local_currency             : num [1:14793] 1.75e+07 1.90e+08 1.60e+07 2.29e+07 8.81e+07 ...
-    ##   ..$ Min_Raw_cost_estimate_local_currency         : chr [1:14793] NA NA NA "7100000" ...
-    ##   ..$ Max_Raw_cost_estimate_local_currency         : chr [1:14793] NA NA NA "38700000" ...
-    ##   ..$ Raw_cost_estimate_2017_USD_exchange_rate     : num [1:14793] 1.67e+07 1.81e+08 1.53e+07 2.19e+07 8.41e+07 ...
-    ##   ..$ Raw_cost_estimate_2017_USD_PPP               : num [1:14793] 1.66e+07 1.81e+08 1.52e+07 2.18e+07 8.38e+07 ...
-    ##   ..$ Cost_estimate_per_year_local_currency        : num [1:14793] 1.75e+07 1.90e+08 1.60e+07 2.29e+07 8.81e+07 ...
-    ##   ..$ Cost_estimate_per_year_2017_USD_exchange_rate: num [1:14793] 16.7 181.3 15.3 21.9 84.1 ...
-    ##   ..$ Cost_estimate_per_year_2017_USD_PPP          : num [1:14793] 1.66e+07 1.81e+08 1.52e+07 2.18e+07 8.38e+07 ...
-    ##   ..$ Currency                                     : chr [1:14793] "AUD" "AUD" "AUD" "AUD" ...
-    ##   ..$ Applicable_year                              : num [1:14793] 2004 2004 2004 2004 2004 ...
-    ##   ..$ Type_of_applicable_year                      : chr [1:14793] "Publication year" "Publication year" "Publication year" "Publication year" ...
-    ##   ..$ Implementation                               : chr [1:14793] "Observed" "Observed" "Observed" "Observed" ...
-    ##   ..$ Acquisition_method                           : chr [1:14793] "Report/Estimation" "Report/Estimation" "Report/Estimation" "Report/Estimation" ...
-    ##   ..$ Impacted_sector                              : chr [1:14793] "Agriculture" "Environment" "Authorities-Stakeholders" "Agriculture" ...
-    ##   ..$ Type_of_cost                                 : chr [1:14793] "Damage-Loss" "Damage-Loss" "Control" "Damage-Loss" ...
-    ##   ..$ Method_reliability                           : chr [1:14793] "High" "High" "High" "High" ...
-    ##   ..$ Details                                      : chr [1:14793] "Key loss is lamb predation. ABARE (2003) estimate 35 million lambs marked per year. Assumed 2% of all lambs mar"| __truncated__ "Following the methodology in Pimentel et al. (2000), the impact of fox predation on the bird population in Aust"| __truncated__ "Fox control expenditure in Tasmania of $9 million per year is also included (Tasmanian Dept. of Primary Industr"| __truncated__ "Prior to the release of RHDV : Rabbits impose annual costs on wool producers in the temperate pasture areas of "| __truncated__ ...
-    ##   ..$ Benefit_value.s.                             : chr [1:14793] "no" "no" "no" "no" ...
-    ##   ..$ Contributors                                 : chr [1:14793] "C.D, C.A., L.N." "C.D, C.A., L.N." "C.D, C.A., L.N." "C.D, C.A., L.N." ...
-    ##   ..$ Island                                       : chr [1:14793] NA NA NA NA ...
-    ##   ..$ verbatimHabitat                              : chr [1:14793] NA NA NA NA ...
-    ##   ..$ Habitat                                      : chr [1:14793] NA NA NA NA ...
-    ##   ..$ protectedArea                                : chr [1:14793] NA NA NA NA ...
-    ##   ..$ Abstract                                     : chr [1:14793] NA NA NA NA ...
-    ##   ..$ Language                                     : chr [1:14793] "EN" "EN" "EN" "EN" ...
-    ##   ..$ Probable_starting_year_high_margin           : num [1:14793] 2004 2004 2000 2004 2004 ...
-    ##   ..$ Probable_ending_year_high_margin             : num [1:14793] 2017 2017 2017 2017 2017 ...
-    ##   ..$ Probable_starting_year_low_margin            : num [1:14793] 2004 2004 2000 2004 2004 ...
-    ##   ..$ Probable_ending_year_low_margin              : num [1:14793] 2004 2004 2000 2004 2004 ...
-    ##   ..$ Impacted_sector_2                            : chr [1:14793] "Agriculture" "Environment" "Mixed" "Agriculture" ...
-    ##   ..$ Type_2                                       : chr [1:14793] "Damage_costs" "Damage_costs" "Management_costs" "Damage_costs" ...
-    ##   ..$ To.removeNew                                 : chr [1:14793] "no" "no" "no" "no" ...
-    ##   ..$ Spatial_scale2                               : chr [1:14793] "Country" "Country" "Site" "Country" ...
-    ##   ..$ Version                                      : chr [1:14793] "V1" "V1" "V1" "V1" ...
-    ##   ..$ Publication_lag                              : num [1:14793] 0 0 4 0 0 0 0 0 0 3 ...
+    ##  $ cost.data              :'data.frame': 14792 obs. of  64 variables:
+    ##   ..$ Impact_year                                  : int [1:14792] 2004 2004 2000 2004 2004 2004 2004 2004 1996 1993 ...
+    ##   ..$ Cost_ID                                      : chr [1:14792] "1" "2" "3" "11" ...
+    ##   ..$ Repository                                   : chr [1:14792] "TC" "TC" "TC" "TC" ...
+    ##   ..$ Reference_ID                                 : chr [1:14792] "2" "2" "2" "559" ...
+    ##   ..$ Reference_title                              : chr [1:14792] "Counting the Cost: Impact of Invasive Animals in Australia" "Counting the Cost: Impact of Invasive Animals in Australia" "Counting the Cost: Impact of Invasive Animals in Australia" "The economic benefits of rabbit control in Australian temperate pastures by the introduction of rabbit haemorrhagic disease" ...
+    ##   ..$ Authors                                      : chr [1:14792] "McLeod" "McLeod" "McLeod" "Vere et al" ...
+    ##   ..$ Publication_year                             : num [1:14792] 2004 2004 2004 2004 2004 ...
+    ##   ..$ Type_of_material                             : chr [1:14792] "Official report" "Official report" "Official report" "Peer-reviewed article" ...
+    ##   ..$ Previous_materials                           : chr [1:14792] "Rolfe, J., & Windle, J. (2014). Public preferences for controlling an invasive species in public and private sp"| __truncated__ "Rolfe, J., & Windle, J. (2014). Public preferences for controlling an invasive species in public and private sp"| __truncated__ "Rolfe, J., & Windle, J. (2014). Public preferences for controlling an invasive species in public and private sp"| __truncated__ "McLeod, R. (2004). Counting the Cost: Impact of Invasive Animals in Australia, 2004. Canberra. Retrieved from h"| __truncated__ ...
+    ##   ..$ Availability                                 : chr [1:14792] "Yes" "Yes" "Yes" "Yes" ...
+    ##   ..$ Kingdom                                      : chr [1:14792] "Animalia" "Animalia" "Animalia" "Animalia" ...
+    ##   ..$ Phylum                                       : chr [1:14792] "Chordata" "Chordata" "Chordata" "Chordata" ...
+    ##   ..$ Class                                        : chr [1:14792] "Mammalia" "Mammalia" "Mammalia" "Mammalia" ...
+    ##   ..$ Order                                        : chr [1:14792] "Carnivora" "Carnivora" "Carnivora" "Lagomorpha" ...
+    ##   ..$ Family                                       : chr [1:14792] "Canidae" "Canidae" "Canidae" "Leporidae" ...
+    ##   ..$ Genus                                        : chr [1:14792] "Vulpes" "Vulpes" "Vulpes" "Oryctolagus" ...
+    ##   ..$ Species                                      : chr [1:14792] "Vulpes vulpes" "Vulpes vulpes" "Vulpes vulpes" "Oryctolagus cuniculus" ...
+    ##   ..$ Common_name                                  : chr [1:14792] "Red fox" "Red fox" "Red fox" "European (common) rabbit" ...
+    ##   ..$ Environment                                  : chr [1:14792] "Terrestrial" "Terrestrial" "Terrestrial" "Terrestrial" ...
+    ##   ..$ Geographic_region                            : chr [1:14792] "Oceania" "Oceania" "Oceania" "Oceania" ...
+    ##   ..$ Official_country                             : chr [1:14792] "Australia" "Australia" "Australia" "Australia" ...
+    ##   ..$ State.Province                               : chr [1:14792] NA NA NA NA ...
+    ##   ..$ Location                                     : chr [1:14792] NA NA "Tasmania" NA ...
+    ##   ..$ Spatial_scale                                : chr [1:14792] "Country" "Country" "Site" "Country" ...
+    ##   ..$ Period_of_estimation                         : chr [1:14792] "2004" "2004" "2000" "2004" ...
+    ##   ..$ Time_range                                   : chr [1:14792] "Year" "Year" "Year" "Year" ...
+    ##   ..$ Probable_starting_year                       : num [1:14792] 2004 2004 2000 2004 2004 ...
+    ##   ..$ Probable_ending_year                         : num [1:14792] NA NA NA NA NA NA NA NA NA NA ...
+    ##   ..$ Occurrence                                   : chr [1:14792] "Potentially ongoing" "Potentially ongoing" "Potentially ongoing" "Potentially ongoing" ...
+    ##   ..$ Raw_cost_estimate_local_currency             : num [1:14792] 1.75e+07 1.90e+08 1.60e+07 2.29e+07 8.81e+07 ...
+    ##   ..$ Min_Raw_cost_estimate_local_currency         : chr [1:14792] NA NA NA "7100000" ...
+    ##   ..$ Max_Raw_cost_estimate_local_currency         : chr [1:14792] NA NA NA "38700000" ...
+    ##   ..$ Raw_cost_estimate_2017_USD_exchange_rate     : num [1:14792] 1.67e+07 1.81e+08 1.53e+07 2.19e+07 8.41e+07 ...
+    ##   ..$ Raw_cost_estimate_2017_USD_PPP               : num [1:14792] 1.66e+07 1.81e+08 1.52e+07 2.18e+07 8.38e+07 ...
+    ##   ..$ Cost_estimate_per_year_local_currency        : num [1:14792] 1.75e+07 1.90e+08 1.60e+07 2.29e+07 8.81e+07 ...
+    ##   ..$ Cost_estimate_per_year_2017_USD_exchange_rate: num [1:14792] 16.7 181.3 15.3 21.9 84.1 ...
+    ##   ..$ Cost_estimate_per_year_2017_USD_PPP          : num [1:14792] 1.66e+07 1.81e+08 1.52e+07 2.18e+07 8.38e+07 ...
+    ##   ..$ Currency                                     : chr [1:14792] "AUD" "AUD" "AUD" "AUD" ...
+    ##   ..$ Applicable_year                              : num [1:14792] 2004 2004 2004 2004 2004 ...
+    ##   ..$ Type_of_applicable_year                      : chr [1:14792] "Publication year" "Publication year" "Publication year" "Publication year" ...
+    ##   ..$ Implementation                               : chr [1:14792] "Observed" "Observed" "Observed" "Observed" ...
+    ##   ..$ Acquisition_method                           : chr [1:14792] "Report/Estimation" "Report/Estimation" "Report/Estimation" "Report/Estimation" ...
+    ##   ..$ Impacted_sector                              : chr [1:14792] "Agriculture" "Environment" "Authorities-Stakeholders" "Agriculture" ...
+    ##   ..$ Type_of_cost                                 : chr [1:14792] "Damage-Loss" "Damage-Loss" "Control" "Damage-Loss" ...
+    ##   ..$ Method_reliability                           : chr [1:14792] "High" "High" "High" "High" ...
+    ##   ..$ Details                                      : chr [1:14792] "Key loss is lamb predation. ABARE (2003) estimate 35 million lambs marked per year. Assumed 2% of all lambs mar"| __truncated__ "Following the methodology in Pimentel et al. (2000), the impact of fox predation on the bird population in Aust"| __truncated__ "Fox control expenditure in Tasmania of $9 million per year is also included (Tasmanian Dept. of Primary Industr"| __truncated__ "Prior to the release of RHDV : Rabbits impose annual costs on wool producers in the temperate pasture areas of "| __truncated__ ...
+    ##   ..$ Benefit_value.s.                             : chr [1:14792] "no" "no" "no" "no" ...
+    ##   ..$ Contributors                                 : chr [1:14792] "C.D, C.A., L.N." "C.D, C.A., L.N." "C.D, C.A., L.N." "C.D, C.A., L.N." ...
+    ##   ..$ Island                                       : chr [1:14792] NA NA NA NA ...
+    ##   ..$ verbatimHabitat                              : chr [1:14792] NA NA NA NA ...
+    ##   ..$ Habitat                                      : chr [1:14792] NA NA NA NA ...
+    ##   ..$ protectedArea                                : chr [1:14792] NA NA NA NA ...
+    ##   ..$ Abstract                                     : chr [1:14792] NA NA NA NA ...
+    ##   ..$ Language                                     : chr [1:14792] "EN" "EN" "EN" "EN" ...
+    ##   ..$ Probable_starting_year_high_margin           : num [1:14792] 2004 2004 2000 2004 2004 ...
+    ##   ..$ Probable_ending_year_high_margin             : num [1:14792] 2017 2017 2017 2017 2017 ...
+    ##   ..$ Probable_starting_year_low_margin            : num [1:14792] 2004 2004 2000 2004 2004 ...
+    ##   ..$ Probable_ending_year_low_margin              : num [1:14792] 2004 2004 2000 2004 2004 ...
+    ##   ..$ Impacted_sector_2                            : chr [1:14792] "Agriculture" "Environment" "Mixed" "Agriculture" ...
+    ##   ..$ Type_2                                       : chr [1:14792] "Damage_costs" "Damage_costs" "Management_costs" "Damage_costs" ...
+    ##   ..$ To.removeNew                                 : chr [1:14792] "no" "no" "no" "no" ...
+    ##   ..$ Spatial_scale2                               : chr [1:14792] "Country" "Country" "Site" "Country" ...
+    ##   ..$ Version                                      : chr [1:14792] "V1" "V1" "V1" "V1" ...
+    ##   ..$ Publication_lag                              : num [1:14792] 0 0 4 0 0 0 0 0 0 3 ...
     ##  $ parameters             :List of 7
     ##   ..$ cost.column          : chr "Cost_estimate_per_year_2017_USD_exchange_rate"
     ##   ..$ year.column          : chr "Impact_year"
     ##   ..$ in.millions          : logi TRUE
     ##   ..$ minimum.year         : num 1960
     ##   ..$ maximum.year         : num 2020
-    ##   ..$ number.of.estimates  : int 7547
-    ##   ..$ number.of.year.values: int 14793
+    ##   ..$ number.of.estimates  : int 7546
+    ##   ..$ number.of.year.values: int 14792
     ##  $ year.breaks            : num [1:7] 1960 1970 1980 1990 2000 2010 2020
     ##  $ cost.per.year          :'data.frame': 61 obs. of  3 variables:
     ##   ..$ year            : int [1:61] 1960 1961 1962 1963 1964 1965 1966 1967 1968 1969 ...
@@ -760,18 +775,18 @@ str(raw.costs)
     ##   ..$ initial_year      : num 1960
     ##   ..$ final_year        : num 2020
     ##   ..$ time_span         : int 61
-    ##   ..$ total_cost        : num 2028768
+    ##   ..$ total_cost        : num 2028748
     ##   ..$ annual_cost       : num 33258
-    ##   ..$ number_estimates  : int 7547
-    ##   ..$ number_year_values: int 14793
+    ##   ..$ number_estimates  : int 7546
+    ##   ..$ number_year_values: int 14792
     ##  $ average.cost.per.period:'data.frame': 6 obs. of  7 variables:
     ##   ..$ initial_year      : num [1:6] 1960 1970 1980 1990 2000 2010
     ##   ..$ final_year        : num [1:6] 1969 1979 1989 1999 2009 ...
     ##   ..$ time_span         : int [1:6] 10 10 10 10 10 11
-    ##   ..$ total_cost        : num [1:6] 21348 25792 33244 225330 1003894 ...
-    ##   ..$ annual_cost       : num [1:6] 2135 2579 3324 22533 100389 ...
-    ##   ..$ number_estimates  : int [1:6] 11 46 176 671 1990 5294
-    ##   ..$ number_year_values: int [1:6] 64 161 511 1753 5277 7027
+    ##   ..$ total_cost        : num [1:6] 21348 25792 33244 225330 1003874 ...
+    ##   ..$ annual_cost       : num [1:6] 2135 2579 3324 22533 100387 ...
+    ##   ..$ number_estimates  : int [1:6] 11 46 176 671 1989 5294
+    ##   ..$ number_year_values: int [1:6] 64 161 511 1753 5276 7027
     ##  - attr(*, "class")= chr [1:2] "invacost.rawcost" "list"
 
 Notice that the expanded database used to calculate costs has been
@@ -804,14 +819,14 @@ raw.costs$average.cost.per.period
     ## 2         1970       1979        10   25791.54    2579.154               46
     ## 3         1980       1989        10   33244.01    3324.401              176
     ## 4         1990       1999        10  225330.15   22533.015              671
-    ## 5         2000       2009        10 1003894.16  100389.416             1990
+    ## 5         2000       2009        10 1003874.08  100387.408             1989
     ## 6         2010       2020        11  719160.58   65378.234             5294
     ##   number_year_values
     ## 1                 64
     ## 2                161
     ## 3                511
     ## 4               1753
-    ## 5               5277
+    ## 5               5276
     ## 6               7027
 
 ## Customising parameters
@@ -839,27 +854,28 @@ raw.costs2 <- calculateRawAvgCosts(db.over.time,
 raw.costs2
 ```
 
+    ## 
     ## Average annual cost of invasive species over time periods
     ## 
     ## - Temporal interval of data : [1970, 2017]
     ## - Values transformed in US$ million: Yes
-    ## - Number of cost estimates: 6888 (number of individual year values: 13797)
+    ## - Number of cost estimates: 6887 (number of individual year values: 13796)
     ## - Cost values in US$ millions:
-    ##     o Total cost over the entire period 2,002,565.38
-    ##     o Average annual cost over the entire period 41,720.11
+    ##     o Total cost over the entire period 2,002,545.30
+    ##     o Average annual cost over the entire period 41,719.69
     ##     o Average annual cost over each period
     ## 
     ##   initial_year final_year time_span   total_cost annual_cost number_estimates
     ## 1         1970       1979        10    25,791.54    2,579.15               46
     ## 2         1980       1989        10    33,244.01    3,324.40              176
     ## 3         1990       1999        10   225,330.15   22,533.01              671
-    ## 4         2000       2009        10 1,003,894.16  100,389.42             1990
+    ## 4         2000       2009        10 1,003,874.08  100,387.41             1989
     ## 5         2010       2017         8   714,305.52   89,288.19             4638
     ##   number_year_values
     ## 1                161
     ## 2                511
     ## 3               1753
-    ## 4               5277
+    ## 4               5276
     ## 5               6095
 
 The function tells you how many values were removed from the dataset
@@ -1086,7 +1102,7 @@ was driven by methods relatively robust to such issues.
 
 **Note: when using the package, please cite the individual model
 packages. Update citations with your package versions\! To do that type
-for example `citation(earth)` in R**
+for example `citation("earth")` in R**
 
   - **Ordinary least square regressions** (hereafter called OLS, R
     package `stats`, function `lm`). OLS regressions are the classical
@@ -1240,7 +1256,10 @@ automatically. We can also provide several parameters such as
     (`incomplete.year.weights`) for incomplete years
   - number of parameters for GAM (dimension basis `gam.k`) and MARS
     (number of model terms `mars.nprune`). **We suggest you should not
-    alter these parameters**
+    alter these parameters, except if you have good reasons to change
+    them.** Notably, in some very rare cases, GAM models can compute
+    forever, in which case, try to define a small value for gam.k
+    (e.g. start from 10 and reduce until the GAM fits).
   - the function will conveniently print the annual cost value estimated
     by all models for a single year, usually the last year. You can
     change this by defining `final.year` (defaults to 2017). Do not
@@ -1272,13 +1291,32 @@ global.trend <- costTrendOverTime(
     ## 6 years will not be included in model calibrations because
     ## they occurred later than incomplete.year.threshold (2015)
 
+    ## 
+    ##  --- Computing OLS regressions
+
+    ## 
+    ##  --- Computing robust regressions
+
+    ## 
+    ##  --- Computing MARS
+
+    ## 
+    ##  --- Computing GAM
+
+    ## 
+    ##  --- Computing quantile regressions
+
     ## Warning in summary.rq(object, cov = TRUE, ...): 10 non-positive fis
+
+    ## 
+    ##  --- Preparing the output objects
 
 ``` r
 # Let's see the results in the console
 global.trend
 ```
 
+    ## 
     ## Estimation of annual cost values of invasive alien species over time
     ## 
     ## - Temporal interval of data : [1970, 2020]
@@ -1288,13 +1326,13 @@ global.trend
     ## - Estimated average annual cost of invasive alien species in 2017:
     ## 
     ##    o Linear regression: 
-    ##      . Linear: US$ million 78,297.33
-    ##      . Quadratic: US$ million 116,111.70
+    ##      . Linear: US$ million 78,297.07
+    ##      . Quadratic: US$ million 116,111.38
     ##    o Robust regression: 
     ##      . Linear: US$ million 36,083.26
     ##      . Quadratic: US$ million 85,573.03
-    ##    o Multiple Adapative Regression Splines: US$ million 114,511.72
-    ##    o Generalized Additive Model: US$ million 77,621.40
+    ##    o Multiple Adapative Regression Splines: US$ million 114,512.30
+    ##    o Generalized Additive Model: US$ million 76,116.41
     ##    o Quantile regression: 
     ##      . Quantile 0.1: US$ million 10,853.19
     ##      . Quantile 0.5: US$ million 36,632.92
@@ -1360,7 +1398,7 @@ str(global.trend)
     ##   ..$ minimum.year             : int 1970
     ##   ..$ maximum.year             : int 2020
     ##   ..$ final.year               : num 2017
-    ##   ..$ gam.k                    : num -1
+    ##   ..$ gam.k                    : num 4
     ##  $ calibration.data      : tibble [45 x 4] (S3: tbl_df/tbl/data.frame)
     ##  $ fitted.models         :List of 7
     ##   ..$ ols.linear      :List of 12
@@ -1382,11 +1420,11 @@ str(global.trend)
     ##   ..$ Details: chr [1:459] "Linear" "Linear" "Linear" "Linear" ...
     ##   ..$ fit    : num [1:459] 1323 1443 1574 1716 1872 ...
     ##   ..$ lwr    : num [1:459] 834 923 1022 1130 1247 ...
-    ##   ..$ upr    : num [1:459] 2462 2458 2471 2504 2564 ...
+    ##   ..$ upr    : num [1:459] 2471 2468 2481 2516 2577 ...
     ##  $ gam.predicted.variance:'data.frame':  51 obs. of  3 variables:
-    ##   ..$ fit: num [1:51] -3.86 -3.91 -3.94 -3.89 -3.75 ...
-    ##   ..$ lwr: num [1:51] -5.16 -5 -4.92 -4.87 -4.75 ...
-    ##   ..$ upr: num [1:51] -2.55 -2.83 -2.95 -2.91 -2.75 ...
+    ##   ..$ fit: num [1:51] -3.02 -2.96 -2.9 -2.83 -2.77 ...
+    ##   ..$ lwr: num [1:51] -3.93 -3.77 -3.62 -3.47 -3.33 ...
+    ##   ..$ upr: num [1:51] -2.11 -2.15 -2.17 -2.19 -2.21 ...
     ##  $ model.summary         :List of 9
     ##   ..$ ols.linear      :List of 3
     ##   ..$ ols.quadratic   :List of 3
@@ -1407,7 +1445,7 @@ str(global.trend)
     ##   ..- attr(*, "class")= chr [1:2] "invacost.modelsummary" "list"
     ##  $ RMSE                  : num [1:9, 1:2] 0.421 0.417 0.454 0.462 0.3 ...
     ##   ..- attr(*, "dimnames")=List of 2
-    ##  $ final.year.cost       : Named num [1:9] 78297 116112 36083 85573 114512 ...
+    ##  $ final.year.cost       : Named num [1:9] 78297 116111 36083 85573 114512 ...
     ##   ..- attr(*, "names")= chr [1:9] "ols.linear" "ols.quadratic" "robust.linear" "robust.quadratic" ...
     ##  - attr(*, "class")= chr [1:2] "invacost.trendcost" "list"
 
@@ -1443,26 +1481,26 @@ global.trend$RMSE
 ```
 
     ##                  RMSE.calibration RMSE.alldata
-    ## ols.linear              0.4212195    0.8499584
-    ## ols.quadratic           0.4174087    0.8959201
-    ## robust.linear           0.4544546    0.7906647
-    ## robust.quadratic        0.4616605    0.8901768
-    ## mars                    0.2998602    0.8620957
-    ## gam                     0.4194876    0.8515805
-    ## qt0.1                   0.6254589    0.8077442
-    ## qt0.5                   0.4517151    0.7905001
-    ## qt0.9                   0.8403412    1.3654590
+    ## ols.linear              0.4212181    0.8499574
+    ## ols.quadratic           0.4174073    0.8959192
+    ## robust.linear           0.4544530    0.7906638
+    ## robust.quadratic        0.4616589    0.8901761
+    ## mars                    0.2998588    0.8620960
+    ## gam                     0.4155175    0.8463784
+    ## qt0.1                   0.6254574    0.8077432
+    ## qt0.5                   0.4517134    0.7904993
+    ## qt0.9                   0.8403410    1.3654589
 
-Overall, both MARS models provide a closer fit to data points than other
+Overall, the MARS model provided a closer fit to data points than other
 models. **Remember that RMSE is irrelevant for quantile regression
 because it does not seek to fit the average trend.**
 
 Hence, purely from a statistical point of view, we would tend to
-prioritize MARS models over models. However, remember that the MARS
-model illustrated the uncertain behaviour of our data after 2000, and we
-may decide that, based on our a-priori assumptions, this is not the most
-adequate model, and we will also include the other models (who all have
-similar RMSE) in our predictions.
+prioritize MARS models over other models. However, remember that the
+MARS model illustrated the uncertain behaviour of our data after 2000,
+and we may decide that, based on our a-priori assumptions, this is not
+the most adequate model, and we will also include the other models (who
+all have similar RMSE) in our predictions.
 
 Now, some models may seem to have good fit but may not be significant.
 This is highly critical especially for data-poor subsets of INVACOST. To
@@ -1472,6 +1510,7 @@ verify this, inspect the model summaries:
 global.trend$model.summary
 ```
 
+    ## 
     ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Summary of model fits ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ## 
     ## 
@@ -1480,12 +1519,12 @@ global.trend$model.summary
     ## 
     ## >>>>>>>>       Linear regression
     ## 
-    ## R squared:  0.5747686  - Adjusted R squared:  0.5747686
+    ## R squared:  0.5747698  - Adjusted R squared:  0.5747698
     ## t test of coefficients:
     ## 
     ##                Estimate  Std. Error t value  Pr(>|t|)    
-    ## (Intercept) -71.1622753  10.4321717 -6.8214 2.335e-08 ***
-    ## Year          0.0377075   0.0052631  7.1645 7.441e-09 ***
+    ## (Intercept) -71.1622020  10.4321401 -6.8214 2.335e-08 ***
+    ## Year          0.0377075   0.0052631  7.1645 7.440e-09 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -1495,13 +1534,13 @@ global.trend$model.summary
     ## 
     ## >>>>>>>>       Quadratic regression
     ## 
-    ## R squared:  0.582428  - Adjusted R squared:  0.582428
+    ## R squared:  0.5824292  - Adjusted R squared:  0.5824292
     ## t test of coefficients:
     ## 
     ##                Estimate  Std. Error t value Pr(>|t|)
     ## (Intercept)  1.4168e+03  1.7374e+03  0.8155   0.4194
     ## Year        -1.4563e+00  1.7431e+00 -0.8355   0.4082
-    ## I(Year^2)    3.7501e-04  4.3717e-04  0.8578   0.3959
+    ## I(Year^2)    3.7501e-04  4.3716e-04  0.8578   0.3959
     ## 
     ## ------------------------------------------------------------------------------------------------------------
     ## 
@@ -1517,11 +1556,11 @@ global.trend$model.summary
     ##  \--> method = "MM"
     ## Residuals:
     ##       Min        1Q    Median        3Q       Max 
-    ## -0.545679 -0.163749  0.009598  0.262959  1.398365 
+    ## -0.545679 -0.163749  0.009598  0.262959  1.398342 
     ## 
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept) -55.209912  11.007424  -5.016 9.62e-06 ***
+    ## (Intercept) -55.209915  11.007421  -5.016 9.62e-06 ***
     ## Year          0.029632   0.005556   5.333 3.38e-06 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
@@ -1564,7 +1603,7 @@ global.trend$model.summary
     ##  \--> method = "MM"
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -0.48712 -0.04327 -0.01391  0.15286  1.43492 
+    ## -0.48712 -0.04327 -0.01391  0.15286  1.43490 
     ## 
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)    
@@ -1611,26 +1650,26 @@ global.trend$model.summary
     ## 
     ## Formula:
     ## transf.cost ~ s(Year, k = gam.k)
-    ## <environment: 0x0000000013a08558>
+    ## <environment: 0x0000000019903510>
     ## ~s(Year, k = gam.k)
-    ## <environment: 0x0000000013a08558>
+    ## <environment: 0x0000000019903510>
     ## 
     ## Parametric coefficients:
     ##               Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)    3.84839    0.03877   99.26   <2e-16 ***
-    ## (Intercept).1 -1.88425    0.13340  -14.12   <2e-16 ***
+    ## (Intercept)    3.89746    0.04995   78.03   <2e-16 ***
+    ## (Intercept).1 -1.46211    0.11321  -12.91   <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Approximate significance of smooth terms:
     ##             edf Ref.df Chi.sq  p-value    
-    ## s(Year)   4.137  4.911 250.55  < 2e-16 ***
-    ## s.1(Year) 5.819  6.830  76.12 1.55e-13 ***
+    ## s(Year)   2.291  2.569 117.53  < 2e-16 ***
+    ## s.1(Year) 2.597  2.867  63.46 1.24e-12 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Deviance explained = 98.3%
-    ## -REML = 9.5269  Scale est. = 1         n = 45
+    ## Deviance explained = 93.9%
+    ## -REML = 13.699  Scale est. = 1         n = 45
     ## ------------------------------------------------------------------------------------------------------------
     ## 
     ## ______________________________     Multiple Adaptive Regression Splines      _______________________________
@@ -1643,35 +1682,35 @@ global.trend$model.summary
     ##              coefficients
     ## (Intercept)     3.4394130
     ## h(Year-1986)    0.0453190
-    ## h(Year-1998)    0.4017946
-    ## h(Year-2001)   -0.6330033
-    ## h(Year-2007)    0.2708503
+    ## h(Year-1998)    0.4017935
+    ## h(Year-2001)   -0.6330020
+    ## h(Year-2007)    0.2708506
     ## 
     ## Selected 5 of 6 terms, and 1 of 1 predictors
     ## Termination condition: RSq changed by less than 0.001 at 6 terms
     ## Importance: Year
     ## Number of terms at each degree of interaction: 1 4 (additive model)
-    ## GCV 0.140494  RSS 4.046227  GRSq 0.6780812  RSq 0.7845006  CVRSq 0.363223
+    ## GCV 0.1404927  RSS 4.046189  GRSq 0.6780829  RSq 0.7845018  CVRSq 0.3902832
     ## 
     ## Note: the cross-validation sd's below are standard deviations across folds
     ## 
-    ## Cross validation:   nterms 3.59 sd 0.70    nvars 1.00 sd 0.00
+    ## Cross validation:   nterms 3.57 sd 0.74    nvars 1.00 sd 0.00
     ## 
-    ##      CVRSq   sd     MaxErr    sd
-    ##      0.363 0.62        1.5 0.886
+    ##      CVRSq  sd     MaxErr    sd
+    ##       0.39 0.6       1.37 0.891
     ## 
-    ## varmod: method "lm"    min.sd 0.0356    iter.rsq 0.399
+    ## varmod: method "lm"    min.sd 0.0352    iter.rsq 0.382
     ## 
     ## stddev of predictions:
     ##             coefficients iter.stderr iter.stderr%
-    ## (Intercept)    -1.320748    0.279844           21
-    ## transf.cost     0.424284    0.079335           19
+    ## (Intercept)   -1.3313855    0.291232           22
+    ## transf.cost    0.4261391   0.0826404           19
     ## 
-    ##                               mean   smallest    largest      ratio
-    ## 95% prediction interval   1.394017   0.543066   3.678409   6.773411
+    ##                              mean   smallest    largest     ratio
+    ## 95% prediction interval   1.38105   0.526379   3.675426   6.98247
     ## 
     ##                                          68%    80%    90%    95% 
-    ## response values in prediction interval   87     91     98     98  
+    ## response values in prediction interval   87     91     96     98  
     ## ------------------------------------------------------------------------------------------------------------
     ## 
     ## ______________________________            Quantile regressions               _______________________________
@@ -1715,7 +1754,7 @@ global.trend$model.summary
     ## 
     ## Coefficients:
     ##             coefficients lower bd   upper bd  
-    ## (Intercept) -115.30963   -133.77616  -20.05955
+    ## (Intercept) -115.30963   -133.77534  -20.05955
     ## Year           0.06020      0.01885    0.06954
     ## ------------------------------------------------------------------------------------------------------------
 
@@ -1768,27 +1807,27 @@ summarized.summary
     ##                                               1                           2
     ## 1     Ordinary Least Square regression - Linear                            
     ## 2                                                                  Estimate
-    ## 3                                     Intercept           -71.1622753099237
-    ## 4                                          Year          0.0377074974130257
+    ## 3                                     Intercept           -71.1622019759181
+    ## 4                                          Year          0.0377074603371585
     ## 5                                                                          
     ## 6                                                               Adjusted R²
-    ## 7                                                         0.564879470190231
+    ## 7                                                         0.564880692690143
     ## 8                             _________________           _________________
     ## 9  Ordinary Least Square regression - Quadratic                            
     ## 10                                                                 Estimate
-    ## 11                                    Intercept            1416.83331643332
-    ## 12                                         Year           -1.45632748574388
+    ## 11                                    Intercept            1416.83563419539
+    ## 12                                         Year           -1.45632977635737
     ## 13                                                                         
     ## 14                                                              Adjusted R²
-    ## 15                                                        0.562543605173819
+    ## 15                                                         0.56254491344609
     ## 16                            _________________           _________________
     ## 17                   Robust regression - Linear                            
     ## 18                                                                 Estimate
-    ## 19                                    Intercept           -55.2099119993105
-    ## 20                                         Year          0.0296317390737135
+    ## 19                                    Intercept           -55.2099146017441
+    ## 20                                         Year          0.0296317403880692
     ## 21                                                                         
     ## 22                                                              Adjusted R²
-    ## 23                                                        0.707440007354394
+    ## 23                                                        0.707439995052547
     ## 24                                                                         
     ## 25                     Summary of model weights                            
     ## 26                                                                      Min
@@ -1798,11 +1837,11 @@ summarized.summary
     ## 30                            _________________           _________________
     ## 31                Robust regression - Quadratic                            
     ## 32                                                                 Estimate
-    ## 33                                    Intercept            3311.43142718572
-    ## 34                                         Year           -3.35095486421965
+    ## 33                                    Intercept            3311.43142720415
+    ## 34                                         Year           -3.35095486423816
     ## 35                                                                         
     ## 36                                                              Adjusted R²
-    ## 37                                                         0.87278836207418
+    ## 37                                                        0.872788362074423
     ## 38                                                                         
     ## 39                     Summary of model weights                            
     ## 40                                                                      Min
@@ -1819,29 +1858,29 @@ summarized.summary
     ## 51                                                             h(Year-2007)
     ## 52                                                                         
     ## 53                                                           Generalized R²
-    ## 54                                                        0.678081165699618
+    ## 54                                                        0.678082861868528
     ## 55                                                                         
     ## 56                               Variance model                            
     ## 57                                                                 Estimate
-    ## 58                                    Intercept           -1.32074807746068
-    ## 59                                    Intercept           0.424283988209062
+    ## 58                                    Intercept           -1.33138554413781
+    ## 59                                    Intercept           0.426139107361183
     ## 60                                                                         
     ## 61                                                    R² for last iteration
-    ## 62                                                        0.399450856372828
+    ## 62                                                        0.382094766439032
     ## 63                            _________________           _________________
     ## 64                  Generalized Additive Models                            
     ## 65                      Parametric coefficients                            
     ## 66                                                                 Estimate
-    ## 67                             Intercept (mean)            3.84838810881931
-    ## 68                               Intercept (sd)           -1.88424569668006
+    ## 67                             Intercept (mean)            3.89745659767138
+    ## 68                               Intercept (sd)           -1.46210552778704
     ## 69                                                                         
     ## 70                                 Smooth terms                            
     ## 71                                              Estimated degree of freedom
-    ## 72                                smooth (mean)            4.13650476772585
-    ## 73                                  smooth (sd)            5.81879241221466
+    ## 72                                smooth (mean)            2.29099707532711
+    ## 73                                  smooth (sd)            2.59736120380664
     ## 74                                                                         
     ## 75                                                   Explained deviance (%)
-    ## 76                                                         98.2962931469324
+    ## 76                                                          93.883206653538
     ## 77                            _________________           _________________
     ## 78                          Quantile regression                            
     ## 79                                                Coefficients quantile 0.1
@@ -1851,63 +1890,63 @@ summarized.summary
     ##                                  3                            4
     ## 1                                                              
     ## 2                   Standard error                      t value
-    ## 3                 10.4321717439977            -6.82142482468887
-    ## 4              0.00526308210804232             7.16452767389023
+    ## 3                 10.4321401306139            -6.82143846659878
+    ## 4              0.00526306612236605             7.16454239039787
     ## 5                                                              
     ## 6                               R²                             
-    ## 7                0.574768573140453                             
+    ## 7                0.574769767856276                             
     ## 8                _________________            _________________
     ## 9                                                              
     ## 10                  Standard error                      t value
-    ## 11                1737.38620828232            0.815497043592909
-    ## 12                1.74307194190027           -0.835494766874749
+    ## 11                1737.38149774498            0.815500588693018
+    ## 12                1.74306744981544           -0.835498234168487
     ## 13                                                             
     ## 14                              R²                             
-    ## 15               0.582427986756827                             
+    ## 15               0.582429235562176                             
     ## 16               _________________            _________________
     ## 17                                                             
     ## 18                  Standard error                      t value
-    ## 19                11.0074242826035            -5.01569764023414
-    ## 20             0.00555639310837843             5.33290904652374
+    ## 19                11.0074210546238            -5.01569934753722
+    ## 20             0.00555639147662988             5.33291084919052
     ## 21                                                             
     ## 22                              R²                             
-    ## 23               0.714089098096339                             
+    ## 23                0.71408908607408                             
     ## 24                                                             
     ## 25                                                             
     ## 26                             25%                          50%
-    ## 27               0.817629347624458            0.935693338321117
+    ## 27                0.81762941211922             0.93569337349312
     ## 28                                                             
     ## 29                                                             
     ## 30               _________________            _________________
     ## 31                                                             
     ## 32                  Standard error                      t value
-    ## 33                656.577123001075             5.04347670849369
-    ## 34               0.659324306095798            -5.08240760008136
+    ## 33                656.577123001869             5.04347670851566
+    ## 34               0.659324306096599            -5.08240760010326
     ## 35                                                             
     ## 36                              R²                             
-    ## 37               0.878570709252626                             
+    ## 37               0.878570709252858                             
     ## 38                                                             
     ## 39                                                             
     ## 40                             25%                          50%
-    ## 41               0.499129391870637            0.969400015880997
+    ## 41                0.49912939187426             0.96940001588378
     ## 42                                                             
     ## 43                                                             
     ## 44               _________________            _________________
     ## 45                                                             
     ## 46                     log10(cost)                             
-    ## 47                3.43941299767712                             
-    ## 48              0.0453190120512663                             
-    ## 49              -0.633003341873982                             
-    ## 50               0.401794644405279                             
-    ## 51                0.27085028000672                             
+    ## 47                3.43941296989764                             
+    ## 48               0.045319038276654                             
+    ## 49              -0.633002039574252                             
+    ## 50                0.40179347300463                             
+    ## 51                0.27085056405301                             
     ## 52                                                             
     ## 53                              R² Generalized Cross-Validation
-    ## 54               0.784500615055116            0.140493984308009
+    ## 54               0.784501750507031            0.140492675746417
     ## 55                                                             
     ## 56                                                             
     ## 57 Standard error (last iteration) Standard error/coefficient %
-    ## 58               0.279844002362432             21.1882952652462
-    ## 59              0.0793350340436599             18.6985689416515
+    ## 58               0.291232427794796             21.8743871057572
+    ## 59              0.0826404277144094             19.3928288408333
     ## 60                                                             
     ## 61                                                             
     ## 62                                                             
@@ -1915,13 +1954,13 @@ summarized.summary
     ## 64                                                             
     ## 65                                                             
     ## 66                  Standard error                      z value
-    ## 67              0.0387699415620146             99.2621591307691
-    ## 68               0.133397337788063            -14.1250622233083
+    ## 67              0.0499470168816981             78.0318193357312
+    ## 68               0.113209605146465            -12.9150307157723
     ## 69                                                             
     ## 70                                                             
     ## 71      Residual degree of freedom                         Chi²
-    ## 72                4.91112733121679             250.552291040344
-    ## 73                6.82972469397359             76.1222798206789
+    ## 72                2.56934809854873             117.535018183137
+    ## 73                2.86715116368363             63.4564149330777
     ## 74                                                             
     ## 75                                                             
     ## 76                                                             
@@ -1934,45 +1973,45 @@ summarized.summary
     ##                       5                 6
     ## 1                                        
     ## 2               p-value                  
-    ## 3  2.33523637420875e-08                  
-    ## 4  7.44080919506566e-09                  
+    ## 3  2.33512993987872e-08                  
+    ## 4  7.44044513520387e-09                  
     ## 5                                        
     ## 6                                        
     ## 7                                        
     ## 8     _________________ _________________
     ## 9                                        
     ## 10              p-value                  
-    ## 11    0.419388643189161                  
-    ## 12    0.408167093442745                  
+    ## 11    0.419386637366857                  
+    ## 12    0.408165164000673                  
     ## 13                                       
     ## 14                                       
     ## 15                                       
     ## 16    _________________ _________________
     ## 17                                       
     ## 18              p-value                  
-    ## 19 9.61514650686812e-06                  
-    ## 20 3.38028987313514e-06                  
+    ## 19 9.61509270847876e-06                  
+    ## 20 3.38026969251303e-06                  
     ## 21                                       
     ## 22                                       
     ## 23                                       
     ## 24                                       
     ## 25                                       
     ## 26                  75%               Max
-    ## 27    0.990356134001413 0.999932290761839
+    ## 27    0.990356135447871 0.999932290498406
     ## 28                                       
     ## 29                                       
     ## 30    _________________ _________________
     ## 31                                       
     ## 32              p-value                  
-    ## 33 9.24314158218651e-06                  
-    ## 34 8.14331224881889e-06                  
+    ## 33 9.24314158152629e-06                  
+    ## 34 8.14331224823822e-06                  
     ## 35                                       
     ## 36                                       
     ## 37                                       
     ## 38                                       
     ## 39                                       
     ## 40                  75%               Max
-    ## 41    0.992236438803017 0.999987815240124
+    ## 41    0.992236438801625 0.999987815240096
     ## 42                                       
     ## 43                                       
     ## 44    _________________ _________________
@@ -1985,7 +2024,7 @@ summarized.summary
     ## 51                                       
     ## 52                                       
     ## 53  Root Sum of Squares                  
-    ## 54     4.04622674807065                  
+    ## 54     4.04618906149681                  
     ## 55                                       
     ## 56                                       
     ## 57                                       
@@ -1999,12 +2038,12 @@ summarized.summary
     ## 65                                       
     ## 66              p-value                  
     ## 67                    0                  
-    ## 68 2.66164659562592e-45                  
+    ## 68 3.70296264914139e-38                  
     ## 69                                       
     ## 70                                       
     ## 71              p-value                  
-    ## 72 2.18528784953333e-44                  
-    ## 73 1.55010730674208e-13                  
+    ## 72 3.38223783717841e-22                  
+    ## 73 1.24185982913158e-12                  
     ## 74                                       
     ## 75                                       
     ## 76                                       
@@ -2032,7 +2071,7 @@ approach: there are two options.
     from our main paper (`link to be added when available ¯\_(ツ)_/¯`) to
     see how to that.
 
-# Simple customisation
+### Simple customisation
 
 There are two base plots provided with the package; you have already
 seen the default, and here is another one where all models are on a
@@ -2059,7 +2098,7 @@ plot(global.trend,
 
 ![](Readme_files/figure-gfm/models52-1.png)<!-- -->
 
-# Complex customisation
+### Complex customisation
 
 Likewise to the raw cost approach, if you want to customise ggplot
 parameters, you have to set `graphical.parameters = "manual"`.
@@ -2150,9 +2189,9 @@ invacost.NA <- invacost[which(invacost$Geographic_region == "North America"), ]
 nrow(invacost.NA)
 ```
 
-    ## [1] 745
+    ## [1] 744
 
-We have 745 lines in the North America subset of INVACOST.
+We have 744 lines in the North America subset of INVACOST.
 
 ``` r
 # Let's see the content of the Class column
@@ -2200,6 +2239,7 @@ raw.NAmammals <- calculateRawAvgCosts(NAmammals.over.time,
 raw.NAmammals
 ```
 
+    ## 
     ## Average annual cost of invasive species over time periods
     ## 
     ## - Temporal interval of data : [1970, 2017]
@@ -2443,17 +2483,17 @@ citation("invacost")
     ## 
     ## To cite package 'invacost' in publications use:
     ## 
-    ##   Boris Leroy, Andrew Kramer, Christophe Diagne and Anne-Charlotte
-    ##   Vaissière (2020). invacost: INVACOST Database With Methods To Analyse
-    ##   Invasion Costs. R package version 0.3-3.
+    ##   Boris Leroy, Andrew Kramer, Anne-Charlotte Vaissière and Christophe
+    ##   Diagne (2020). invacost: INVACOST Database With Methods To Analyse
+    ##   Invasion Costs. R package version 0.3-4.
     ## 
     ## A BibTeX entry for LaTeX users is
     ## 
     ##   @Manual{,
     ##     title = {invacost: INVACOST Database With Methods To Analyse Invasion Costs},
-    ##     author = {Boris Leroy and Andrew Kramer and Christophe Diagne and Anne-Charlotte Vaissière},
+    ##     author = {Boris Leroy and Andrew Kramer and Anne-Charlotte Vaissière and Christophe Diagne},
     ##     year = {2020},
-    ##     note = {R package version 0.3-3},
+    ##     note = {R package version 0.3-4},
     ##   }
     ## 
     ## ATTENTION: This citation information has been auto-generated from the

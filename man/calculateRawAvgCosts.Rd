@@ -87,7 +87,6 @@ res
 \code{\link{expandYearlyCosts}} to get the database in appropriate format.
 }
 \author{
-Boris Leroy \email{leroy.boris@gmail.com}
-
-with help from C. Diagne & A.-C. Vaissière
+Boris Leroy \email{leroy.boris@gmail.com}, Andrew Kramer, Anne-Charlotte
+Vaissière, Christophe Diagne
 }

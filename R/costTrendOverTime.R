@@ -270,7 +270,8 @@ costTrendOverTime <- function(costdb,
   
 
 # Ordinary Least Square (OLS) regression ----------------------------------
-
+  
+  message("\n --- Computing OLS regressions\n")
   # Ordinary least square - linear effect
   ols.linear <- lm(transf.cost ~ Year, data = yearly.cost.calibration,
                    weights = incomplete.year.weights)
@@ -350,6 +351,7 @@ costTrendOverTime <- function(costdb,
   
 # Robust regression -------------------------------------------------------
   # Robust regression - Linear effect
+  message("\n --- Computing robust regressions\n")
   robust.linear <- robustbase::lmrob(transf.cost ~ Year, data = yearly.cost.calibration, 
                                      weights = incomplete.year.weights)
   pred.robust.linear <- try(predict(robust.linear, 
@@ -404,7 +406,8 @@ costTrendOverTime <- function(costdb,
   
 
 # Multiple Adapative Regression Splines -----------------------------------
-
+  
+  message("\n --- Computing MARS\n")
   mars <- earth::earth(transf.cost ~ Year, data = yearly.cost.calibration,
                        varmod.method = "lm",
                        # nk = mars.nk,
@@ -427,7 +430,8 @@ costTrendOverTime <- function(costdb,
   
 
 # Generalized Additive Models ---------------------------------------------
-
+  
+  message("\n --- Computing GAM\n")
   if(!is.null(incomplete.year.weights))
   {
     igam <- mgcv::gam(list(transf.cost ~ s(Year, k = gam.k),
@@ -500,7 +504,8 @@ costTrendOverTime <- function(costdb,
   
 
 # Quantile regression -----------------------------------------------------
-
+  
+  message("\n --- Computing quantile regressions\n")
   qt0.1 <- quantreg::rq(transf.cost ~ Year, 
                         data = yearly.cost.calibration,
                         tau = 0.1,
@@ -573,7 +578,8 @@ costTrendOverTime <- function(costdb,
 
 # Assembling predictions --------------------------------------------------
 
-
+  
+  message("\n --- Preparing the output objects\n")
   model.preds <- rbind.data.frame(data.frame(model = "OLS regression",
                                              Year = prediction.years$Year,
                                              Details = "Linear",

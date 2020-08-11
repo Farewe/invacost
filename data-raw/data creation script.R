@@ -20,14 +20,6 @@ invacost$Version[grep("NE", invacost$Cost_ID)] <- "V2"
 invacost$Version[grep("SC", invacost$Cost_ID)] <- "V2-1"
 
 
-
-# We remove this line until it is officially excluded from INVACOST as, after checking,
-# it is not adequate (budget corresponds to both native & non native species management with no distinction)
-invacost <- invacost[-which(invacost$Reference_ID == 8733 & 
-                              invacost$Repository == "WoS"), ]
-invacost$Method_reliability[which(invacost$Cost_ID == "SC1897")] <- "Low"
-
-
 usethis::use_data(invacost, overwrite = TRUE)
 
 

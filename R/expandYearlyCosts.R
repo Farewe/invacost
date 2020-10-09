@@ -34,6 +34,14 @@ expandYearlyCosts <- function(costdb, startcolumn, endcolumn)
   {
     stop("The 'endcolumn' does not exist in the invacost database, please check spelling.")
   }
+  if(!(sum(is.na(costdb[,startcolumn]))==0))
+  {
+    stop(paste("The 'startcolumn' is missing values for", sum(is.na(costdb[,startcolumn])),"rows"))
+  }
+  if(!(sum(is.na(costdb[,endcolumn]))==0))
+  {
+    stop(paste("The 'endcolumn' is missing values for", sum(is.na(costdb[,endcolumn])),"rows"))
+  }
   return(
     dplyr::bind_rows(
       lapply(costdb$Cost_ID, function(x, costdb.,

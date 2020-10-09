@@ -8,7 +8,8 @@
 #' where annual costs occurring over several years are repeated for each year.
 #' @param cost.column Name of the cost column to use in \code{costdb} (usually, 
 #' choose between the exchange rate (default) or PPP annualised cost)
-#' @param year.column Name of the year column to use in \code{costdb}.
+#' @param year.column Name of the year column to use in \code{costdb}( usually, 
+#' "Impact_year" from \code{\link{expandYearlyCosts}} 
 #' @param in.millions If \code{TRUE}, cost values will be transformed in 
 #' millions (to make graphs easier to read), else if \code{}, cost values will
 #' not be transformed.
@@ -23,16 +24,18 @@
 #' year of the dataset is included in the last interval (\code{TRUE}) or is
 #' considered as an interval of its own (\code{FALSE}). Generally only useful
 #' if the last year is at the limit of an interval.
-#' @return a \code{list} with 5 elements:
+#' @return a \code{list} with 6 elements:
 #'
 #' \itemize{
-#' \item{\code{cost.data}: the annualised costs of invasions, as sums of all 
-#' costs for each year.}
+#' \item{\code{cost.data}: the input data.}
 #' \item{\code{parameters}: parameters used to run the function. The 
 #' \code{minimum.year} and \code{maximum.year} are based on the input data
 #' (i.e., the user may specify \code{minimum.year = 1960} but the input data may
 #' only have data starting from 1970, hence the \code{minimum.year} will be
 #'  1970.)}
+#' \item{\code{year.breaks}: the years used to define year intervals over which costs were calculated.}
+#' \item{\code{cost.per.year}: the annualised costs of invasions, as sums of all 
+#' costs for each year.}
 #' \item{\code{average.total.cost}: the average annual cost of IAS calculated
 #' over the entire time period}
 #' \item{\code{average.cost.per.period}: a data.frame containing the the average 
@@ -280,6 +283,16 @@ calculateRawAvgCosts <- function(
 #' @param max.year The minimum year of the period (specify only if different from
 #' the range of data)
 #' @return a named \code{list} with 5 elements
+#' \itemize{
+#'  \item{\code{initial_year}: first year in the data}
+#'  \item{\code{final_year}: last year in the data}
+#'  \item{\code{time_span}: the difference between initial and final years.}
+#'  \item{\code{total_cost}: total cost.}
+#'  \item{\code{annual.cost}: cost per year}
+#'  \item{\code{number_estimates}: the number of cost estimates before expansion 
+#' via \code{\link{expandYearlyCosts}}
+#'  \item{\code{number_year_values}: the number of yearly costs included}
+#' }
 #' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
 #' @export
 #' @note

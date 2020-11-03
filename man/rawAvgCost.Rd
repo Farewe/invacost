@@ -30,6 +30,16 @@ the range of data)}
 }
 \value{
 a named \code{list} with 5 elements
+\itemize{
+ \item{\code{initial_year}: first year in the data}
+ \item{\code{final_year}: last year in the data}
+ \item{\code{time_span}: the difference between initial and final years.}
+ \item{\code{total_cost}: total cost.}
+ \item{\code{annual.cost}: cost per year}
+ \item{\code{number_estimates}: the number of cost estimates before expansion 
+via \code{\link{expandYearlyCosts}}
+ \item{\code{number_year_values}: the number of yearly costs included}
+}}
 }
 \description{
 This simple function calculates the raw average annual cost of invasive species

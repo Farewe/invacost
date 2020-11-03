@@ -107,15 +107,16 @@ costTrendOverTime <- function(costdb,
 
 # Argument checking -------------------------------------------------------
 
+  dots <- list(...)
   # Checking if deprecated mars.nk argument was provided
-  if(hasArg(mars.nk))
+  if("mars.nk" %in% names(dots))
   {
     stop("Argument mars.nk was specified. If you are looking to reduce model size, please use mars.nprune instead of mars.nk.")
   }
   
   if(any(is.na(costdb[, cost.column])))
   {
-    warning("There were NA values in the cost column, they will be excluded from the dataset.\n")
+    warning("There were NA values in the cost column, they have been removed.\n")
     costdb <- costdb[-which(is.na(costdb[, cost.column])), ]
   }
   
@@ -291,8 +292,8 @@ costTrendOverTime <- function(costdb,
   vcov.HAC.linear <- sandwich::vcovHAC(ols.linear)
   
   # Calculating 95% confidence intervals based on robust variance covariance matrix
-  modelmatrix.linear <- model.matrix(~ Year,
-                                     data = prediction.years)
+  modelmatrix.linear <- stats::model.matrix(~ Year,
+                                            data = prediction.years)
   
   # Variance of prediction years
   var.years.linear <- modelmatrix.linear %*% vcov.HAC.linear %*% t(modelmatrix.linear)
@@ -329,7 +330,7 @@ costTrendOverTime <- function(costdb,
   vcov.HAC.quadratic <- sandwich::vcovHAC(ols.quadratic)
   
   # Calculating 95% confidence intervals based on robust variance covariance matrix
-  modelmatrix.quadric <- model.matrix(~ Year + I(Year^2),
+  modelmatrix.quadric <- stats::model.matrix(~ Year + I(Year^2),
                                       data = prediction.years)
   # Variance of prediction years
   var.years.quadratic <- modelmatrix.quadric %*% vcov.HAC.quadratic %*% t(modelmatrix.quadric)

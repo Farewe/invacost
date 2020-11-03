@@ -44,7 +44,8 @@
 #' The structure of this object can be seen using \code{str()}
 #' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
 #' @details
-#' Missing data for specific years will be considered as zero. 
+#' Missing data will be ignored. However, note that the average for each 
+#' interval will always be calculated on the basis of the full temporal range.
 #' For example, if there is only data for 1968 for the 1960-1969 interval,
 #' then the total cost for the interval will be equal to the cost of 1968, and the
 #' average annual cost for 1960-1969 will be cost of 1968 / 10.
@@ -75,6 +76,13 @@ calculateRawAvgCosts <- function(
   include.last.year = TRUE
 )
 {
+  if(any(is.na(costdb[, cost.column])))
+  {
+    costdb <- costdb[-which(is.na(costdb[, cost.column])), ]
+    warning("There were NA values in the cost column, they have been removed.\n")
+  } 
+  
+  
   if(any(costdb[, year.column] < minimum.year))
   {
     warning(paste0("There are ",  length(unique(costdb$Cost_ID[which(costdb[, year.column] < minimum.year)])),
@@ -292,7 +300,7 @@ calculateRawAvgCosts <- function(
 #'  \item{\code{number_estimates}: the number of cost estimates before expansion 
 #' via \code{\link{expandYearlyCosts}}
 #'  \item{\code{number_year_values}: the number of yearly costs included}
-#' }
+#' }}
 #' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
 #' @export
 #' @note
@@ -300,7 +308,7 @@ calculateRawAvgCosts <- function(
 #' specify them if you wish to change the interval over which averages are 
 #' calculated. For example, if your data have values from 1960 to 1964 but you
 #' want to calculated the average value from 1960 to 1969, set 
-#' \code{min.year = 1960} and \code{max.year = 1964}.
+#' \code{min.year = 1960} and \code{max.year = 1969}.
 #' 
 #' However, if you want to calculate values for an interval narrower than your
 #' data, filter the data BEFORE running this function.

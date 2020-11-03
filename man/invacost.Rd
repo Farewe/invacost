@@ -182,7 +182,7 @@ A data frame with 10005 rows and 61 variables:
 Include URL to the original dataset here
 }
 \usage{
-invacost
+data(invacost)
 }
 \description{
 The database compiling published values of economic costs of Invasive Alien

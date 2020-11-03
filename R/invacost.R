@@ -175,6 +175,7 @@
 #'   recent entries. Do not use it to remove "older" entries as these remain
 #'   valid even for recent versions.}
 #' }
+#' @usage data(invacost)
 #' @details
 #'  \bold{Standardisation of cost data’}
 #'

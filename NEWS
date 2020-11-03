@@ -1,9 +1,15 @@
-invacost v0.3-4 (Release date: unreleased yet)
+invacost v0.3-5 (Release date: 3 November 2020)
+==============
+* Fixed all CRAN checks warnings and notes
+* Changes to documentation before CRAN submission
+* Added error checks
+
+invacost v0.3-4 (Release date: 10 August 2020)
 ==============
 
 * Added a function to make a "pretty" summary of model summaries
 
-invacost v0.3-3 (Release date: unreleased yet)
+invacost v0.3-3 (Release date: 3 August 2020)
 ==============
 
 * Fixed a bug with RMSE estimation for robust models when data did not have
@@ -13,7 +19,7 @@ values for all years
 * Added a column with invacost version
 
 
-invacost v0.3-2 (Release date: unreleased yet)
+invacost v0.3-2 (Release date: 17 July 2020)
 ==============
 
 * Added a feature in plot-method to allow user to select which model outputs are included
@@ -23,7 +29,7 @@ invacost v0.3-2 (Release date: unreleased yet)
 Fixed erroneous RMSE of GAM models
 
 
-invacost v0.3-1 (Release date: unreleased yet)
+invacost v0.3-1 (Release date: 7 July 2020)
 ==============
 
 Fixed a bug in costTrendOverTime when incomplete.years.weight was set to NULL
@@ -32,7 +38,7 @@ Fixed a bug in costTrendOverTime when incomplete.years.weight was set to NULL
   - added annual costs in the output
   - improved handling of the last year with a new argument
 
-invacost v0.3 (Release date: unreleased yet)
+invacost v0.3 (Release date: 3 July 2020)
 ==============
 
 * Major changes to the models in costTrendOverTime(): 
@@ -44,7 +50,7 @@ invacost v0.3 (Release date: unreleased yet)
   - added the summary of models directly in the output of costTrendOverTime()
 * Added precisions about the error bands for MARS models in the help file
 
-invacost v0.2-4 (Release date: unreleased yet)
+invacost v0.2-4 (Release date: 7 April 2020)
 ==============
 
 Changes:
@@ -52,15 +58,15 @@ Changes:
 * Changed the method used to manually specify graphical parameters
 
 
-invacost v0.2-3 (Release date: unreleased yet)
+invacost v0.2-3 (Release date: 25 February 2020)
 ==============
 
 Changes:
 
 * Added the number of estimates and the number of "year values" (total
-number of individual values spread over all years in raw costs
+number of individual values spread over all years in raw costs)
 
-invacost v0.2-2 (Release date: unreleased yet)
+invacost v0.2-2 (Release date: 27 January 2020)
 ==============
 
 Changes:
@@ -72,7 +78,7 @@ arguments:
   - choice between bars or points, average or total costs for raw costs
   - choice of a single or multiple facets for cost trends over time
 
-invacost v0.2-1 (Release date: unreleased yet)
+invacost v0.2-1 (Release date: 22 January 2020)
 ==============
 
 Changes:
@@ -88,7 +94,7 @@ now on, the function will make a raw average per period of time regardless of
 data completion.
 
 
-invacost v0.2 (Release date: unreleased yet)
+invacost v0.2 (Release date: 19 December 2019)
 ==============
 
 Changes:
@@ -96,7 +102,7 @@ Changes:
 * Added the calculateRawAvgCosts function
 
 
-invacost v0.1 (Release date: unreleased yet)
+invacost v0.1 (Release date: 30 November 2019)
 ==============
 
 Changes:

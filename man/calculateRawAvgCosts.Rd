@@ -23,7 +23,8 @@ where annual costs occurring over several years are repeated for each year.}
 \item{cost.column}{Name of the cost column to use in \code{costdb} (usually, 
 choose between the exchange rate (default) or PPP annualised cost)}
 
-\item{year.column}{Name of the year column to use in \code{costdb}.}
+\item{year.column}{Name of the year column to use in \code{costdb}( usually, 
+"Impact_year" from \code{\link{expandYearlyCosts}}}
 
 \item{in.millions}{If \code{TRUE}, cost values will be transformed in 
 millions (to make graphs easier to read), else if \code{}, cost values will
@@ -45,16 +46,18 @@ considered as an interval of its own (\code{FALSE}). Generally only useful
 if the last year is at the limit of an interval.}
 }
 \value{
-a \code{list} with 5 elements:
+a \code{list} with 6 elements:
 
 \itemize{
-\item{\code{cost.data}: the annualised costs of invasions, as sums of all 
-costs for each year.}
+\item{\code{cost.data}: the input data.}
 \item{\code{parameters}: parameters used to run the function. The 
 \code{minimum.year} and \code{maximum.year} are based on the input data
 (i.e., the user may specify \code{minimum.year = 1960} but the input data may
 only have data starting from 1970, hence the \code{minimum.year} will be
  1970.)}
+\item{\code{year.breaks}: the years used to define year intervals over which costs were calculated.}
+\item{\code{cost.per.year}: the annualised costs of invasions, as sums of all 
+costs for each year.}
 \item{\code{average.total.cost}: the average annual cost of IAS calculated
 over the entire time period}
 \item{\code{average.cost.per.period}: a data.frame containing the the average 

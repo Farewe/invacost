@@ -3,7 +3,7 @@
 print.invacost.trendcost <- function(x, ...)
 {
   cat("\nEstimation of annual cost values of invasive alien species over time\n")
-  cat(paste0("\n- Temporal interval of data : [", 
+  cat(paste0("\n- Temporal interval of data: [", 
              x$parameters$minimum.year,
              ", ",
              x$parameters$maximum.year, "]"))

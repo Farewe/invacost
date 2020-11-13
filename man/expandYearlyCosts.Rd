@@ -22,6 +22,26 @@ all costs occuring over several years will be repeated for each year.
 For costs that occur over several years, this function will repeat the 
 annualised cost value over each year of the relevant period.
 }
+\note{
+Information on the beginning and ending years was not directly provided in
+literature sources of economic costs for about a quarter of entries in the 
+database. Therefore, for papers for which it was not available, we made 
+educated guesses on the probable starting and ending years, under two 
+different scenarios. The first scenario (called “low margin”) was designed 
+to be realistic, and makes no assumption as of whether the economic impacts 
+have been continued after the source was published. In this case,
+we used the duration of impacts indicated by the authors, or publication
+year when no information was available to fill the missing data. For costs
+repeated over several years but for which no information with respect to
+the exact periods of impact was available, we counted only a single year.
+The second scenario (called “high margin”) was designed as an extreme scenario 
+where the costs are repeated over time until the reference year of the 
+database (2017). These two scenarios are provided in the four fields added
+to the database with the package. We recommend using the “low margin”
+(columns \code{Probable_starting_year_low_margin} and 
+\code{Probable_ending_year_low_margin}) scenario as the base scenario, as 
+its conservative assumptions make it more realistic.
+}
 \examples{
 data(invacost)
 invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]

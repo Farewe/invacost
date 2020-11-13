@@ -70,7 +70,8 @@ This function calculates the raw average annual cost of invasive species
 over different periods of time
 }
 \details{
-Missing data for specific years will be considered as zero. 
+Missing data will be ignored. However, note that the average for each 
+interval will always be calculated on the basis of the full temporal range.
 For example, if there is only data for 1968 for the 1960-1969 interval,
 then the total cost for the interval will be equal to the cost of 1968, and the
 average annual cost for 1960-1969 will be cost of 1968 / 10.

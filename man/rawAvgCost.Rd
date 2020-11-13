@@ -50,7 +50,7 @@ Arguments \code{min.year} and \code{max.year} do not filter the data. Only
 specify them if you wish to change the interval over which averages are 
 calculated. For example, if your data have values from 1960 to 1964 but you
 want to calculated the average value from 1960 to 1969, set 
-\code{min.year = 1960} and \code{max.year = 1964}.
+\code{min.year = 1960} and \code{max.year = 1969}.
 
 However, if you want to calculate values for an interval narrower than your
 data, filter the data BEFORE running this function.

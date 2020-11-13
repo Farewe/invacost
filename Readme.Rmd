@@ -35,17 +35,17 @@ There are two main methods developed in this package to estimate the costs
 associated
 to biological invasions.
 
- - The first approach consists in calculating the *raw costs* (i.e., observed
- costs) that occurred over
- specific intervals of time. From this approach you can obtain the *observed*
- cumulated and 
+ - *Approach based on available estimates*: the first approach consists in  using
+ cost estimates, as they appear in the collected materials, that occurred over
+ specific intervals of time. From this approach you can obtain the 
+ cumulative and 
  average annual costs of biological invasions for different time intervals.  
  This approach is generalisable to any subset of the INVACOST database,
  regardless of data quantity. However, it does not account for the temporal dynamics
  of costs, and may thus underestimate the costs of invasions, especially for
  recent years for which we likely have incomplete data.
  
- - The second approach consists in **estimating** the long-term trend in annual cost 
+ - *Modelling approach*: the second approach consists in **estimating** the long-term trend in annual cost 
  values with an ensemble modelling approach. Because it includes the dynamic 
  nature of cost values, it is probably the most robust approach to estimate 
  average annual costs. However, it requires more data and for data-poor cases it
@@ -214,7 +214,7 @@ use one of these two standardised cost columns:
 The second method is probably more robust to provide equitable estimations 
 between countries, but PPP was not available for all countries and all years, so
 oftentimes it could not be estimated. Therefore, to avoid data exclusion, we 
-generally tend to focus on exchange rate since it is available for most country
+generally tend to focus on exchange rate since it is available for most countries
 after 1960. 
 
 Therefore, in the following sections we will always use the same column for cost 
@@ -245,7 +245,7 @@ of economic costs of invasive species, with detailed sources and reproducible
 methodology; but it also includes unsourced and irreproducible "*guestimates*".
 Therefore, we want to apply filters on the database to avoid as much as possible
 the unreliable economic cost estimates. Furthermore, the database includes both
-observed and predicted costs, so depending on our objectives we may or may not
+observed and potential costs, so depending on our objectives we may or may not
 want to filter out potential costs.
 
 - **Reliability**: There is a standard field in the database called `Method_reliability`,
@@ -276,20 +276,20 @@ unique(invacost$Method_reliability)
 documents whether the costs correspond to *Observed* or *Potential* costs. 
 Choosing to keep one or both of them depends on your study objectives. 
 In addition, costs can also be based on
-direct observations or estimations, or can be based on extrapolations: this is 
+direct *reports* or *estimations*, or can be based on *extrapolations*: this is 
 documented in the `Acquisition_method` field. Extrapolation does 
-not necessarily mean *Potential*: some Observed costs may have been extrapolated
+not necessarily mean *potential*: some Observed costs may have been extrapolated
 from a reduced spatial extent. Below is a table showing the number of cases
-of extrapolations and reports/estimation for *Observed* and *Potential* costs.  As 
-you can see, the majority of Observed costs are based on reports / 
-estimations; yet a few are based on extrapolations.
+of *extrapolations* and *reports/estimation* for *Observed* and *Potential* costs.  As 
+you can see, the majority of Observed costs are based on *reports* / 
+*estimations*; yet a few are based on *extrapolations.*
 ```{r obs}
 table(invacost$Acquisition_method, invacost$Implementation)
 ```
 
 
 For the rest of this tutorial, we will be working only on costs categorised as
-"High" in `Method_reliability` and "Observed" in `Implementation`:
+*High* in `Method_reliability` and "Observed" in `Implementation`:
 
 ```{r filter1}
 invacost <- invacost[which(invacost$Method_reliability == "High"), ]
@@ -388,7 +388,8 @@ it, to make it look like this:
 
 To do this, we use the function `expandYearlyCosts`, to
 which we provide the starting and ending year columns. It will store the
-years over which economic costs have occurred in a column named `Impact_year`.
+years over which economic costs have occurred in a column named `Impact_year`. 
+In this example, expanded database is here stored in an object called `db.over.time`.
 
 ```{r i2y, cache = TRUE}
 # Expanding and formating the database
@@ -405,7 +406,7 @@ head(db.over.time[, c("Cost_ID", "Species",
 
 It is impossible to evaluate the absolute degree of completeness of our 
 INVACOST - we know that we lack data for many taxonomic groups (e.g. plants are
-currently underrepresented) and many places around the earth (most cost data is
+currently underrepresented) and many places around the earth (most cost data are
 located in North America and Europe). You have to be aware of these 
 potential biases and remember them when interpreting data/analyses.
 
@@ -466,7 +467,7 @@ The median delay between impact and publication of impact was
 `r median(db.over.time$Publication_lag)` years, we can expect to have less than 50% 
 of the economic impacts**. 
 
-Likewise, we can say it takes approximately `r quantiles[1]` years to have 25% of the 
+Likewise, we can say it takes approximately `r quantiles[1]` year to have 25% of the 
 economic data for any year, and `r quantiles[3]` years to reach at least 75% of 
 economic data.
 
@@ -487,11 +488,12 @@ as we did here.***
 
 
 
-# Calculate raw/observed costs of invasions
+# Approach based on available estimates: cumulative and average costs of invasions
 
 ## Basic usage
 The first method to analyse economic costs of invasive species consists in
-calculating the observed cumulative and average costs over a specific period 
+calculating the observed cumulative and average costs - as they appear in the 
+collected materials - over a specific period 
 of time, or at different time intervals.
 
 We implemented this method in the function `calculateRawAvgCosts`. It will 
@@ -600,7 +602,7 @@ There are two main parameters to customize:
 
  - **beginning** (`minimum.year`) and **ending year** (`maximum.year`) of the entire 
  time period. For example in our
- analyses for the main paper we chose to start at 1970, because data for the
+ analyses for the main paper we chose to start in 1970, because data for the
  1960s are scarce and uncertain.
 ```{r raw4, cache=TRUE}
 raw.costs2 <- calculateRawAvgCosts(db.over.time,
@@ -690,7 +692,7 @@ p1
 
 Your turn to play with graphs now!
 
-# Estimate the average annual cost of invasions
+# Modelling approach: estimating the average annual cost of invasions
 
 The second method we provide in the package consists in estimating the long-term
 trend in annual cost with different modelling techniques. In other words, we fit
@@ -698,7 +700,7 @@ a model to predict costs as a function of years. Then, we can inspect the
 different models and the shapes of cost trends over time, and grasp an idea
 of dynamics of invasion costs.
 
-This approach requires more data than the raw approach and for data-poor cases it
+This approach requires more data than the approach based on available estimates  and for data-poor cases it
 will not work or provide inadequate results. 
 
 
@@ -710,7 +712,7 @@ years.
 
 This is no simple decision and your choice will have to be justified.
 
-There two different methods we can apply here, either independently or in
+There are two different methods we can apply here, either independently or in
 combination.
 
 - The first method consists in applying a threshold of incompleteness to remove
@@ -817,7 +819,7 @@ type for example `citation("earth")` in R**
  implemented two OLS methods: 
     + **linear OLS regressions** 
     + **quadratic OLS regressions**
- - **Robust regressions regression** (R package `robustbase`,
+ - **Robust regressions** (R package `robustbase`,
  function `lmrob`, Maechler et al. 2020). We implemented MM-type regressions (hereafter called
  robust regressions) based on iteratively reweighted least squares since these types 
  of regressions are less sensitive to outliers than ordinary least square 
@@ -825,7 +827,7 @@ type for example `citation("earth")` in R**
  Stahel 2011). In addition, this method estimates standard errors robust to heteroskedasticity and autocorrelation as described in Croux et al. 2003. *Thanks 
  Andrew Kramer for this addition*. Likewise to OLS regressions, we implemented 
  two methods:
-    + **Linear robust regressions** 
+    + **linear robust regressions** 
     + **quadratic robust regressions**
  - **Multivariate adaptive regression splines** (Multivariate Adaptive Regression 
  Splines, MARS, R package `earth`, function `earth`, Milborrow 2018). The MARS 
@@ -849,7 +851,7 @@ type for example `citation("earth")` in R**
  time. To account for heteroskedasticity, we used a
  location-scale method which consists in fitting two GAMs, one for the average
  trend and one for the standard deviation. We used a simple Gaussian location
- scale family because, likewise to GAMs, we have  have enough
+ scale family because, likewise to GAMs, we have enough
  data to only approximately model variance. 
  - **Quantile regressions** (R package `quantreg`, Koenker et al. 2020).
  Contrary to previous models, 
@@ -898,7 +900,7 @@ of the assumption that there is a substantial part of costs that have not been
 estimated or reported in INVACOST. The usefulness of these models is to 
 investigate whether the costs are increasing, stabilizing, or decreasing, 
 and how these trends changed over time, and to have an idea of the order of 
-magnitude of annual IAS costs for different depending on time. 
+magnitude of annual IAS costs depending on time. 
 
 Therefore, remember that the major uncertainty we have on estimated cost values
 does not necessarily come from statistical robustness but rather from the 
@@ -1093,7 +1095,7 @@ summarized.summary
 
 
 
-Customising plots for the modelling approach similar to the raw cost approach: 
+Customising plots for the modelling approach similar to the approach based on available estimates: 
 there are two options. 
 
 
@@ -1136,7 +1138,7 @@ plot(global.trend,
 
 ### Complex customisation
 
-Likewise to the raw cost approach, if you want to customise ggplot parameters,
+Likewise to the approach based on available estimates, if you want to customise ggplot parameters,
 you have to set `graphical.parameters = "manual"`.
 
 ```{r models6, cache=TRUE}
@@ -1211,8 +1213,8 @@ Once again, there are studies involving multiple taxa, and here we focus only on
 mammals.
 
 There are only 63 rows in this subset, which may not be 
-sufficient to run the predictive approach. Let's confirm this by starting with
-the raw cost approach:
+sufficient to run the modelling approach. Let's confirm this by starting with
+the approach based on available estimates:
 
 
 ```{r example1.4}
@@ -1238,7 +1240,7 @@ US$ `r scales::comma(raw.NAmammals$average.total.cost$total_cost)` millions for
 the 1970-2017 time period.
 
 
-# Example on many subsets: all taxons/species in the database
+# Example on many subsets: all taxa/species in the database
 
 This is a more complex situation where we want to derive a single estimate for 
 all species/taxon in the database.
@@ -1302,7 +1304,7 @@ invacost$unique.sp.id <- do.call("paste", invacost[, c("Kingdom", "Phylum", "Cla
 ```
 
 Finally, we will write a loop that will cycle through all these unique groups,
-and for each group, calculate the raw cumulative cost and average annual cost
+and for each group, calculate the cumulative cost and average annual cost
 for the 1970-2017 time period. 
 
 ```{r allsp5, warning=FALSE, cache = TRUE}

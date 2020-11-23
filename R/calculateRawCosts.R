@@ -76,6 +76,10 @@ calculateRawAvgCosts <- function(
   include.last.year = TRUE
 )
 {
+  if(nrow(costdb) == 0)
+  {
+    stop("costdb is an empty table.\n")
+  }
   if(any(is.na(costdb[, cost.column])))
   {
     costdb <- costdb[-which(is.na(costdb[, cost.column])), ]

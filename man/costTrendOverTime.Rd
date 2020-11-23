@@ -14,7 +14,7 @@ costTrendOverTime(
   minimum.year = 1960,
   maximum.year = 2017,
   final.year = 2017,
-  incomplete.year.threshold = 2015,
+  incomplete.year.threshold = NULL,
   incomplete.year.weights = NULL,
   gam.k = -1,
   mars.nprune = NULL,

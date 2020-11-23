@@ -97,7 +97,7 @@ costTrendOverTime <- function(costdb,
                               #            "gam",
                               #            "mars",
                               #            "quantile"),
-                              incomplete.year.threshold = 2015,
+                              incomplete.year.threshold = NULL, # Changed default behaviour 2020.11.18
                               incomplete.year.weights = NULL,
                               gam.k = -1,
                               mars.nprune = NULL,
@@ -106,7 +106,10 @@ costTrendOverTime <- function(costdb,
 {
 
 # Argument checking -------------------------------------------------------
-
+  if(nrow(costdb) == 0)
+  {
+    stop("costdb is an empty table.\n")
+  }
   dots <- list(...)
   # Checking if deprecated mars.nk argument was provided
   if("mars.nk" %in% names(dots))

@@ -501,8 +501,7 @@ calculate the cumulative and average costs for the entire period, as well as
 for different time intervals (by default, 10-year intervals).
 
 ```{r raw1, cache=TRUE}
-raw.costs <- calculateRawAvgCosts(db.over.time,
-                                   maximum.year = 2020)
+raw.costs <- calculateRawAvgCosts(db.over.time)
 ```
 
 We can get a summary of the results by typing the name of the object in the 
@@ -512,7 +511,7 @@ raw.costs
 ```
 
 And we can have a graphical output with:
-```{r raw3, cache=TRUE}
+```{r raw3, cache=TRUE, fig.width=8, fig.height = 8}
 plot(raw.costs)
 ```
 

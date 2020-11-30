@@ -7,7 +7,7 @@
 prettySummary(x)
 }
 \arguments{
-\item{x}{output object from \code{\link{costTrendOverTime}}}
+\item{x}{output object from \code{\link{modelCosts}}}
 }
 \description{
 This function is useful for presenting the main results (coefficients, tests,
@@ -21,7 +21,7 @@ db.over.time <- expandYearlyCosts(invacost,
 costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
 costdb <- costdb[which(costdb$Method_reliability == "High"), ]
 costdb <- costdb[-which(is.na(costdb$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
-res <- costTrendOverTime(costdb)
+res <- modelCosts(costdb)
 prettySummary(res)
 }
 \author{

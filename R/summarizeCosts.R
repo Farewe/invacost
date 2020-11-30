@@ -1,7 +1,7 @@
-#' Calculate the raw average annual cost of invasions over periods of time
+#' Summarize costs of invasions over periods of time
 #' 
-#' This function calculates the raw average annual cost of invasive species
-#' over different periods of time
+#' This function calculates the cumulative costs and average annual costs of
+#' invasive species over different periods of time.
 #' 
 #' @param costdb The \bold{expanded INVACOST database} output from 
 #' \code{\link{expandYearlyCosts}},
@@ -42,19 +42,30 @@
 #' annual cost of IAS calculated over each time interval}
 #' }
 #' The structure of this object can be seen using \code{str()}
-#'
-#' @templateVar fun calculateRawAvgCosts
-#' @template template-depr_fun
-NULL
-
-#' @templateVar old calculateRawAvgCosts
-#' @templateVar new summarizeCosts
-#' @template template-depr_pkg
-#'
+#' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
+#' @details
+#' Missing data will be ignored. However, note that the average for each 
+#' interval will always be calculated on the basis of the full temporal range.
+#' For example, if there is only data for 1968 for the 1960-1969 interval,
+#' then the total cost for the interval will be equal to the cost of 1968, and the
+#' average annual cost for 1960-1969 will be cost of 1968 / 10.
 #' @export
+#' @author
+#' Boris Leroy \email{leroy.boris@@gmail.com}, Andrew Kramer, Anne-Charlotte
+#' Vaissière, Christophe Diagne
+#' 
+#' @examples
+#' data(invacost)
+#' db.over.time <- expandYearlyCosts(invacost,
+#'                                   startcolumn = "Probable_starting_year_low_margin",
+#'                                   endcolumn = "Probable_ending_year_low_margin")
+#' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
+#' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
+#' costdb <- costdb[-which(is.na(costdb$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
+#' res <- summarizeCosts(costdb)
+#' res
 
-
-calculateRawAvgCosts <- function(
+summarizeCosts <- function(
   costdb,
   cost.column = "Cost_estimate_per_year_2017_USD_exchange_rate",
   year.column = "Impact_year",
@@ -115,7 +126,7 @@ calculateRawAvgCosts <- function(
   }
   
   # Average cost of the entire period of time
-  total.cost <-  as.data.frame(rawAvgCost(costdb,
+  total.cost <-  as.data.frame(computeAvgTotCost(costdb,
                                           cost.column,
                                           year.column,
                                           min.year = minimum.year,
@@ -131,7 +142,7 @@ calculateRawAvgCosts <- function(
     if(nrow(cur.db))
     {
       cost.per.year <- rbind(cost.per.year,
-                             as.data.frame(rawAvgCost(cur.db,
+                             as.data.frame(computeAvgTotCost(cur.db,
                                                       cost.column,
                                                       year.column)))
     } else
@@ -150,10 +161,10 @@ calculateRawAvgCosts <- function(
   # In case requested periods are 1-year intervals
   tmp <- cost.per.year
   cost.per.year <- cost.per.year[, -which(colnames(cost.per.year) %in%
-                                          c("final_year", 
-                                            "time_span",
-                                            "annual_cost",
-                                            "number_year_values"))]
+                                            c("final_year", 
+                                              "time_span",
+                                              "annual_cost",
+                                              "number_year_values"))]
   colnames(cost.per.year)[colnames(cost.per.year) == "initial_year"] <- "year"
   colnames(cost.per.year)[colnames(cost.per.year) == "total_cost"] <- "cost"
   
@@ -181,7 +192,7 @@ calculateRawAvgCosts <- function(
         if(nrow(cur.db))
         {
           period.costs <- rbind.data.frame(period.costs,
-                                           as.data.frame(rawAvgCost(cur.db,
+                                           as.data.frame(computeAvgTotCost(cur.db,
                                                                     cost.column,
                                                                     year.column,
                                                                     min.year = period[1],
@@ -211,7 +222,7 @@ calculateRawAvgCosts <- function(
           if(nrow(cur.db))
           {
             period.costs <- rbind.data.frame(period.costs,
-                                             as.data.frame(rawAvgCost(cur.db,
+                                             as.data.frame(computeAvgTotCost(cur.db,
                                                                       cost.column,
                                                                       year.column,
                                                                       min.year = period[1],
@@ -234,7 +245,7 @@ calculateRawAvgCosts <- function(
           if(nrow(cur.db))
           {
             period.costs <- rbind.data.frame(period.costs,
-                                             as.data.frame(rawAvgCost(cur.db,
+                                             as.data.frame(computeAvgTotCost(cur.db,
                                                                       cost.column,
                                                                       year.column,
                                                                       min.year = period[1],
@@ -254,7 +265,7 @@ calculateRawAvgCosts <- function(
       }
     }
   }
-
+  
   results <- list(cost.data = costdb,
                   parameters = parameters, 
                   year.breaks = year.breaks,
@@ -262,9 +273,9 @@ calculateRawAvgCosts <- function(
                   average.total.cost = total.cost,
                   average.cost.per.period = period.costs)
   
-  class(results) <- append("invacost.rawcost", class(results))
+  class(results) <- append("invacost.costsummary", class(results))
   return(results)
-
+  
 }
 
 
@@ -295,16 +306,31 @@ calculateRawAvgCosts <- function(
 #' via \code{\link{expandYearlyCosts}}
 #'  \item{\code{number_year_values}: the number of yearly costs included}
 #' }}
-#' @templateVar fun rawAvgCost
-#' @template template-depr_fun
-NULL
-
+#' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
 #' @export
-#' @templateVar old rawAvgCost
-#' @templateVar new computeAvgTotCost
-#' @template template-depr_pkg
-
-rawAvgCost <- function(
+#' @note
+#' Arguments \code{min.year} and \code{max.year} do not filter the data. Only 
+#' specify them if you wish to change the interval over which averages are 
+#' calculated. For example, if your data have values from 1960 to 1964 but you
+#' want to calculated the average value from 1960 to 1969, set 
+#' \code{min.year = 1960} and \code{max.year = 1969}.
+#' 
+#' However, if you want to calculate values for an interval narrower than your
+#' data, filter the data BEFORE running this function.
+#' @author
+#' Boris Leroy \email{leroy.boris@@gmail.com}
+#' 
+#' with help from C. Diagne & A.-C. Vaissière
+#' @examples
+#' data(invacost)
+#' db.over.time <- expandYearlyCosts(invacost,
+#'                                   startcolumn = "Probable_starting_year_low_margin",
+#'                                   endcolumn = "Probable_ending_year_low_margin")
+#' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
+#' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
+#' res <- computeAvgTotCost(costdb)
+#' res
+computeAvgTotCost <- function(
   costdb,
   cost.column = "Cost_estimate_per_year_2017_USD_exchange_rate",
   year.column = "Impact_year",
@@ -312,13 +338,12 @@ rawAvgCost <- function(
   max.year = NULL
 )
 {
-  .Deprecated("computeAvgTotCost")
   initial_year <- ifelse(!is.null(min.year),
-                        min.year,
-                        min(costdb[, year.column]))
+                         min.year,
+                         min(costdb[, year.column]))
   final_year <- ifelse(!is.null(max.year),
-                      max.year,
-                      max(costdb[, year.column]))
+                       max.year,
+                       max(costdb[, year.column]))
   return(list(initial_year = initial_year,
               final_year = final_year,
               time_span = length(initial_year:final_year),
@@ -329,4 +354,3 @@ rawAvgCost <- function(
               number_year_values = nrow(costdb)))
 }
 
-    

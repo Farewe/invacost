@@ -3,7 +3,7 @@
 #' This function is useful for presenting the main results (coefficients, tests,
 #' etc.) of models in a paper
 #' 
-#' @param x output object from \code{\link{costTrendOverTime}}
+#' @param x output object from \code{\link{modelCosts}}
 #' @export
 #' @author
 #' Boris Leroy \email{leroy.boris@@gmail.com}, Andrew Kramer, Anne-Charlotte
@@ -16,14 +16,14 @@
 #' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
 #' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
 #' costdb <- costdb[-which(is.na(costdb$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
-#' res <- costTrendOverTime(costdb)
+#' res <- modelCosts(costdb)
 #' prettySummary(res)
 
 prettySummary <- function(x)
 {
-  if(!inherits(x, "invacost.trendcost"))
+  if(!inherits(x, "invacost.costmodel"))
   {
-    stop("This function was designed to work with an object of class invacost.trendcost (output of costTrendOverTime()")
+    stop("This function was designed to work with an object of class invacost.costmodel (output of modelCosts()")
   }
   # Pretty summaries (to make it easier to present results in papers) -------
   

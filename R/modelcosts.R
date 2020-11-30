@@ -1,7 +1,7 @@
-#' Estimate the trend of invasive species costs over time
+#' Model the trend of invasive species costs over time
 #' 
 #' This function fits different models on annualised INVACOST data in order to
-#' estimate the average trend over time of invasive species costs.
+#' estimate and predict the trend over time of invasive species costs.
 #' 
 #' @param costdb The \bold{expanded INVACOST database} output from 
 #' \code{\link{expandYearlyCosts}},
@@ -65,40 +65,47 @@
 #' costs of invasive species based on all models for \code{final.year}.}
 #' }
 #' The structure of this object can be seen using \code{str()}
-#' @templateVar fun rawAvgCost
-#' @template template-depr_fun
-NULL
-
+#' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
+#' @importFrom stats lm predict qt residuals
 #' @export
-#' @templateVar old costTrendOverTime
-#' @templateVar new modelCosts
-#' @template template-depr_pkg
+#' @author
+#' Boris Leroy \email{leroy.boris@@gmail.com}, Andrew Kramer, Anne-Charlotte
+#' Vaissière, Christophe Diagne
+#' @examples
+#' data(invacost)
+#' db.over.time <- expandYearlyCosts(invacost,
+#'                                   startcolumn = "Probable_starting_year_low_margin",
+#'                                   endcolumn = "Probable_ending_year_low_margin")
+#' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
+#' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
+#' res <- modelCosts(costdb)
+#' res
 
-costTrendOverTime <- function(costdb,
-                              cost.column = "Cost_estimate_per_year_2017_USD_exchange_rate",
-                              year.column = "Impact_year",
-                              cost.transf = "log10",
-                              in.millions = TRUE,
-                              confidence.interval = 0.95,
-                              minimum.year = 1960, 
-                              maximum.year = 2017, 
-                              final.year = 2017, 
-                              # models = c("ols.linear", 
-                              #            "ols.quadratic",
-                              #            "robust.linear",
-                              #            "robust.quadratic",
-                              #            "gam",
-                              #            "mars",
-                              #            "quantile"),
-                              incomplete.year.threshold = NULL, # Changed default behaviour 2020.11.18
-                              incomplete.year.weights = NULL,
-                              gam.k = -1,
-                              mars.nprune = NULL,
-                              ...
+modelCosts <- function(costdb,
+                       cost.column = "Cost_estimate_per_year_2017_USD_exchange_rate",
+                       year.column = "Impact_year",
+                       cost.transf = "log10",
+                       in.millions = TRUE,
+                       confidence.interval = 0.95,
+                       minimum.year = 1960, 
+                       maximum.year = 2017, 
+                       final.year = 2017, 
+                       # models = c("ols.linear", 
+                       #            "ols.quadratic",
+                       #            "robust.linear",
+                       #            "robust.quadratic",
+                       #            "gam",
+                       #            "mars",
+                       #            "quantile"),
+                       incomplete.year.threshold = NULL, # Changed default behaviour 2020.11.18
+                       incomplete.year.weights = NULL,
+                       gam.k = -1,
+                       mars.nprune = NULL,
+                       ...
 )
 {
-  .deprecated(modelCosts)
-# Argument checking -------------------------------------------------------
+  
+  # Argument checking -------------------------------------------------------
   if(nrow(costdb) == 0)
   {
     stop("costdb is an empty table.\n")
@@ -265,8 +272,8 @@ costTrendOverTime <- function(costdb,
   # Prediction years correspond to the entire range provided by the user
   prediction.years <- data.frame(Year = minimum.year:maximum.year)
   
-
-# Ordinary Least Square (OLS) regression ----------------------------------
+  
+  # Ordinary Least Square (OLS) regression ----------------------------------
   
   message("\n --- Computing OLS regressions\n")
   # Ordinary least square - linear effect
@@ -327,7 +334,7 @@ costTrendOverTime <- function(costdb,
   
   # Calculating 95% confidence intervals based on robust variance covariance matrix
   modelmatrix.quadric <- stats::model.matrix(~ Year + I(Year^2),
-                                      data = prediction.years)
+                                             data = prediction.years)
   # Variance of prediction years
   var.years.quadratic <- modelmatrix.quadric %*% vcov.HAC.quadratic %*% t(modelmatrix.quadric)
   # Standard errors
@@ -346,7 +353,7 @@ costTrendOverTime <- function(costdb,
   
   
   
-# Robust regression -------------------------------------------------------
+  # Robust regression -------------------------------------------------------
   # Robust regression - Linear effect
   message("\n --- Computing robust regressions\n")
   robust.linear <- robustbase::lmrob(transf.cost ~ Year, data = yearly.cost.calibration, 
@@ -355,7 +362,7 @@ costTrendOverTime <- function(costdb,
                                     prediction.years,
                                     interval = "confidence", 
                                     level = confidence.interval),
-                               silent = TRUE)
+                            silent = TRUE)
   if("try-error" %in% class(pred.robust.linear)) 
   {
     warning("Could not estimate confidence interval for robust linear regression")
@@ -365,8 +372,8 @@ costTrendOverTime <- function(costdb,
       lwr = NA, upr = NA)
   }
   rownames(pred.robust.linear) <- prediction.years[, 1]
-
-
+  
+  
   
   model.RMSE["robust.linear", "RMSE.calibration"] <- sqrt(mean(residuals(robust.linear)^2))
   model.RMSE["robust.linear", "RMSE.alldata"] <- 
@@ -393,7 +400,7 @@ costTrendOverTime <- function(costdb,
                     newdata = prediction.years),
       lwr = NA, upr = NA)
   }
-
+  
   rownames(pred.robust.quadratic) <- prediction.years[, 1]
   
   model.RMSE["robust.quadratic", "RMSE.calibration"] <- sqrt(mean(residuals(robust.quadratic)^2))
@@ -401,8 +408,8 @@ costTrendOverTime <- function(costdb,
     mean((pred.robust.quadratic[match(yearly.cost$Year, rownames(pred.robust.quadratic)), 
                                 "fit"] - yearly.cost$transf.cost)^2))
   
-
-# Multiple Adapative Regression Splines -----------------------------------
+  
+  # Multiple Adapative Regression Splines -----------------------------------
   
   message("\n --- Computing MARS\n")
   mars <- earth::earth(transf.cost ~ Year, data = yearly.cost.calibration,
@@ -425,8 +432,8 @@ costTrendOverTime <- function(costdb,
     mean((pred.mars[match(yearly.cost$Year, rownames(pred.mars)), "fit"] -
             yearly.cost$transf.cost)^2))
   
-
-# Generalized Additive Models ---------------------------------------------
+  
+  # Generalized Additive Models ---------------------------------------------
   
   message("\n --- Computing GAM\n")
   if(!is.null(incomplete.year.weights))
@@ -499,8 +506,8 @@ costTrendOverTime <- function(costdb,
             yearly.cost$transf.cost)^2))
   
   
-
-# Quantile regression -----------------------------------------------------
+  
+  # Quantile regression -----------------------------------------------------
   
   message("\n --- Computing quantile regressions\n")
   qt0.1 <- quantreg::rq(transf.cost ~ Year, 
@@ -571,10 +578,10 @@ costTrendOverTime <- function(costdb,
     mean((pred.qt0.9[match(yearly.cost$Year, rownames(pred.qt0.9)), "fit"] -
             yearly.cost$transf.cost)^2))
   
-
-
-# Assembling predictions --------------------------------------------------
-
+  
+  
+  # Assembling predictions --------------------------------------------------
+  
   
   message("\n --- Preparing the output objects\n")
   model.preds <- rbind.data.frame(data.frame(model = "OLS regression",
@@ -614,9 +621,9 @@ costTrendOverTime <- function(costdb,
                                              Details = "Quantile 0.9",
                                              pred.qt0.9))
   
-
-# Model Summaries ---------------------------------------------------------
-
+  
+  # Model Summaries ---------------------------------------------------------
+  
   
   # Creating the list containing the summary of model results
   testsummary <- list()
@@ -644,7 +651,7 @@ costTrendOverTime <- function(costdb,
   
   
   
-# Preparing outputs -------------------------------------------------------
+  # Preparing outputs -------------------------------------------------------
   
   # Formatting results for output object
   if(cost.transf == "log10")
@@ -759,6 +766,6 @@ costTrendOverTime <- function(costdb,
                     model.summary = testsummary,
                     RMSE = model.RMSE)
   }
-  class(results) <- append("invacost.trendcost", class(results))
+  class(results) <- append("invacost.costmodel", class(results))
   return(results)
 }

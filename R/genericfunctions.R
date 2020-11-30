@@ -1,6 +1,6 @@
 #' @export
-#' @method print invacost.trendcost
-print.invacost.trendcost <- function(x, ...)
+#' @method print invacost.costmodel
+print.invacost.costmodel <- function(x, ...)
 {
   cat("\nEstimation of annual cost values of invasive alien species over time\n")
   cat(paste0("\n- Temporal interval of data: [", 
@@ -54,8 +54,8 @@ print.invacost.trendcost <- function(x, ...)
 }
 
 #' @export
-#' @method print invacost.rawcost
-print.invacost.rawcost <- function(x, ...)
+#' @method print invacost.costsummary
+print.invacost.costsummary <- function(x, ...)
 {
   cat("\nAverage annual cost of invasive species over time periods\n")
   cat(paste0("\n- Temporal interval of data : [", 
@@ -132,8 +132,8 @@ print.invacost.modelsummary <- function(x, ...)
 
 
 #' @export
-#' @method str invacost.trendcost
-str.invacost.trendcost <- function(object, ...)
+#' @method str invacost.costmodel
+str.invacost.costmodel <- function(object, ...)
 {
   args <- list(...)
   if(is.null(args$max.level))
@@ -144,8 +144,8 @@ str.invacost.trendcost <- function(object, ...)
 }
 
 #' @export
-#' @method str invacost.rawcost
-str.invacost.rawcost <- function(object, ...)
+#' @method str invacost.costsummary
+str.invacost.costsummary <- function(object, ...)
 {
   args <- list(...)
   if(is.null(args$max.level))
@@ -160,14 +160,14 @@ str.invacost.rawcost <- function(object, ...)
 #' This function provides different plotting methods for the estimated annual
 #' cost of invasive species based on the temporal trend of costs.
 #' 
-#' @param x The output object from \code{\link{costTrendOverTime}}
+#' @param x The output object from \code{\link{modelCosts}}
 #' @param plot.type \code{"single"} or \code{"facets"}. Defines the type of plot
 #' you want to make: a single facet with all models (\code{"single"}), or a 
 #' facet per category of model (\code{"facets"})
 #' @param plot.breaks a vector of numeric values indicating the plot breaks 
 #' for the Y axis (cost values)
 #' @param models the models the user would like to appear in the plots. Can be
-#' any subset of the models included in 'costTrendOverTime'. Default is all models.
+#' any subset of the models included in 'modelCosts'. Default is all models.
 #' @param graphical.parameters set this to \code{"manual"} if you want to 
 #' customise ggplot2 parameters. 
 #' By default, the following layers are configured: ylab, xlab, scale_x_continuous,
@@ -199,12 +199,12 @@ str.invacost.rawcost <- function(object, ...)
 #'                                   endcolumn = "Probable_ending_year_low_margin")
 #' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
 #' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
-#' res <- costTrendOverTime(costdb)
+#' res <- modelCosts(costdb)
 #' plot(res)
 #' plot(res, plot.type = "single")
 #' @export
-#' @method plot invacost.trendcost
-plot.invacost.trendcost <- function(x,
+#' @method plot invacost.costmodel
+plot.invacost.costmodel <- function(x,
                                     plot.breaks = 10^(-15:15),
                                     plot.type = "facets",
                                     models = c("ols.linear", 
@@ -367,7 +367,7 @@ plot.invacost.trendcost <- function(x,
                   scales = "free_y") +
       scale_discrete_manual(aesthetics = "col",
                             values = cols)
-    message("Note that MARS error bands are prediction intervals and not confidence interval (see ?plot.invacost.trendcost)\n")
+    message("Note that MARS error bands are prediction intervals and not confidence interval (see ?plot.invacost.costmodel)\n")
     
   }
   
@@ -380,7 +380,7 @@ plot.invacost.trendcost <- function(x,
 #' This function provides different plotting methods for the raw average annual 
 #' cost of invasive species over different periods of time
 #' 
-#' @param x The output object from \code{\link{calculateRawAvgCosts}}
+#' @param x The output object from \code{\link{summarizeCosts}}
 #' @param plot.type \code{"points"} or \code{"bars"}. Defines the type of plot
 #' you want to make; bars are not advised in log scale because the base value (0)
 #' is infinite in log-scale. 
@@ -407,11 +407,11 @@ plot.invacost.trendcost <- function(x,
 #'                                   endcolumn = "Probable_ending_year_low_margin")
 #' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
 #' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
-#' res <- calculateRawAvgCosts(costdb)
+#' res <- summarizeCosts(costdb)
 #' plot(res)
 #' plot(res, plot.type = "bars")
-#' @method plot invacost.rawcost
-plot.invacost.rawcost <- function(x,
+#' @method plot invacost.costsummary
+plot.invacost.costsummary <- function(x,
                                   plot.breaks = 10^(-15:15),
                                   plot.type = "points",
                                   average.annual.values = TRUE,
@@ -575,4 +575,10 @@ plot.invacost.rawcost <- function(x,
 }
 
 
+#' @export
+#' @method summary invacost.costmodel
+summary.invacost.costmodel <- function(x, ...)
+{
+  x$model.summary
+}
 

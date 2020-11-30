@@ -2,7 +2,7 @@
 % Please edit documentation in R/modelcosts.R
 \name{modelCosts}
 \alias{modelCosts}
-\title{Estimate the trend of invasive species costs over time}
+\title{Model the trend of invasive species costs over time}
 \usage{
 modelCosts(
   costdb,
@@ -12,8 +12,8 @@ modelCosts(
   in.millions = TRUE,
   confidence.interval = 0.95,
   minimum.year = 1960,
-  maximum.year = 2017,
-  final.year = 2017,
+  maximum.year = max(costdb[, year.column]),
+  final.year = max(costdb[, year.column]),
   incomplete.year.threshold = NULL,
   incomplete.year.weights = NULL,
   gam.k = -1,
@@ -102,7 +102,7 @@ The structure of this object can be seen using \code{str()}
 }
 \description{
 This function fits different models on annualised INVACOST data in order to
-estimate the average trend over time of invasive species costs.
+estimate and predict the trend over time of invasive species costs.
 }
 \examples{
 data(invacost)

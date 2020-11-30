@@ -115,7 +115,7 @@ calculateRawAvgCosts <- function(
   }
   
   # Average cost of the entire period of time
-  total.cost <-  as.data.frame(rawAvgCost(costdb,
+  total.cost <-  as.data.frame(computeAvgTotCost(costdb,
                                           cost.column,
                                           year.column,
                                           min.year = minimum.year,
@@ -131,7 +131,7 @@ calculateRawAvgCosts <- function(
     if(nrow(cur.db))
     {
       cost.per.year <- rbind(cost.per.year,
-                             as.data.frame(rawAvgCost(cur.db,
+                             as.data.frame(computeAvgTotCost(cur.db,
                                                       cost.column,
                                                       year.column)))
     } else
@@ -181,7 +181,7 @@ calculateRawAvgCosts <- function(
         if(nrow(cur.db))
         {
           period.costs <- rbind.data.frame(period.costs,
-                                           as.data.frame(rawAvgCost(cur.db,
+                                           as.data.frame(computeAvgTotCost(cur.db,
                                                                     cost.column,
                                                                     year.column,
                                                                     min.year = period[1],
@@ -211,7 +211,7 @@ calculateRawAvgCosts <- function(
           if(nrow(cur.db))
           {
             period.costs <- rbind.data.frame(period.costs,
-                                             as.data.frame(rawAvgCost(cur.db,
+                                             as.data.frame(computeAvgTotCost(cur.db,
                                                                       cost.column,
                                                                       year.column,
                                                                       min.year = period[1],
@@ -234,7 +234,7 @@ calculateRawAvgCosts <- function(
           if(nrow(cur.db))
           {
             period.costs <- rbind.data.frame(period.costs,
-                                             as.data.frame(rawAvgCost(cur.db,
+                                             as.data.frame(computeAvgTotCost(cur.db,
                                                                       cost.column,
                                                                       year.column,
                                                                       min.year = period[1],

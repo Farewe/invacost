@@ -50,7 +50,7 @@ print.invacost.costmodel <- function(x, ...)
              scales::comma(x$final.year.cost["quantile.0.9"], accuracy = .01),
              "\n"
              ))
-  cat(paste0("\nYou can inspect the summary of each fitted model with object$model.summary\n"))
+  cat(paste0("\nYou can inspect the summary of each fitted model with summary(object)\n"))
 }
 
 #' @export

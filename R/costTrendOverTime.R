@@ -97,7 +97,7 @@ costTrendOverTime <- function(costdb,
                               ...
 )
 {
-  .deprecated(modelCosts)
+  .Deprecated("modelCosts")
 # Argument checking -------------------------------------------------------
   if(nrow(costdb) == 0)
   {

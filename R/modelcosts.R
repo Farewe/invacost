@@ -48,6 +48,8 @@
 #' provided if you selected a cost transformation different from log10):
 #'
 #' \itemize{
+#' \item{\code{input.data}: the input cost data, for reproducibility of 
+#' analyses.}
 #' \item{\code{cost.data}: the annualised costs of invasions, as sums of all 
 #' costs for each year.}
 #' \item{\code{parameters}: parameters used to run the function. The 
@@ -88,8 +90,8 @@ modelCosts <- function(costdb,
                        in.millions = TRUE,
                        confidence.interval = 0.95,
                        minimum.year = 1960, 
-                       maximum.year = 2017, 
-                       final.year = 2017, 
+                       maximum.year = max(costdb[, year.column]), 
+                       final.year = max(costdb[, year.column]), 
                        # models = c("ols.linear", 
                        #            "ols.quadratic",
                        #            "robust.linear",
@@ -751,7 +753,8 @@ modelCosts <- function(costdb,
                                                          newdata = data.frame(Year = final.year)))))
   } else
   {
-    results <- list(cost.data = yearly.cost,
+    results <- list(input.data = costdb,
+                    cost.data = yearly.cost,
                     parameters = parameters, 
                     calibration.data = yearly.cost.calibration,
                     fitted.models = list(linear = ols.linear, # Inconsistent name, should be corrected (but need to check generic functions)

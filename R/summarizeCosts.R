@@ -76,7 +76,6 @@ summarizeCosts <- function(
   include.last.year = TRUE
 )
 {
-  .Deprecated("summarizeCosts")
   if(nrow(costdb) == 0)
   {
     stop("costdb is an empty table.\n")

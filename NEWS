@@ -2,6 +2,7 @@ invacost v0.3-7 (Release date: 30 November 2020)
 ==============
 * Changed function names
 * Updated to invacost v3.0
+* Changed default values in modelCosts (ex-costTrendOverTime())
 
 invacost v0.3-5 (Release date: 3 November 2020)
 ==============

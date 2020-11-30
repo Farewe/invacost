@@ -122,7 +122,7 @@ This simple function calculates the raw average annual cost of invasive species
 over a single period of time
 
 This function fits different models on annualised INVACOST data in order to
-estimate and predict the trend over time of invasive species costs.
+estimate the average trend over time of invasive species costs.
 }
 \seealso{
 \code{\link{invacost-deprecated}}

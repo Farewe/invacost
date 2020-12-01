@@ -82,6 +82,8 @@ a \code{list} with 3 to 6 elements (only the first three will be
 provided if you selected a cost transformation different from log10):
 
 \itemize{
+\item{\code{input.data}: the input cost data, for reproducibility of 
+analyses.}
 \item{\code{cost.data}: the annualised costs of invasions, as sums of all 
 costs for each year.}
 \item{\code{parameters}: parameters used to run the function. The 

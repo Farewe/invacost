@@ -1,3 +1,7 @@
+invacost v0.3-8 (Release date: 1 December 2020)
+==============
+* Added function getInvaCostVersion() to download older releases of InvaCost
+
 invacost v0.3-7 (Release date: 30 November 2020)
 ==============
 * Changed function names

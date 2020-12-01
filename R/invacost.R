@@ -23,14 +23,14 @@
 #'   \item{Family}{}
 #'   \item{Genus}{}
 #'   \item{Species}{}
-#'   \item{Sub-species}{}
+#'   \item{Subspecies}{}
 #'   \item{Common_name}{}
 #'   \item{Environment}{}
 #'   \item{Environment_IAS}{}
-#'   \item{Habitat}{}
-#'   \item{Habitat_verbatim}{}
 #'   \item{Island}{}
-#'   \item{ProtectedArea}{}
+#'   \item{verbatimHabitat}{}
+#'   \item{Habitat}{}
+#'   \item{protectedArea}{}
 #'   \item{Geographic_region}{}
 #'   \item{Official_country}{}
 #'   \item{State|Province|Administrative_area}{}
@@ -44,8 +44,8 @@
 #'   \item{Probable_ending_year_adjusted}{}
 #'   \item{Occurrence}{}
 #'   \item{Raw_cost_estimate_local_currency}{}
-#'   \item{Min Raw cost estimate local currency}{}
-#'   \item{Max Raw cost estimate local currency}{}
+#'   \item{Min_Raw_cost_estimate_local_currency}{}
+#'   \item{Max_Raw_cost_estimate_local_currency}{}
 #'   \item{Raw_cost_estimate_2017_USD_exchange_rate}{}
 #'   \item{Raw_cost_estimate_2017_USD_PPP}{}
 #'   \item{Cost_estimate_per_year_local_currency}{}
@@ -62,18 +62,13 @@
 #'   \item{Management_type}{}
 #'   \item{Method_reliability}{}
 #'   \item{Method_reliability_refined}{}
-#'   \item{Method_reliability_refined_Explanation}{}
-#'   \item{Method_reliability_refined_Expert_Name}{}
-#'   \item{Overlaps}{}
-#'   \item{Benefit_values}{}
+#'   \item{Method_reliability_Explanation}{}
+#'   \item{Method_reliability_Expert_Name}{}
+#'   \item{Overlap}{}
+#'   \item{Benefit_value(s)}{}
 #'   \item{Details}{}
-#'   \item{Initial_contributors_names}{}
-#'   \item{Initial_contributors_emails}{}
-#'   \item{Double-checking}{}
-#'   \item{Version}{Version in which the cost estimate was added. Useful to
-#'   reproduce results from earlier versions of the database by eliminating
-#'   recent entries. Do not use it to remove "older" entries as these remain
-#'   valid even for recent versions.}
+#'   \item{Initial contributors_names}{}
+#'   \item{Double-checking}
 #' }
 #' @usage data(invacost)
 #' @details

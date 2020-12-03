@@ -18,5 +18,5 @@ citEntry(entry = "Article",
            paste("Leroy Boris, Kramer Andrew M, Vaissière Anne-Charlotte, Courchamp Franck & Diagne Christophe (2020).",
                  "Analysing economic costs of invasive alien species with the invacost R package.",
                  "",
-                 "URL https://www.github.com/Farewe/invacost")
+                 "URL https://github.com/Farewe/invacost")
 )

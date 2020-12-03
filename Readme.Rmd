@@ -1,7 +1,7 @@
 ---
 title: "The invacost R Package: Global Costs of Biological Invasions"
 author: "Leroy B, Kramer A, Courchamp C, Vaissière AC & Diagne C"
-date: "02/12/2020"
+date: "03/12/2020"
 output:
   github_document:
     toc: true
@@ -97,12 +97,12 @@ install from the raw .tar.gz).
 **Major changes related to the upcoming official release of the package on the
 Comprehensive R Archive Network. Existing users PLEASE READ CAREFULLY!**
 
-- **The main functions of the package have changed names.** `summarizeCosts`
+- **The main functions of the package have changed names.** `calculateRawAvgCosts`
 is now `summarizeCosts`, and `costTrendOverTime` is now `modelCosts`. Older
 function names are still functional but will throw a warning, and will no longer
 be updated. Please update your scripts accordingly.
 
-- **Default values in `summarizeCosts` (formerly `summarizeCosts`) and 
+- **Default values in `summarizeCosts` (formerly `calculateRawAvgCosts`) and 
 `modelCosts` (formerly `costTrendOverTime`) have changed.** First, the last 
 year of analysis will, by default, be the last year of your input data. Naturally,
 you can still define it manually. Second, by default, `modelCosts` will no 

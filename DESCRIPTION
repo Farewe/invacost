@@ -1,6 +1,6 @@
 Package: invacost
 Type: Package
-Title: InvaCost Database With Methods To Analyse Costs of Invasive Alien Species
+Title: InvaCost Database with Methods to Analyse Costs of Invasive Alien Species
 Version: 1.0
 Date: 2020-12-03
 Author: Boris Leroy [cre, aut], Andrew Kramer [aut], Anne-Charlotte Vaissière [ctb], Christophe Diagne [ctb]

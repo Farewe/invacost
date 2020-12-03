@@ -206,6 +206,7 @@ str.invacost.costsummary <- function(object, ...)
 #' invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
 #' 
 #' ### Expansion
+#' \dontrun{
 #' db.over.time <- expandYearlyCosts(invacost,
 #'                                   startcolumn = "Probable_starting_year_adjusted",
 #'                                   endcolumn = "Probable_ending_year_adjusted")
@@ -215,7 +216,7 @@ str.invacost.costsummary <- function(object, ...)
 #' 
 #' ### Visualisation
 #' plot(res)
-#' plot(res, plot.type = "single")
+#' plot(res, plot.type = "single")}
 #' @export
 #' @method plot invacost.costmodel
 plot.invacost.costmodel <- function(x,
@@ -428,6 +429,7 @@ plot.invacost.costmodel <- function(x,
 #' invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
 #' 
 #' ### Expansion
+#' \dontrun{
 #' db.over.time <- expandYearlyCosts(invacost,
 #'                                   startcolumn = "Probable_starting_year_adjusted",
 #'                                   endcolumn = "Probable_ending_year_adjusted")
@@ -437,7 +439,7 @@ plot.invacost.costmodel <- function(x,
 #' 
 #' ### Visualisation
 #' plot(res)
-#' plot(res, plot.type = "bars")
+#' plot(res, plot.type = "bars")}
 #' @method plot invacost.costsummary
 plot.invacost.costsummary <- function(x,
                                   plot.breaks = 10^(-15:15),

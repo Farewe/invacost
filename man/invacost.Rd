@@ -172,7 +172,7 @@ Species.
   local currency unit per US$) provided by the World Bank Open Data 
   (available at \url{https://data.worldbank.org/indicator/PA.NUS.PPP?end=2017&start=1990}) 
   and the Organisation for Economic Cooperation and Development (available at 
-  \url{https://data.oecd.org/conversion/purchasing-powerparities-ppp.htm)}}
+  \url{https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm})}
   \item{Cost_estimate_per_year_local_currency}{Raw cost estimate local 
   currency transformed to a cost estimate per year of the Period of 
   estimation, which was obtained by dividing the raw cost estimate by the 
@@ -192,7 +192,7 @@ Species.
   provided by the World Bank Open Data (available at 
   \url{https://data.worldbank.org/indicator/PA.NUS.PPP?end=2017&start=1990})
    and the Organisation for Economic Cooperation and Development (available at 
-   \url{https://data.oecd.org/conversion/purchasing-powerparities-ppp.htm}).
+   \url{https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm}).
     Blank cells are those that have no information in at least one of these 
     two previous columns}
   \item{Currency}{Currency of the Raw cost estimate local currency as 

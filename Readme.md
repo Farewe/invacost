@@ -1,7 +1,7 @@
 The invacost R Package: Global Costs of Biological Invasions
 ================
 Leroy B, Kramer A, Courchamp C, Vaissière AC & Diagne C
-02/12/2020
+03/12/2020
 
   - [Introduction](#introduction)
   - [Acknowledgements](#acknowledgements)
@@ -124,19 +124,20 @@ on the Comprehensive R Archive Network. Existing users PLEASE READ
 CAREFULLY\!**
 
   - **The main functions of the package have changed names.**
-    `summarizeCosts` is now `summarizeCosts`, and `costTrendOverTime` is
-    now `modelCosts`. Older function names are still functional but will
-    throw a warning, and will no longer be updated. Please update your
-    scripts accordingly.
+    `calculateRawAvgCosts` is now `summarizeCosts`, and
+    `costTrendOverTime` is now `modelCosts`. Older function names are
+    still functional but will throw a warning, and will no longer be
+    updated. Please update your scripts accordingly.
 
-  - **Default values in `summarizeCosts` (formerly `summarizeCosts`) and
-    `modelCosts` (formerly `costTrendOverTime`) have changed.** First,
-    the last year of analysis will, by default, be the last year of your
-    input data. Naturally, you can still define it manually. Second, by
-    default, `modelCosts` will no longer exclude data from calibration
-    (formerly, `costTrendOverTime` excluded by default data from 2015
-    and above). If you wish to keep this threshold as in former versions
-    of the packages, you can still alter it by manually setting
+  - **Default values in `summarizeCosts` (formerly
+    `calculateRawAvgCosts`) and `modelCosts` (formerly
+    `costTrendOverTime`) have changed.** First, the last year of
+    analysis will, by default, be the last year of your input data.
+    Naturally, you can still define it manually. Second, by default,
+    `modelCosts` will no longer exclude data from calibration (formerly,
+    `costTrendOverTime` excluded by default data from 2015 and above).
+    If you wish to keep this threshold as in former versions of the
+    packages, you can still alter it by manually setting
     `incomplete.year.threshold = 2015`.
 
   - InvaCost version 3.0 is now shipped in the package
@@ -1332,7 +1333,7 @@ global.trend
     ##      . Linear: US$ million 88,083.65
     ##      . Quadratic: US$ million 162,574.57
     ##    o Robust regression: 
-    ##      . Linear: US$ million 32,764.22
+    ##      . Linear: US$ million 32,764.34
     ##      . Quadratic: US$ million 61,103.98
     ##    o Multiple Adapative Regression Splines: US$ million 156,978.17
     ##    o Generalized Additive Model: US$ million 61,600.00
@@ -1416,7 +1417,7 @@ str(global.trend)
     ##   .. ..- attr(*, "class")= chr "lmrob"
     ##   ..$ mars            :List of 39
     ##   .. ..- attr(*, "class")= chr "earth"
-    ##   ..$ gam             :List of 53
+    ##   ..$ gam             :List of 54
     ##   .. ..- attr(*, "class")= chr [1:3] "gam" "glm" "lm"
     ##   ..$ quantile        :List of 3
     ##  $ estimated.annual.costs:'data.frame':  459 obs. of  6 variables:
@@ -1488,7 +1489,7 @@ global.trend$RMSE
     ##                  RMSE.calibration RMSE.alldata
     ## ols.linear              0.4064954    0.8325589
     ## ols.quadratic           0.4012316    0.8862577
-    ## robust.linear           0.4509990    0.7643209
+    ## robust.linear           0.4509987    0.7643211
     ## robust.quadratic        0.4641147    0.8184795
     ## mars                    0.2677510    0.8279031
     ## gam                     0.3790340    0.7885374
@@ -1565,7 +1566,7 @@ global.trend$model.summary
     ## 
     ## Coefficients:
     ##              Estimate Std. Error t value Pr(>|t|)   
-    ## (Intercept) -48.41696   16.76941  -2.887  0.00606 **
+    ## (Intercept) -48.41705   16.76934  -2.887  0.00606 **
     ## Year          0.02620    0.00847   3.094  0.00347 **
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
@@ -1651,9 +1652,9 @@ global.trend$model.summary
     ## 
     ## Formula:
     ## transf.cost ~ s(Year, k = gam.k)
-    ## <environment: 0x00000000202dd978>
+    ## <environment: 0x0000000018f27410>
     ## ~s(Year, k = gam.k)
-    ## <environment: 0x00000000202dd978>
+    ## <environment: 0x0000000018f27410>
     ## 
     ## Parametric coefficients:
     ##               Estimate Std. Error z value Pr(>|z|)    
@@ -1663,9 +1664,9 @@ global.trend$model.summary
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## Approximate significance of smooth terms:
-    ##             edf Ref.df Chi.sq  p-value    
-    ## s(Year)   4.974  5.844 134.50  < 2e-16 ***
-    ## s.1(Year) 4.870  5.783  67.89 1.42e-12 ***
+    ##             edf Ref.df Chi.sq p-value    
+    ## s(Year)   4.974  5.844 134.50  <2e-16 ***
+    ## s.1(Year) 4.870  5.783  67.89  <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
@@ -1691,24 +1692,24 @@ global.trend$model.summary
     ## Termination condition: RSq changed by less than 0.001 at 6 terms
     ## Importance: Year
     ## Number of terms at each degree of interaction: 1 4 (additive model)
-    ## GCV 0.1120165  RSS 3.226076  GRSq 0.7247048  RSq 0.8157115  CVRSq 0.4583758
+    ## GCV 0.1120165  RSS 3.226076  GRSq 0.7247048  RSq 0.8157115  CVRSq 0.4786257
     ## 
     ## Note: the cross-validation sd's below are standard deviations across folds
     ## 
-    ## Cross validation:   nterms 3.36 sd 0.58    nvars 1.00 sd 0.00
+    ## Cross validation:   nterms 3.52 sd 0.70    nvars 1.00 sd 0.00
     ## 
     ##      CVRSq    sd     MaxErr    sd
-    ##      0.458 0.502        1.3 0.812
+    ##      0.479 0.384       1.35 0.812
     ## 
-    ## varmod: method "lm"    min.sd 0.0319    iter.rsq 0.326
+    ## varmod: method "lm"    min.sd 0.0325    iter.rsq 0.337
     ## 
     ## stddev of predictions:
     ##             coefficients iter.stderr iter.stderr%
-    ## (Intercept)   -1.1757926    0.296045           25
-    ## transf.cost    0.3809129   0.0836143           22
+    ## (Intercept)   -1.2480261    0.302685           24
+    ## transf.cost    0.4007699   0.0856608           21
     ## 
-    ##                               mean    smallest    largest      ratio
-    ## 95% prediction interval   1.251621   0.5370688   3.504779   6.525755
+    ##                               mean   smallest    largest      ratio
+    ## 95% prediction interval   1.273987   0.522185   3.644602   6.979524
     ## 
     ##                                          68%    80%    90%    95% 
     ## response values in prediction interval   87     91     96     98  
@@ -1825,11 +1826,11 @@ summarized.summary
     ## 16                            _________________           _________________
     ## 17                   Robust regression - Linear                            
     ## 18                                                                 Estimate
-    ## 19                                    Intercept           -48.4169636590242
-    ## 20                                         Year          0.0262041403389784
+    ## 19                                    Intercept           -48.4170447969544
+    ## 20                                         Year           0.026204181318799
     ## 21                                                                         
     ## 22                                                              Adjusted R²
-    ## 23                                                        0.672125889698755
+    ## 23                                                         0.67212565645257
     ## 24                                                                         
     ## 25                     Summary of model weights                            
     ## 26                                                                      Min
@@ -1839,11 +1840,11 @@ summarized.summary
     ## 30                            _________________           _________________
     ## 31                Robust regression - Quadratic                            
     ## 32                                                                 Estimate
-    ## 33                                    Intercept            2174.17403678647
-    ## 34                                         Year           -2.20399056400694
+    ## 33                                    Intercept            2174.17421601588
+    ## 34                                         Year           -2.20399074480511
     ## 35                                                                         
     ## 36                                                              Adjusted R²
-    ## 37                                                        0.789890633949672
+    ## 37                                                        0.789890629558751
     ## 38                                                                         
     ## 39                     Summary of model weights                            
     ## 40                                                                      Min
@@ -1864,11 +1865,11 @@ summarized.summary
     ## 55                                                                         
     ## 56                               Variance model                            
     ## 57                                                                 Estimate
-    ## 58                                    Intercept           -1.17579265463351
-    ## 59                                    Intercept           0.380912908450621
+    ## 58                                    Intercept           -1.24802609525216
+    ## 59                                    Intercept            0.40076991909382
     ## 60                                                                         
     ## 61                                                    R² for last iteration
-    ## 62                                                        0.325526779247887
+    ## 62                                                        0.337329896204699
     ## 63                            _________________           _________________
     ## 64                  Generalized Additive Models                            
     ## 65                      Parametric coefficients                            
@@ -1908,15 +1909,15 @@ summarized.summary
     ## 16               _________________            _________________
     ## 17                                                             
     ## 18                  Standard error                      t value
-    ## 19                16.7694102599599            -2.88721922288637
-    ## 20             0.00846955615823307              3.0939213164678
+    ## 19                16.7693353581965             -2.8872369573842
+    ## 20             0.00846951831816434             3.09393997797958
     ## 21                                                             
     ## 22                              R²                             
-    ## 23               0.679577574023783                             
+    ## 23               0.679577346078648                             
     ## 24                                                             
     ## 25                                                             
     ## 26                             25%                          50%
-    ## 27               0.780683480017186            0.948740605111795
+    ## 27               0.780684377629286            0.948740676126269
     ## 28                                                             
     ## 29                                                             
     ## 30               _________________            _________________
@@ -1926,11 +1927,11 @@ summarized.summary
     ## 34                            <NA>                         <NA>
     ## 35                                                             
     ## 36                              R²                             
-    ## 37               0.799441059679232                             
+    ## 37               0.799441055487898                             
     ## 38                                                             
     ## 39                                                             
     ## 40                             25%                          50%
-    ## 41               0.542047607842224            0.961280751549634
+    ## 41               0.542047642855402            0.961280753598913
     ## 42                                                             
     ## 43                                                             
     ## 44               _________________            _________________
@@ -1947,8 +1948,8 @@ summarized.summary
     ## 55                                                             
     ## 56                                                             
     ## 57 Standard error (last iteration) Standard error/coefficient %
-    ## 58               0.296045204601557              25.178351253932
-    ## 59              0.0836142805904005             21.9510231172015
+    ## 58               0.302684510288017             24.2530594063308
+    ## 59              0.0856608070433174             21.3740610166064
     ## 60                                                             
     ## 61                                                             
     ## 62                                                             
@@ -1991,15 +1992,15 @@ summarized.summary
     ## 16    _________________ _________________
     ## 17                                       
     ## 18              p-value                  
-    ## 19  0.00605949814603238                  
-    ## 20  0.00346595289789965                  
+    ## 19  0.00605921288684111                  
+    ## 20  0.00346577507190638                  
     ## 21                                       
     ## 22                                       
     ## 23                                       
     ## 24                                       
     ## 25                                       
     ## 26                  75%               Max
-    ## 27    0.989589311286966 0.999964430984668
+    ## 27    0.989589268017086 0.999964420221007
     ## 28                                       
     ## 29                                       
     ## 30    _________________ _________________
@@ -2013,7 +2014,7 @@ summarized.summary
     ## 38                                       
     ## 39                                       
     ## 40                  75%               Max
-    ## 41     0.99462089377257 0.999280652121882
+    ## 41    0.994620894832705 0.999280651549509
     ## 42                                       
     ## 43                                       
     ## 44    _________________ _________________
@@ -2044,8 +2045,8 @@ summarized.summary
     ## 69                                       
     ## 70                                       
     ## 71              p-value                  
-    ## 72 1.72764063857612e-24                  
-    ## 73 1.42408838786558e-12                  
+    ## 72                    0                  
+    ## 73                    0                  
     ## 74                                       
     ## 75                                       
     ## 76                                       

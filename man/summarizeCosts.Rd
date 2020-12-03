@@ -96,6 +96,7 @@ invacost <- invacost[which(invacost$Method_reliability == "High"), ]
 invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
 
 ### Expansion
+\dontrun{
 db.over.time <- expandYearlyCosts(invacost,
                                   startcolumn = "Probable_starting_year_adjusted",
                                   endcolumn = "Probable_ending_year_adjusted")
@@ -103,7 +104,7 @@ db.over.time <- expandYearlyCosts(invacost,
 ### Analysis
 res <- summarizeCosts(db.over.time,
                       maximum.year = 2020) # Excluding data after 2020 (e.g. planned budgets)
-res
+res}
 }
 \seealso{
 \code{\link{expandYearlyCosts}} to get the database in appropriate format.

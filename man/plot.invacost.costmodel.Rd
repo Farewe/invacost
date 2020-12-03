@@ -57,12 +57,26 @@ transparency; zooming in or writing to a file are the best workarounds.
 }
 \examples{
 data(invacost)
+
+### Cleaning steps
+# Eliminating data with no information on starting and ending years
+invacost <- invacost[-which(is.na(invacost$Probable_starting_year_adjusted)), ]
+invacost <- invacost[-which(is.na(invacost$Probable_ending_year_adjusted)), ]
+# Keeping only observed and reliable costs
+invacost <- invacost[invacost$Implementation == "Observed", ]
+invacost <- invacost[which(invacost$Method_reliability == "High"), ]
+# Eliminating data with no usable cost value
+invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
+
+### Expansion
 db.over.time <- expandYearlyCosts(invacost,
-                                  startcolumn = "Probable_starting_year_low_margin",
-                                  endcolumn = "Probable_ending_year_low_margin")
-costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
-costdb <- costdb[which(costdb$Method_reliability == "High"), ]
-res <- modelCosts(costdb)
+                                  startcolumn = "Probable_starting_year_adjusted",
+                                  endcolumn = "Probable_ending_year_adjusted")
+
+### Analysis
+res <- modelCosts(db.over.time)
+
+### Visualisation
 plot(res)
 plot(res, plot.type = "single")
 }

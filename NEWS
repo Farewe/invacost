@@ -1,3 +1,14 @@
+invacost v1.0 (Release date: 3 December 2020)
+==============
+* Official release of invacost to be uploaded to the CRAN
+* Several minor fixes
+
+invacost v0.3-9 (Release date: 2 December 2020)
+==============
+* Updated all help files
+* Changed default values in summarizeCosts() (ex-calculateRawAvgCosts())
+
+
 invacost v0.3-8 (Release date: 1 December 2020)
 ==============
 * Added function getInvaCostVersion() to download older releases of InvaCost

@@ -1,54 +1,60 @@
 #' Summarize costs of invasions over periods of time
 #' 
-#' This function calculates the cumulative costs and average annual costs of
-#' invasive species over different periods of time.
+#' This function summarizes the cumulative costs and average annual costs of
+#' invasive alien species and breaks it down into regular periods of time, on 
+#' the basis
+#' of cost estimates as they appeared in the provided in the source references
+#' collected in the InvaCost database
 #' 
-#' @param costdb The \bold{expanded INVACOST database} output from 
+#' @param costdb The \bold{expanded InvaCost database} output from 
 #' \code{\link{expandYearlyCosts}},
-#' where annual costs occurring over several years are repeated for each year.
+#' where costs occurring over several years are expanded over each year of impact.
 #' @param cost.column Name of the cost column to use in \code{costdb} (usually, 
-#' choose between the exchange rate (default) or PPP annualised cost)
+#' choose between the exchange rate (default) or Purchase Power parity cost per
+#' year)
 #' @param year.column Name of the year column to use in \code{costdb}( usually, 
 #' "Impact_year" from \code{\link{expandYearlyCosts}} 
-#' @param in.millions If \code{TRUE}, cost values will be transformed in 
-#' millions (to make graphs easier to read), else if \code{}, cost values will
-#' not be transformed.
-#' @param minimum.year the starting year of this analysis. By default, 
+#' @param in.millions If \code{TRUE}, cost values are transformed in 
+#' millions (to make graphs easier to read), otherwise if \code{FALSE}, cost
+#' values are
+#' not transformed.
+#' @param minimum.year The starting year of the analysis. By default, 
 #' 1960 was chosen because it marks the period from which world bank data is 
 #' available for exchange rates and inflation values.
-#' @param maximum.year the ending year for this analysis. By default, 2017
-#' was chosen as it is the last year for which we have data in INVACOST.
-#' @param year.breaks a vector of breaks for the year intervals over which
-#' you want to calculate raw cost values
+#' @param maximum.year The ending year for the analysis. By default, the last
+#' year of \code{costdb} is chosen.
+#' @param year.breaks A vector of breaks for the year intervals over which
+#' you want to summarize cost values
 #' @param include.last.year \code{TRUE} or \code{FALSE}. Defines if the last
 #' year of the dataset is included in the last interval (\code{TRUE}) or is
 #' considered as an interval of its own (\code{FALSE}). Generally only useful
 #' if the last year is at the limit of an interval.
-#' @return a \code{list} with 6 elements:
+#' @return A \code{list} with 6 elements:
 #'
 #' \itemize{
-#' \item{\code{cost.data}: the input data.}
+#' \item{\code{cost.data}: the input data}
 #' \item{\code{parameters}: parameters used to run the function. The 
 #' \code{minimum.year} and \code{maximum.year} are based on the input data
 #' (i.e., the user may specify \code{minimum.year = 1960} but the input data may
 #' only have data starting from 1970, hence the \code{minimum.year} will be
-#'  1970.)}
+#'  1970)}
 #' \item{\code{year.breaks}: the years used to define year intervals over which costs were calculated.}
-#' \item{\code{cost.per.year}: the annualised costs of invasions, as sums of all 
-#' costs for each year.}
-#' \item{\code{average.total.cost}: the average annual cost of IAS calculated
+#' \item{\code{cost.per.year}: the costs of invasions expressed per year, 
+#' as sums of all costs for each year}
+#' \item{\code{average.total.cost}: the average annual cost of invasive Alien
+#' species calculated
 #' over the entire time period}
-#' \item{\code{average.cost.per.period}: a data.frame containing the the average 
-#' annual cost of IAS calculated over each time interval}
+#' \item{\code{average.cost.per.period}: a data.frame containing the average 
+#' annual cost of invasive alien species calculated over each time interval}
 #' }
-#' The structure of this object can be seen using \code{str()}
+#' The structure of this object can be seen using \code{str()}.
 #' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
 #' @details
-#' Missing data will be ignored. However, note that the average for each 
-#' interval will always be calculated on the basis of the full temporal range.
+#' Missing data are ignored. However, note that the average for each 
+#' interval is always calculated on the basis of the full temporal range.
 #' For example, if there is only data for 1968 for the 1960-1969 interval,
 #' then the total cost for the interval will be equal to the cost of 1968, and the
-#' average annual cost for 1960-1969 will be cost of 1968 / 10.
+#' average annual cost for 1960-1969 will be the cost of 1968 / 10.
 #' @export
 #' @author
 #' Boris Leroy \email{leroy.boris@@gmail.com}, Andrew Kramer, Anne-Charlotte
@@ -56,13 +62,25 @@
 #' 
 #' @examples
 #' data(invacost)
+#' 
+#' ### Cleaning steps
+#' # Eliminating data with no information on starting and ending years
+#' invacost <- invacost[-which(is.na(invacost$Probable_starting_year_adjusted)), ]
+#' invacost <- invacost[-which(is.na(invacost$Probable_ending_year_adjusted)), ]
+#' # Keeping only observed and reliable costs
+#' invacost <- invacost[invacost$Implementation == "Observed", ]
+#' invacost <- invacost[which(invacost$Method_reliability == "High"), ]
+#' # Eliminating data with no usable cost value
+#' invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
+#' 
+#' ### Expansion
 #' db.over.time <- expandYearlyCosts(invacost,
-#'                                   startcolumn = "Probable_starting_year_low_margin",
-#'                                   endcolumn = "Probable_ending_year_low_margin")
-#' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
-#' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
-#' costdb <- costdb[-which(is.na(costdb$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
-#' res <- summarizeCosts(costdb)
+#'                                   startcolumn = "Probable_starting_year_adjusted",
+#'                                   endcolumn = "Probable_ending_year_adjusted")
+#'                                   
+#' ### Analysis
+#' res <- summarizeCosts(db.over.time,
+#'                       maximum.year = 2020) # Excluding data after 2020 (e.g. planned budgets)
 #' res
 
 summarizeCosts <- function(
@@ -71,7 +89,7 @@ summarizeCosts <- function(
   year.column = "Impact_year",
   in.millions = TRUE,
   minimum.year = 1960,
-  maximum.year = 2017,
+  maximum.year = max(costdb[, year.column]),
   year.breaks = seq(minimum.year, maximum.year, by = 10),
   include.last.year = TRUE
 )
@@ -86,6 +104,10 @@ summarizeCosts <- function(
     warning("There were NA values in the cost column, they have been removed.\n")
   } 
   
+  if(maximum.year < minimum.year)
+  {
+    stop("maximum.year is lower than minimum.year.\n")
+  }
   
   if(any(costdb[, year.column] < minimum.year))
   {
@@ -103,6 +125,13 @@ summarizeCosts <- function(
                    " which will be removed.\n"))
     costdb <- costdb[-which(costdb[, year.column] > maximum.year), ]
   }
+  
+  if(nrow(costdb) == 0)
+  {
+    stop("There are no costs in the database that are between minimum.year and maximum.year")
+  }
+  
+  
   
   parameters <- list(cost.column = cost.column,
                      year.column = year.column,
@@ -279,16 +308,18 @@ summarizeCosts <- function(
 
 
 
-#' Calculate the raw average annual cost over a single period of time
+#' Calculate the cumulative and average annual cost over a single period of time
 #' 
-#' This simple function calculates the raw average annual cost of invasive species
-#' over a single period of time
+#' This simple function calculates the cumulative cost average annual cost of
+#' invasive alien species over a single period of time. It is used internally
+#' by \code{\link{summarizeCosts}}.
 #' 
-#' @param costdb The \bold{expanded INVACOST database} output from 
+#' @param costdb The \bold{expanded InvaCost database} output from 
 #' \code{\link{expandYearlyCosts}},
 #' where annual costs occurring over several years are repeated for each year.
 #' @param cost.column Name of the cost column to use in \code{costdb} (usually, 
-#' choose between the exchange rate (default) or PPP annualised cost)
+#' choose between the exchange rate (default) or Purchase Power Parity cost per 
+#' year)
 #' @param year.column Name of the year column to use in \code{costdb}.
 #' @param min.year The minimum year of the period (specify only if different from
 #' the range of data)
@@ -303,7 +334,7 @@ summarizeCosts <- function(
 #'  \item{\code{annual.cost}: cost per year}
 #'  \item{\code{number_estimates}: the number of cost estimates before expansion 
 #' via \code{\link{expandYearlyCosts}}
-#'  \item{\code{number_year_values}: the number of yearly costs included}
+#'  \item{\code{number_year_values}: the number of costs per year included}
 #' }}
 #' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
 #' @export
@@ -317,17 +348,30 @@ summarizeCosts <- function(
 #' However, if you want to calculate values for an interval narrower than your
 #' data, filter the data BEFORE running this function.
 #' @author
-#' Boris Leroy \email{leroy.boris@@gmail.com}
-#' 
-#' with help from C. Diagne & A.-C. Vaissière
+#' Boris Leroy \email{leroy.boris@@gmail.com}, Andrew Kramer, Anne-Charlotte
+#' Vaissière, Christophe Diagne
 #' @examples
 #' data(invacost)
+#' 
+#' ### Cleaning steps
+#' # Eliminating data with no information on starting and ending years
+#' invacost <- invacost[-which(is.na(invacost$Probable_starting_year_adjusted)), ]
+#' invacost <- invacost[-which(is.na(invacost$Probable_ending_year_adjusted)), ]
+#' # Keeping only observed and reliable costs
+#' invacost <- invacost[invacost$Implementation == "Observed", ]
+#' invacost <- invacost[which(invacost$Method_reliability == "High"), ]
+#' # Eliminating data with no usable cost value
+#' invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
+#' 
+#' ### Expansion
 #' db.over.time <- expandYearlyCosts(invacost,
-#'                                   startcolumn = "Probable_starting_year_low_margin",
-#'                                   endcolumn = "Probable_ending_year_low_margin")
-#' costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
-#' costdb <- costdb[which(costdb$Method_reliability == "High"), ]
-#' res <- computeAvgTotCost(costdb)
+#'                                   startcolumn = "Probable_starting_year_adjusted",
+#'                                   endcolumn = "Probable_ending_year_adjusted")
+#'                                   
+#' ### Analysis
+#' res <- computeAvgTotCost(db.over.time,
+#'                          min.year = 1960,
+#'                          max.year = 2020) # Excluding data after 2020 (e.g. planned budgets)
 #' res
 computeAvgTotCost <- function(
   costdb,

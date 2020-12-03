@@ -15,10 +15,8 @@ invacost$Probable_starting_year <- as.numeric(invacost$Probable_starting_year)
 invacost$Probable_ending_year <- as.numeric(invacost$Probable_ending_year)
 invacost$Probable_starting_year_adjusted <- as.numeric(invacost$Probable_starting_year_adjusted)
 invacost$Probable_ending_year_adjusted <- as.numeric(invacost$Probable_ending_year_adjusted)
-invacost$Version <- "V1"
-invacost$Version[grep("NE", invacost$Cost_ID)] <- "V2"
-invacost$Version[grep("SC", invacost$Cost_ID)] <- "V2-1"
 
+invacost$Acquisition_method[which(invacost$Acquisition_method == "Report/estimation")] <- "Report/Estimation"
 
 usethis::use_data(invacost, overwrite = TRUE)
 

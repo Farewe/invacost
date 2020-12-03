@@ -1,7 +1,7 @@
 ---
-title: "The INVACOST R Package: Global Costs of Biological Invasions"
-author: "Leroy B, Kramer A, Vaissière AC & Diagne C"
-date: "11/08/2020"
+title: "The invacost R Package: Global Costs of Biological Invasions"
+author: "Leroy B, Kramer A, Courchamp C, Vaissière AC & Diagne C"
+date: "02/12/2020"
 output:
   github_document:
     toc: true
@@ -20,15 +20,9 @@ data(invacost)
 
 ```
 
-# WARNING
-
-This page represents work in progress and no third parties are allowed to use
-it under any circumstances. For more information, please write to 
-leroy.boris@gmail.com, christophe.diagne@u-psud.fr and franck.courchamp@u-psud.fr
-
 # Introduction 
 
-The INVACOST R package provides the INVACOST database in R with several 
+The invacost R package provides the InvaCost database in R with several 
 functions to analyse economic costs of invasive species. 
 
 There are two main methods developed in this package to estimate the costs
@@ -40,13 +34,14 @@ to biological invasions.
  specific intervals of time. From this approach you can obtain the 
  cumulative and 
  average annual costs of biological invasions for different time intervals.  
- This approach is generalisable to any subset of the INVACOST database,
+ This approach is generalisable to any subset of the InvaCost database,
  regardless of data quantity. However, it does not account for the temporal dynamics
  of costs, and may thus underestimate the costs of invasions, especially for
  recent years for which we likely have incomplete data.
  
- - *Modelling approach*: the second approach consists in **estimating** the long-term trend in annual cost 
- values with an ensemble modelling approach. Because it includes the dynamic 
+ - *Modelling approach*: the second approach consists in **estimating** the
+ long-term trend in annual cost 
+ values with a statistical modelling approach. Because it includes the dynamic 
  nature of cost values, it is probably the most robust approach to estimate 
  average annual costs. However, it requires more data and for data-poor cases it
  will not work or provide inadequate results. We fit several models because the
@@ -61,13 +56,13 @@ to biological invasions.
 
 Thanks a lot to Anna Turbelin for her help in correcting mistakes in this 
 tutorial, and to Phillip Haubrock for agreeing to be the "Guinea pig" of 
-various test versions of the INVACOST R package!
+various test versions of the invacost R package!
  
 # Installation
 
 
-**The package requires at least R 4.0.0.** *FYI, the main difference (for you)
-between R4.0.0+
+**The package requires at least R 4.0.0.** *For your information, 
+the main difference (for you) between R4.0.0+
 and former versions is that data.frame will no longer automatically transform
 character strings into factors.* 
 
@@ -76,10 +71,8 @@ brand new one you just installed by clicking on Tools > Global Options > R
 version: change.
 
 
-
 The easiest method to install the package for now is to install it directly from
 github with the following command line (requires the package devtools).
-**DOES NOT WORK UNTIL THE PACKAGE IS RELEASED PUBLICLY ON GITHUB**
 
 ``` {r install, eval = FALSE}
 install.packages("devtools")
@@ -93,56 +86,38 @@ packages:
 ```{r i1, eval = FALSE}
 install.packages(c("dplyr", "earth", "ggplot2", "lmtest", "mgcv", "quantreg",
                    "robustbase", "sandwich", "scales"))
-install.packages("invacost_0.3-4.tar.gz", repos = NULL, type="source")
+install.packages("invacost_0.3-9.tar.gz", repos = NULL, type="source")
 ```
 
 Then, install the package from the .tar.gz file (do not extract it,
 install from the raw .tar.gz).
 
-# Changes to the package
+# Latest changes to the package : December 2020
 
-## August 2020
+**Major changes related to the upcoming official release of the package on the
+Comprehensive R Archive Network. Existing users PLEASE READ CAREFULLY!**
 
-- Andrew Kramer joined the dev team
+- **The main functions of the package have changed names.** `summarizeCosts`
+is now `summarizeCosts`, and `costTrendOverTime` is now `modelCosts`. Older
+function names are still functional but will throw a warning, and will no longer
+be updated. Please update your scripts accordingly.
 
-- Updated all statistical methods in `costTrendOverTime` to better address 
-statistical issues with the data, and notably heteroskedasticity.
+- **Default values in `summarizeCosts` (formerly `summarizeCosts`) and 
+`modelCosts` (formerly `costTrendOverTime`) have changed.** First, the last 
+year of analysis will, by default, be the last year of your input data. Naturally,
+you can still define it manually. Second, by default, `modelCosts` will no 
+longer exclude data from calibration (formerly, `costTrendOverTime` excluded
+by default data from 2015 and above). If you wish to keep this threshold as
+in former versions of the packages, you can still alter it by manually setting 
+`incomplete.year.threshold = 2015`.
 
-- **Important**: new versions of the stats should no longer require you to
-tweak model parameters. Please consider recalibrating models **WITHOUT**
-GAM and MARS arguments.
+- InvaCost version 3.0 is now shipped in the package (`data(invacost)`).
 
-- Added a new model to model the trend of costs over time, namely robust
-regressions (addition by Andrew Kramer). Robust regression handle natively
-data heteroskedasticity & reduce the weight of outliers on the regression.
-
-- Some new features have been added in `calculateRawAvgCosts()`, e.g. a table
-in the output list with all values per individual years, with number of
-estimates.
-
-- Added plotting features/capabilities
-
-- Updated invacost data to v2.1. Added a column in invacost to filter out versions
-of the database.
-
-
-## April 2020
-For those of you who tried the earlier versions of the package:
-
-- Many bugs arose when working on small subsets of INVACOST. Most of them have
-been corrected. 
-
-- Graphics are no longer included in the functions. They are not provided as
-stand-alone generic function (i.e. type `plot(your.object)` and you will get
-the same graphs as before). They are easier to customise if you are familiar 
-with ggplot2.
-
-- New information has been added in outputs of functions, e.g. the number of 
-unique estimates used to compute values.
-
-- Lots of minor changes / quality of life improvement.
-
-- Minor corrections to the database (mainly typos)
+- A new function is available (`getInvaCostVersion`) to rollback the database to
+former major releases. Current options are: `1.0`, `2.0`, `2.1`, `3.0`. This is
+to ensure reproducibility of analyses performed on former versions of the 
+database. Naturally, any new analysis should be done on the the latest version
+shipped with the package (`data(invacost)`).
 
 
 # Basic steps to get started
@@ -163,37 +138,34 @@ ncol(invacost)
 
 There are `r ncol(invacost)` fields in the INVACOST database, and I strongly 
 recommend you get familiarised with them by inspecting them individually and
-reading the paper describing the database (and its fields) available here:
-`link to be added when available ¯\_(ツ)_/¯`.
+reading the [paper describing the database (and its fields) available here]
+(https://doi.org/10.1038/s41597-020-00586-z). The updated versions of the 
+database (and its fields) are stored in a [figShare repository accessible here](https://doi.org/10.6084/m9.figshare.12668570).
 
 ## How to distinguish between invacost v1 and subsequent versions?
 
-INVACOST v1 only includes the original data we had back in November 2019.
-Later additions to INVACOST have versions such as V2 and V2-1. Later versions
-are supposed to include all data from V1 to V2-1. If you want to roll back to
-earlier versions of INVACOST, use the column `version` to **remove** recent
-entries. 
+Since the first official release of InvaCost in 2019, there have been several
+major releases, some of which were internal, some of which were public. To 
+ensure reproducibility of analyses performed on older releases, we provide a 
+function in the database to fetch older releases. we expect it will also help
+to understand how and why results may change with new additions and corrections
+to this living database.
 
-*NOTE*: YOU SHOULD NOT REMOVE OLDER ENTRIES! They are also part of 
-recent versions. e.g. if you want to use version v2-1, use all entries of the 
-database, not those only with "V2-1"!
+As of now, we offer the possibility to roll back to version 1.0, 2.0 and 2.1. 
 
-
-Here is an example on how to roll back to V1 or V2:
+Here is an example on how to roll back to V1 or V2.1
 ```{r rollback, cache = TRUE}
-# Versions
-unique(invacost$Version)
+# Version 1.0
+invacost_1.0 <- getInvaCostVersion("1.0")
+dim(invacost_1.0)
 
-# Rollback to V1
-invacost_V1 <- invacost[-which(invacost$Version %in% c("V2", "V2-1")), ]
-nrow(invacost_V1)
-
-# Rollback to V2
-invacost_V2 <- invacost[-which(invacost$Version %in% "V2-1"), ]
-nrow(invacost_V2)
-
+# Version 2.1
+invacost_2.1 <- getInvaCostVersion("2.1")
+dim(invacost_2.1)
 ```
 
+If you want, the database can be automatically saved on your hard drive in csv
+format, by specifying a file name with argument `destination_file`.
 
 ## Where are the economic values I should use?
 
@@ -206,10 +178,10 @@ different currencies, different years (inflation) and different periods of time
 annual cost values in 2017 US$ with two different methods. We recommend you 
 use one of these two standardised cost columns:
 
- - `Cost_estimate_per_year_2017_USD_exchange_rate`: Annual cost estimate in 
- US$ 2017 based on exchange rate
- - `Cost_estimate_per_year_2017_USD_PPP`: Annual cost estimate in 
- US$ 2017 based on purchasing power parity (PPP)
+ - `Cost_estimate_per_year_2017_USD_exchange_rate`: Cost estimate per year 
+ expressed in USD 2017 based on exchange rate
+ - `Cost_estimate_per_year_2017_USD_PPP`: Cost estimate per year 
+ expressed in USD 2017 based on purchasing power parity (PPP)
 
 The second method is probably more robust to provide equitable estimations 
 between countries, but PPP was not available for all countries and all years, so
@@ -235,6 +207,40 @@ if(any(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)))
 nrow(invacost)
 ```
 
+Likewise, there are costs for which we have **inadequate time 
+period information**: some studies omitted to provide time 
+periods, which can cause tremendous biases when analysing the temporal trends of
+costs. Sometimes, this is not problematic as we can safely guess when costs 
+occurred (see section [How do I know when costs occurred](#costtime)). 
+However, other times, costs spread over 10+ and
+sometimes 100+ years can be presented
+as occurring over a single year or require highly speculative guesses about when 
+they occurred. As a general rule, it is much easier and safer to estimate the
+ending year than the starting year. Therefore, we recommend to remove all 
+estimates that are known to occur over more than 1 year with no information on
+the starting date whatsoever, and also remove the remaining estimates for which
+it is not possible to safely estimate if they occurred over a single or multiple 
+years. 
+
+```{r filter2}
+# Uncertain starting periods
+uncertain.starts <- invacost[which(invacost$Time_range == "Period" &
+                                     is.na(invacost$Probable_starting_year)), ]
+# Number of estimates without adequate information about starting year
+nrow(uncertain.starts)
+
+# No info about whether cost was annual or over a period
+unknown.periods <- invacost[which(is.na(invacost$Time_range)), ]
+# Number of estimates without adequate information about period
+nrow(unknown.periods) 
+
+# Applying the filter
+invacost <- invacost[-which(invacost$Cost_ID %in% c(uncertain.starts$Cost_ID,
+                                                    unknown.periods$Cost_ID)), ]
+# Number of rows after filtering
+nrow(invacost)
+```
+
 ## How do we filter out unreliable costs?
 
 You have to be aware of the limitations of such a database. This database is
@@ -244,7 +250,7 @@ economic costs of biological invasions. Therefore, it includes sound estimations
 of economic costs of invasive species, with detailed sources and reproducible 
 methodology; but it also includes unsourced and irreproducible "*guestimates*".
 Therefore, we want to apply filters on the database to avoid as much as possible
-the unreliable economic cost estimates. Furthermore, the database includes both
+the unreliable economic cost estimates. Furthermore, the database also includes 
 observed and potential costs, so depending on our objectives we may or may not
 want to filter out potential costs.
 
@@ -266,7 +272,12 @@ To do that, take time to investigate the `Details` field (especially for cost
 values that you deem suspiciously high) and potentially go back to the source to
 make your decision. For an example on how to do that, take a look at the 
 "Determining cost estimate reproducibility" section in 
-[Bradshaw et al. 2016](https://www.nature.com/articles/ncomms12986#Sec8).
+[Bradshaw et al. 2016](https://www.nature.com/articles/ncomms12986#Sec8). 
+**Important update as of InvaCost version 3.0:** The database now also includes a 
+`Method_reliability_refined` descriptor (not exhaustive as of now) which 
+includes an expert-based assessment of reliability. It can be used as an 
+alternative or as a complementary approach to the standard `Method_reliability` 
+descriptor.
 
 ```{r filt1}
 unique(invacost$Method_reliability)
@@ -299,39 +310,9 @@ invacost <- invacost[which(invacost$Implementation == "Observed"), ]
 nrow(invacost)
 ```
 
-- **Inadequate time period information**: Some studies omitted to provide time 
-periods, which can cause tremendous biases when analysing the temporal trends of
-costs. Sometimes, this is not problematic as we can safely guess when costs 
-occurred (see next section). However, other times, costs spread over 10+ and
-sometimes 100+ years can be presented
-as occurring over a single year or require highly speculative guesses about when 
-they occurred. As a general rule, it is much easier and safer to estimate the
-ending year than the starting year. Therefore, we recommend to remove all 
-estimates that are known to occur over more than 1 year with no information on
-the starting date whatsoever, and also remove the remaining estimates for which
-it is not possible to safely estimate if they occurred over a single or multiple 
-years. 
 
-```{r filter2}
-# Uncertain starting periods
-uncertain.starts <- invacost[which(invacost$Time_range == "Period" &
-                                     is.na(invacost$Probable_starting_year)), ]
-# Number of estimates without adequate information about starting year
-nrow(uncertain.starts)
 
-# No info about whether cost was annual or over a period
-unknown.periods <- invacost[which(is.na(invacost$Time_range)), ]
-# Number of estimates without adequate information about period
-nrow(unknown.periods) # Few! It appears we have none left in INVACOST 2.1!
-
-# Applying the filter
-invacost <- invacost[-which(invacost$Cost_ID %in% c(uncertain.starts$Cost_ID,
-                                                    unknown.periods$Cost_ID)), ]
-# Number of rows after filtering
-nrow(invacost)
-```
-
-## How do I know when costs occurred? 
+## How do I know when costs occurred? {#costtime}
 
 A crucial aspect in analysing cost values is to know the periods of time
 over which costs have occurred. Indeed, knowing the period over which a cost occurred
@@ -350,14 +331,13 @@ substantial portion of the papers we compiled in the database: for
 least one of the two columns.
                       
 Therefore, for papers for which it was not available, we made 
-educated guesses on the probable starting and ending years, on the basis of a 
-set of rules we decided for our main paper (*link to be added when the paper is 
-published*). These educated guesses were based on conservative rules
+educated guesses on the probable starting and ending years.
+These educated guesses were based on conservative rules
 (e.g., if no duration information was provided,
 then the impact was reported of one year only). These estimated starting and
 ending years are available in
-two new fields in the database called `Probable_starting_year_low_margin` and 
-`Probable_ending_year_low_margin`.
+two new fields in the database called `Probable_starting_year_adjusted` and 
+`Probable_ending_year_adjusted`.
 
 
 As it stands now, each cost has a starting and an ending year, and schematically
@@ -389,13 +369,14 @@ it, to make it look like this:
 To do this, we use the function `expandYearlyCosts`, to
 which we provide the starting and ending year columns. It will store the
 years over which economic costs have occurred in a column named `Impact_year`. 
-In this example, expanded database is here stored in an object called `db.over.time`.
+In this example, expanded database is here stored in an object called 
+`db.over.time`.
 
 ```{r i2y, cache = TRUE}
 # Expanding and formating the database
 db.over.time <- expandYearlyCosts(invacost,
-                                  startcolumn = "Probable_starting_year_low_margin",
-                                  endcolumn = "Probable_ending_year_low_margin")
+                                  startcolumn = "Probable_starting_year_adjusted",
+                                  endcolumn = "Probable_ending_year_adjusted")
 # Let's see some columns
 head(db.over.time[, c("Cost_ID", "Species",
                       "Cost_estimate_per_year_2017_USD_exchange_rate",
@@ -405,7 +386,7 @@ head(db.over.time[, c("Cost_ID", "Species",
 ## How complete is our economic data?
 
 It is impossible to evaluate the absolute degree of completeness of our 
-INVACOST - we know that we lack data for many taxonomic groups (e.g. plants are
+InvaCost - we know that we lack data for many taxonomic groups (e.g. plants are
 currently underrepresented) and many places around the earth (most cost data are
 located in North America and Europe). You have to be aware of these 
 potential biases and remember them when interpreting data/analyses.
@@ -496,23 +477,24 @@ calculating the observed cumulative and average costs - as they appear in the
 collected materials - over a specific period 
 of time, or at different time intervals.
 
-We implemented this method in the function `calculateRawAvgCosts`. It will 
+We implemented this method in the function `summarizeCosts`. It will 
 calculate the cumulative and average costs for the entire period, as well as
 for different time intervals (by default, 10-year intervals).
 
 ```{r raw1, cache=TRUE}
-raw.costs <- calculateRawAvgCosts(db.over.time)
+obs.costs <- summarizeCosts(db.over.time,
+                            maximum.year = 2020)
 ```
 
 We can get a summary of the results by typing the name of the object in the 
 console
 ```{r raw2, cache=TRUE}
-raw.costs
+obs.costs
 ```
 
 And we can have a graphical output with:
 ```{r raw3, cache=TRUE, fig.width=8, fig.height = 8}
-plot(raw.costs)
+plot(obs.costs)
 ```
 
 This graph represents the observed annual costs of biological invasions over 
@@ -533,7 +515,7 @@ A good way to illustrate this issue would be to look at the number of estimates
 per year.
 
 ```{r raw3.}
-ggplot(raw.costs$cost.per.year,
+ggplot(obs.costs$cost.per.year,
        aes(x = year, y = number_estimates)) +
   geom_point() +
   ylab("Number of estimates") +
@@ -542,12 +524,12 @@ ggplot(raw.costs$cost.per.year,
 ```
 
 We can see that the number of estimates increases exponentially, but this
-increase seems to drops after 2013.
+increase seems to slow down/drop after 2013.
 
 We can refine this graph to add the relationship with annual costs:
 
 ```{r raw3..}
-ggplot(raw.costs$cost.per.year,
+ggplot(obs.costs$cost.per.year,
        aes(x = year, y = number_estimates,
            size = cost)) +
   geom_point() +
@@ -555,6 +537,15 @@ ggplot(raw.costs$cost.per.year,
   xlab("Year") +
   theme_minimal()
 ```
+
+**Note, however, that the number of estimates in itself is not a meaningful 
+index to describe the sampling effort. Indeed, a single estimate can be 
+a complete synthesis over a country, and thus be complete in itself, whereas
+many estimates can be direct reports of small localized costs from grey 
+litterature, and altogether still represent an incomplete picture of overall
+costs.** Notably, recent years have been characterized by a high number of
+direct reports from the grey literature, which can result in a false sense of
+completeness when only looking at the number estimates. 
 
 
 Use this information, in combination with the quantiles of
@@ -568,7 +559,7 @@ sensitivity analysis.
 
 We can access the content of the output object with
 ```{r raw3.1, cache=TRUE}
-str(raw.costs)
+str(obs.costs)
 ```
 
 Notice that the expanded database used to calculate costs has been stored in
@@ -592,7 +583,7 @@ You can access each element with the `$` sign; for example for the costs
 for all time intervals:
 
 ```{r raw3.2, cache=TRUE}
-raw.costs$average.cost.per.period
+obs.costs$average.cost.per.period
 ```
 
 ## Customising parameters
@@ -604,14 +595,13 @@ There are two main parameters to customize:
  analyses for the main paper we chose to start in 1970, because data for the
  1960s are scarce and uncertain.
 ```{r raw4, cache=TRUE}
-raw.costs2 <- calculateRawAvgCosts(db.over.time,
-                                  minimum.year = 1970,
-                                  maximum.year = 2017)
-raw.costs2
+obs.costs2 <- summarizeCosts(db.over.time,
+                             minimum.year = 1970,
+                             maximum.year = 2017)
+obs.costs2
 ```
 The function tells you how many values were removed from the 
-dataset because they were outside the 1970-2017 time periods. 2017 was chosen
-as the default value as it was the last year for INVACOST V1.
+dataset because they were outside the 1970-2017 time periods. 
 
  - **time intervals**: set them with the arguments `year.breaks`, where you specify
  the starting year of each interval. For example, if your specify 
@@ -620,11 +610,11 @@ as the default value as it was the last year for INVACOST V1.
  
 ```{r raw4.1, cache=TRUE}
 # let's plot 20-year intervals
-raw.costs3 <- calculateRawAvgCosts(db.over.time,
+obs.costs3 <- summarizeCosts(db.over.time,
                                   minimum.year = 1960,
                                   maximum.year = 2017,
                                   year.breaks = seq(1960, 2017, by = 20))
-plot(raw.costs3)
+plot(obs.costs3)
 ```
 
 ## Customising graphs
@@ -635,7 +625,7 @@ There are two methods to customise graphs.
 standard ggplot produced by the package and adding things or changing 
 parameters. This method is easy to implement but you cannot change everything
 (e.g. adjust the colors/shapes of points is not possible). This is what we
-will see here. See the help here: `?plot.invacost.rawcost`
+will see here. See the help here: `?plot.invacost.costsummary`
 
 - The second one is to make your own ggplot from the output object. It is 
 more difficult to implement if you are not familiar with graphs in R - but it
@@ -647,14 +637,14 @@ There are two base plots provided with the package; you have already seen the
 default, and here is another one:
 
 ```{r raw5, cache=TRUE}
-plot(raw.costs,
+plot(obs.costs,
      plot.type = "bars")
 ```
 
 You can also remove the log10 scale:
 
 ```{r raw5.1, cache=TRUE}
-plot(raw.costs,
+plot(obs.costs,
      plot.type = "bars",
      cost.transf = NULL)
 ```
@@ -664,7 +654,7 @@ you will have to set the argument `graphical.parameters = "manual"`.
 
 ```{r raw5.2, cache=TRUE}
 # Store the plot in object p1 to customize it afterwards
-p1 <- plot(raw.costs,
+p1 <- plot(obs.costs,
            graphical.parameters = "manual")
 
 # Show the graph in its initial state
@@ -679,7 +669,7 @@ is a starting point:
 p1 <- p1 +
   xlab("Year") + 
   ylab("Average annual cost of invasions in US$ millions") +
-  scale_x_continuous(breaks = raw.costs$year.breaks) + # X axis breaks
+  scale_x_continuous(breaks = obs.costs$year.breaks) + # X axis breaks
   theme_bw() + # Minimal theme
   scale_y_log10(breaks = 10^(-15:15), # y axis in log 10 with pretty labels
                 labels = scales::comma) +
@@ -699,7 +689,8 @@ a model to predict costs as a function of years. Then, we can inspect the
 different models and the shapes of cost trends over time, and grasp an idea
 of dynamics of invasion costs.
 
-This approach requires more data than the approach based on available estimates  and for data-poor cases it
+This approach requires more data than the approach based on available estimates 
+and for data-poor cases it
 will not work or provide inadequate results. 
 
 
@@ -822,7 +813,7 @@ type for example `citation("earth")` in R**
  function `lmrob`, Maechler et al. 2020). We implemented MM-type regressions (hereafter called
  robust regressions) based on iteratively reweighted least squares since these types 
  of regressions are less sensitive to outliers than ordinary least square 
- regressions (and we do have outliers in INVACOST!) (Yohai 1987, Koller and 
+ regressions (and we do have outliers in InvaCost!) (Yohai 1987, Koller and 
  Stahel 2011). In addition, this method estimates standard errors robust to heteroskedasticity and autocorrelation as described in Croux et al. 2003. *Thanks 
  Andrew Kramer for this addition*. Likewise to OLS regressions, we implemented 
  two methods:
@@ -896,7 +887,7 @@ However, remember that even if we had found a model that has an ideal fit to the
 data, with no statistical violations whatsoever, we should absolutely not 
 consider the predictions as accurate values of the annual costs of IAS, because 
 of the assumption that there is a substantial part of costs that have not been
-estimated or reported in INVACOST. The usefulness of these models is to 
+estimated or reported in InvaCost The usefulness of these models is to 
 investigate whether the costs are increasing, stabilizing, or decreasing, 
 and how these trends changed over time, and to have an idea of the order of 
 magnitude of annual IAS costs depending on time. 
@@ -921,13 +912,13 @@ The function called `costTrendOverTime` will fit all models automatically. We
 can also provide several parameters such as 
 
 - starting year (`minimum.year`): defaults to 1960
-- ending year (`maximum.year`): defaults to 2017
+- ending year (`maximum.year`): defaults to last year of the input data
 - cost transformation (`cost.transf`): by default, a log10 transformation will
 be applied
 - costs in millions (`in.millions`): by default, costs are transformed in 
 millions so numbers are easier to read
 - threshold (`incomplete.year.threshold`) and/or weights 
-(`incomplete.year.weights`) for incomplete years
+(`incomplete.year.weights`) for incomplete years (nothing by default)
 - number of parameters for GAM (dimension basis `gam.k`) and MARS (number of
 model terms `mars.nprune`). **We suggest you should not alter these parameters,
 except if you have good reasons to change them.** Notably, in some very rare 
@@ -935,7 +926,8 @@ cases, GAM models can compute forever, in which case, try to define a small
 value for gam.k (e.g. start from 10 and reduce until the GAM fits).
 - the function will conveniently print the annual cost value estimated by
 all models for a single year, usually the last year. You can change this by
-defining `final.year` (defaults to 2017). Do not worry, values are estimated
+defining `final.year` (defaults to last year of the input data). Do not worry,
+values are estimated
 for all years, this is mostly to provide a summary inspection in the console. 
 
 
@@ -946,7 +938,7 @@ manually exclude specific outliers by setting their weights to zero.
 
 Here is an example in action:
 ```{r models}
-global.trend <- costTrendOverTime(
+global.trend <- modelCosts(
   db.over.time, # The EXPANDED database
   minimum.year = 1970, 
   maximum.year = 2020,
@@ -961,8 +953,8 @@ global.trend
 ## Model plotting
 
 
-We can now look at the shape of each model with the `plot` function, which once
-again does ggplot2 stuff internally in INVACOST:
+We can now look at the shape of each model with the `plot` function, which uses
+ggplot2 internally in the invacost R package:
 
 ```{r models2, fig.height=7, fig.width=10}
 plot(global.trend)
@@ -979,7 +971,7 @@ an illustration of the high dispersion of costs after 2000, or the
 incompleteness of data after 2000. Given our prior assumptions, we may hypothesise
 that the two latter hypotheses are more probable than the former one. 
 
-**Important** Note that error bands for MARS are 95% prediction intervals, whereas
+**Important.** Note that error bands for MARS are 95% prediction intervals, whereas
 for all other models they are 95% confidence intervals. Indeed, we cannot estimate
 confidence intervals for MARS models.
 
@@ -1039,7 +1031,7 @@ we will also include the other models (who all have similar RMSE) in our predict
 
 
 Now, some models may seem to have good fit but may not be significant. This
-is highly critical especially for data-poor subsets of INVACOST. To verify this,
+is highly critical especially for data-poor subsets of InvaCost To verify this,
 inspect the model summaries:
 
 ```{r models8}
@@ -1054,8 +1046,9 @@ If we start reading from the top, we can see that for OLS regressions,
 coefficients of the linear model are significant, but coefficients of the
 quadratic model are not! So we should exclude this model from further analysis.
 
-Looking at robust regressions, coefficients seem significant for both linear
-and quadratic terms, and the model outputs also indicate us that some outliers
+Looking at robust regressions, coefficients seem significant for linear
+terms, whereas they could not be calculated for quadratic terms in our example.
+The model outputs also indicate us that some outliers
 were found in both cases (their weight was set to zero). This is useful if your
 dataset has a lot of outliers!
 
@@ -1094,7 +1087,8 @@ summarized.summary
 
 
 
-Customising plots for the modelling approach similar to the approach based on available estimates: 
+Customising plots for the modelling approach similar to the approach based on 
+available estimates: 
 there are two options. 
 
 
@@ -1102,7 +1096,7 @@ there are two options.
 standard ggplot produced by the package and adding things or changing 
 parameters. This method is easy to implement but you cannot change everything
 (e.g. adjust the colors/shapes of points is not possible). This is what we
-will see here. See the help here: `?plot.invacost.trendcost`
+will see here. See the help here: `?plot.invacost.costmodel`
 
 - The second one is to make your own ggplot from the output object. It is 
 more difficult to implement if you are not familiar with graphs in R - but it
@@ -1123,14 +1117,15 @@ plot(global.trend,
 ```
 
 
-Remember that we found that the OLS quadratic model was not significant?
+Remember that we found that the quadratic models were not significant or not
+working properly in our examples?
 
-We can exclude it from model outputs:
+We can exclude them from model outputs:
 
 
 ```{r models52, fig.width = 16, fig.height = 9}
 plot(global.trend,
-     models = c("ols.linear", "robust.linear", "robust.quadratic", "gam",
+     models = c("ols.linear", "robust.linear", "gam",
     "mars", "quantile"))
 ```
 
@@ -1157,7 +1152,7 @@ You can now set all parameters by yourself; here is a starting point:
 p2 <- p2 +
   xlab("Year") + 
   ylab("Average annual cost of invasions in US$ millions") +
-  scale_x_continuous(breaks = raw.costs$year.breaks) + # X axis breaks
+  scale_x_continuous(breaks = obs.costs$year.breaks) + # X axis breaks - notice I used the breaks from obs.costs
   theme_bw() + # Minimal theme
   scale_y_log10(breaks = 10^(-15:15), # y axis in log 10 with pretty labels
                 labels = scales::comma) +
@@ -1177,7 +1172,7 @@ database. We are not going to analyse it in details.
 We assume here that you have run the code on the first sections of this 
 tutorial: database filtering and completeness.
 
-First, let's inspect the geographic regions of INVACOST:
+First, let's inspect the geographic regions of InvaCost:
 ```{r example1.1}
 unique(invacost$Geographic_region)
 ```
@@ -1196,12 +1191,12 @@ invacost.NA <- invacost[which(invacost$Geographic_region == "North America"), ]
 nrow(invacost.NA)
 ```
 
-We have `r nrow(invacost.NA)` lines in the North America subset of INVACOST. 
+We have `r nrow(invacost.NA)` lines in the North America subset of InvaCost 
 
 ```{r example1.3}
 # Let's see the content of the Class column
 unique(invacost.NA$Class)
-# Subset the NA INVACOST database
+# Subset the NA InvaCost database
 invacost.NA.mammals <- invacost.NA[which(invacost.NA$Class == "Mammalia"), ]
 
 # Number of rows
@@ -1219,23 +1214,23 @@ the approach based on available estimates:
 ```{r example1.4}
 # Expand the subset
 NAmammals.over.time <- expandYearlyCosts(invacost.NA.mammals,
-                                         startcolumn = "Probable_starting_year_low_margin",
-                                         endcolumn = "Probable_ending_year_low_margin")
+                                         startcolumn = "Probable_starting_year_adjusted",
+                                         endcolumn = "Probable_ending_year_adjusted")
 
 
-raw.NAmammals <- calculateRawAvgCosts(NAmammals.over.time,
+obs.NAmammals <- summarizeCosts(NAmammals.over.time,
                                     minimum.year = 1970)
 
-raw.NAmammals
+obs.NAmammals
 
-plot(raw.NAmammals)
+plot(obs.NAmammals)
 ```
 
 Indeed, looking at the graph it would be ill-advised to calibrate models on this
-subset of INVACOST (feel free to try it!).
+subset of InvaCost (feel free to try it!).
 We should rather focus on the cumulative cost over time, 
 which in our case amounts to 
-US$ `r scales::comma(raw.NAmammals$average.total.cost$total_cost)` millions for 
+US$ `r scales::comma(obs.NAmammals$average.total.cost$total_cost)` millions for 
 the 1970-2017 time period.
 
 
@@ -1274,13 +1269,12 @@ invacost$sp.list[which(invacost$Species %in% c("Rattus sp./Mus sp.",
 invacost$genus.list[which(invacost$sp.list == "Rattus spp./Mus spp.")] <- "Rattus/Mus"
 ```
 
-We can also do that for other taxa; here are the corrections we applied for the
-main paper:
+We can also do that for other taxa; here are the changes we applied for the
+Nature paper:
 
 ```{r allsp3}
 invacost$sp.list[which(invacost$Genus == "Aedes")] <- "Aedes spp."
 invacost$sp.list[which(invacost$Genus == "Felis/Rattus")] <- "Felis catus/Rattus spp."
-invacost$sp.list[which(invacost$Genus == "Oryctolagus/Rattus")] <- "Oryctolagus spp./Rattus spp." 
 invacost$sp.list[which(invacost$Genus == "Canis")] <- "Canis lupus spp."
 ```
 
@@ -1309,8 +1303,12 @@ for the 1970-2017 time period.
 ```{r allsp5, warning=FALSE, cache = TRUE}
 # First we expand the database
 db.over.time <- expandYearlyCosts(invacost,
-                                  startcolumn = "Probable_starting_year_low_margin",
-                                  endcolumn = "Probable_ending_year_low_margin")
+                                  startcolumn = "Probable_starting_year_adjusted",
+                                  endcolumn = "Probable_ending_year_adjusted")
+
+# We subset this data to the 1970 - 2020 time period
+db.over.time <- db.over.time[which(db.over.time$Impact_year >= 1970 &
+                                     db.over.time$Impact_year <= 2020), ]
 
 
 # Then we prepare a data.frame in which we will store our results
@@ -1322,7 +1320,7 @@ for(sp in unique(db.over.time$unique.sp.id))
   cur.db <- db.over.time[which(db.over.time$unique.sp.id %in% sp), ]
   
   # We apply the raw cost function
-  cur.raw <- calculateRawAvgCosts(cur.db, minimum.year = 1970)
+  cur.raw <- summarizeCosts(cur.db)
   
   
   # And from the cur.raw object we extract the specific information we are looking for
@@ -1360,8 +1358,11 @@ main paper here: `link to be added when available ¯\_(ツ)_/¯`.
 
 # Improving the package
 
-If something is not clear, or missing, please send me a detailed question by 
-mail (leroy.boris@gmail.com). However, remember that we need to find a good balance
+If something is not clear, or missing, or if you would like to request a 
+feature, please open an issue on
+[our GitHub repository](https://github.com/Farewe/invacost/issues).
+
+However, remember that we need to find a good balance
 between generalisability and specificity: not enough parameters and users are not
 happy; too many parameters and users are lost in the function usage. Therefore,
 if you have a very specific request that will not be useful to other users, do

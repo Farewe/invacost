@@ -15,11 +15,11 @@
 #' 
 #' @details
 #' The public archive for invacost releases is available here:
-#' https://figshare.com/articles/dataset/InvaCost_References_and_description_of_economic_cost_estimates_associated_with_biological_invasions_worldwide_/12668570
+#' \url{https://figshare.com/articles/dataset/InvaCost_References_and_description_of_economic_cost_estimates_associated_with_biological_invasions_worldwide_/12668570}
 #' 
 #' The files used in this function correspond to official releases by the 
 #' InvaCost team and are downloaded in CSV (sep = ";") from a dedicated
-#' GitHub repository: https://github.com/Farewe/invacost_versions
+#' GitHub repository: \url{https://github.com/Farewe/invacost_versions}
 #' 
 #' @importFrom utils download.file read.csv2
 #' @export
@@ -30,9 +30,10 @@
 #' invacost <- getInvaCostVersion("1.0")
 #' dim(invacost)
 
+
 getInvaCostVersion <- function(
   version = "3.0",
-  destination_file = paste0("InvaCost_", version, ".csv")
+  destination_file = NULL
 )
 {
   if(version == "3.0")
@@ -52,12 +53,22 @@ getInvaCostVersion <- function(
     stop("The version you have entered does not exist. See ?getInvaCostVersion")
   }
   
-  download.file(URL, 
-                destfile = destination_file, 
-                method = "curl")
-  
-  
-  invacost <- read.csv2(destination_file, 
-                        sep = ";", header = TRUE)
+  if(!is.null(destination_file))
+  {
+    download.file(URL, 
+                  destfile = destination_file, 
+                  method = "curl")
+    invacost <- read.csv2(destination_file, 
+                          sep = ";", header = TRUE)
+  } else
+  {
+    destination_file <- paste0("InvaCost_", version, "_", as.numeric(Sys.time()), ".csv")
+    download.file(URL, 
+                  destfile = destination_file, 
+                  method = "curl")
+    invacost <- read.csv2(destination_file, 
+                          sep = ";", header = TRUE)
+    unlink(destination_file)
+  }
   return(invacost)
 }

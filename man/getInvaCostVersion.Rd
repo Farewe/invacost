@@ -4,10 +4,7 @@
 \alias{getInvaCostVersion}
 \title{Download and read a specific version of InvaCost}
 \usage{
-getInvaCostVersion(
-  version = "3.0",
-  destination_file = paste0("InvaCost_", version, ".csv")
-)
+getInvaCostVersion(version = "3.0", destination_file = NULL)
 }
 \arguments{
 \item{version}{\code{character} indicating the major release to download.
@@ -28,11 +25,11 @@ releases of the database can be reproduced.
 }
 \details{
 The public archive for invacost releases is available here:
-https://figshare.com/articles/dataset/InvaCost_References_and_description_of_economic_cost_estimates_associated_with_biological_invasions_worldwide_/12668570
+\url{https://figshare.com/articles/dataset/InvaCost_References_and_description_of_economic_cost_estimates_associated_with_biological_invasions_worldwide_/12668570}
 
 The files used in this function correspond to official releases by the 
 InvaCost team and are downloaded in CSV (sep = ";") from a dedicated
-GitHub repository: https://github.com/Farewe/invacost_versions
+GitHub repository: \url{https://github.com/Farewe/invacost_versions}
 }
 \examples{
 invacost <- getInvaCostVersion("1.0")

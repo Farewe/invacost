@@ -1,44 +1,54 @@
-#' Expand annual cost values of the database over periods
+#' Expand cost values per year of the database over relevant periods of impact
 #' 
-#' For costs that occur over several years, this function will repeat the 
-#' annualised cost value over each year of the relevant period.
+#' For costs that occur over several years, this function repeats the 
+#' cost value per year over each year of the relevant period of impact.
 #' 
-#' @param costdb The \bold{INVACOST database}, usually obtained with  
-#' \code{data(\link{invacost})}.
-#' @param startcolumn Name of the column containing starting years.
-#' @param endcolumn Name of the column containing ending years.
-#' @return a \code{data.frame} containing the INVACOST database where 
-#' all costs occuring over several years will be repeated for each year.
+#' @param costdb The \bold{InvaCost database}, usually obtained with  
+#' \code{data(\link{invacost})}
+#' @param startcolumn Name of the column containing starting years
+#' @param endcolumn Name of the column containing ending years
+#' @return A \code{data.frame} containing the InvaCost database where 
+#' all costs occuring over several years are repeated for each year.
 #' @export
 #' @note
 #' Information on the beginning and ending years was not directly provided in
-#' literature sources of economic costs for about a quarter of entries in the 
-#' database. Therefore, for papers for which it was not available, we made 
-#' educated guesses on the probable starting and ending years, under two 
-#' different scenarios. The first scenario (called “low margin”) was designed 
-#' to be realistic, and makes no assumption as of whether the economic impacts 
-#' have been continued after the source was published. In this case,
-#' we used the duration of impacts indicated by the authors, or publication
-#' year when no information was available to fill the missing data. For costs
-#' repeated over several years but for which no information with respect to
-#' the exact periods of impact was available, we counted only a single year.
-#' The second scenario (called “high margin”) was designed as an extreme scenario 
-#' where the costs are repeated over time until the reference year of the 
-#' database (2017). These two scenarios are provided in the four fields added
-#' to the database with the package. We recommend using the “low margin”
-#' (columns \code{Probable_starting_year_low_margin} and 
-#' \code{Probable_ending_year_low_margin}) scenario as the base scenario, as 
-#' its conservative assumptions make it more realistic. 
+#' literature sources of economic costs for a substantial part of entries in the 
+#' database (\code{Probable_starting_year} and \code{Probable_ending_year 
+#' columns}). 
+#' Therefore, for papers for which this information was not available,  
+#' educated guesses were made by the InvaCost team on the probable starting 
+#' and ending years. These educated guesses were designed 
+#' to be conservative, and make no assumption as of whether the economic impacts 
+#' have been continued after the publication year of the material where the cost
+#' was collected.
+#' Therefore, we used the publication year as the probable ending year. For 
+#' costs repeated over several years but for which no information with respect 
+#' to the exact periods of impact was available, we counted only a single year.
+#' These educated guesses are included in the columns (columns 
+#' \code{Probable_starting_year_adjusted} and 
+#' \code{Probable_ending_year_adjusted}), and we recommend using them the base 
+#' scenario, as its conservative assumptions limit over-estimations of the 
+#' costs. 
 #' @author
-#' Boris Leroy \email{leroy.boris@@gmail.com}
-#' 
-#' with help from C. Diagne & A.-C. Vaissière
+#' Boris Leroy \email{leroy.boris@@gmail.com}, Andrew Kramer, Anne-Charlotte
+#' Vaissière, Christophe Diagne
 #' @examples
-#' data(invacost)
+#' data(invacost) 
+#' 
+#' ### Cleaning steps
+#' # Eliminating data with no information on starting and ending years
+#' invacost <- invacost[-which(is.na(invacost$Probable_starting_year_adjusted)), ]
+#' invacost <- invacost[-which(is.na(invacost$Probable_ending_year_adjusted)), ]
+#' # Keeping only observed and reliable costs
+#' invacost <- invacost[invacost$Implementation == "Observed", ]
+#' invacost <- invacost[which(invacost$Method_reliability == "High"), ]
+#' # Eliminating data with no usable cost value
 #' invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
+#' 
+#' ### Expansion
 #' db.over.time <- expandYearlyCosts(invacost,
-#'                                   startcolumn = "Probable_starting_year_low_margin",
-#'                                   endcolumn = "Probable_ending_year_low_margin")
+#'                                   startcolumn = "Probable_starting_year_adjusted",
+#'                                   endcolumn = "Probable_ending_year_adjusted")
 expandYearlyCosts <- function(costdb, startcolumn, endcolumn)
 {
   if(!("Cost_ID" %in% colnames(costdb)))
@@ -56,12 +66,12 @@ expandYearlyCosts <- function(costdb, startcolumn, endcolumn)
   if(!(sum(is.na(costdb[,startcolumn]))==0))
   {
     stop(paste("The 'startcolumn' is missing values for", sum(is.na(costdb[,startcolumn])),"rows.
-    A pre-filled start column should be available in 'Probable_starting_year_low_margin' (see the help file)."))
+    A pre-filled start column should be available in 'Probable_starting_year_adjusted' (see the help file)."))
   }
   if(!(sum(is.na(costdb[,endcolumn]))==0))
   {
     stop(paste("The 'endcolumn' is missing values for", sum(is.na(costdb[,endcolumn])),"rows.
-    A pre-filled end column should be available in 'Probable_ending_year_low_margin' (see the help file)."))
+    A pre-filled end column should be available in 'Probable_ending_year_adjusted' (see the help file)."))
   }
   return(
     dplyr::bind_rows(

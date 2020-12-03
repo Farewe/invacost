@@ -2,7 +2,7 @@
 % Please edit documentation in R/summarizeCosts.R
 \name{computeAvgTotCost}
 \alias{computeAvgTotCost}
-\title{Calculate the raw average annual cost over a single period of time}
+\title{Calculate the cumulative and average annual cost over a single period of time}
 \usage{
 computeAvgTotCost(
   costdb,
@@ -13,12 +13,13 @@ computeAvgTotCost(
 )
 }
 \arguments{
-\item{costdb}{The \bold{expanded INVACOST database} output from 
+\item{costdb}{The \bold{expanded InvaCost database} output from 
 \code{\link{expandYearlyCosts}},
 where annual costs occurring over several years are repeated for each year.}
 
 \item{cost.column}{Name of the cost column to use in \code{costdb} (usually, 
-choose between the exchange rate (default) or PPP annualised cost)}
+choose between the exchange rate (default) or Purchase Power Parity cost per 
+year)}
 
 \item{year.column}{Name of the year column to use in \code{costdb}.}
 
@@ -38,12 +39,13 @@ a named \code{list} with 5 elements
  \item{\code{annual.cost}: cost per year}
  \item{\code{number_estimates}: the number of cost estimates before expansion 
 via \code{\link{expandYearlyCosts}}
- \item{\code{number_year_values}: the number of yearly costs included}
+ \item{\code{number_year_values}: the number of costs per year included}
 }}
 }
 \description{
-This simple function calculates the raw average annual cost of invasive species
-over a single period of time
+This simple function calculates the cumulative cost average annual cost of
+invasive alien species over a single period of time. It is used internally
+by \code{\link{summarizeCosts}}.
 }
 \note{
 Arguments \code{min.year} and \code{max.year} do not filter the data. Only 
@@ -57,19 +59,32 @@ data, filter the data BEFORE running this function.
 }
 \examples{
 data(invacost)
+
+### Cleaning steps
+# Eliminating data with no information on starting and ending years
+invacost <- invacost[-which(is.na(invacost$Probable_starting_year_adjusted)), ]
+invacost <- invacost[-which(is.na(invacost$Probable_ending_year_adjusted)), ]
+# Keeping only observed and reliable costs
+invacost <- invacost[invacost$Implementation == "Observed", ]
+invacost <- invacost[which(invacost$Method_reliability == "High"), ]
+# Eliminating data with no usable cost value
+invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
+
+### Expansion
 db.over.time <- expandYearlyCosts(invacost,
-                                  startcolumn = "Probable_starting_year_low_margin",
-                                  endcolumn = "Probable_ending_year_low_margin")
-costdb <- db.over.time[db.over.time$Implementation == "Observed", ]
-costdb <- costdb[which(costdb$Method_reliability == "High"), ]
-res <- computeAvgTotCost(costdb)
+                                  startcolumn = "Probable_starting_year_adjusted",
+                                  endcolumn = "Probable_ending_year_adjusted")
+                                  
+### Analysis
+res <- computeAvgTotCost(db.over.time,
+                         min.year = 1960,
+                         max.year = 2020) # Excluding data after 2020 (e.g. planned budgets)
 res
 }
 \seealso{
 \code{\link{expandYearlyCosts}} to get the database in appropriate format.
 }
 \author{
-Boris Leroy \email{leroy.boris@gmail.com}
-
-with help from C. Diagne & A.-C. Vaissière
+Boris Leroy \email{leroy.boris@gmail.com}, Andrew Kramer, Anne-Charlotte
+Vaissière, Christophe Diagne
 }

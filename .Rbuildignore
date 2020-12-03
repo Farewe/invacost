@@ -3,3 +3,10 @@
 ^\.Rproj\.user$
 Readme*
 ^publi$
+InvaCost_1.0
+InvaCost_1.0.csv
+InvaCost_2.0
+InvaCost_2.1
+InvaCost_2.1.csv
+InvaCost_3.0
+^man-roxygen

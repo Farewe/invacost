@@ -61,36 +61,19 @@ various test versions of the invacost R package!
 # Installation
 
 
-**The package requires at least R 4.0.0.** *For your information, 
-the main difference (for you) between R4.0.0+
-and former versions is that data.frame will no longer automatically transform
-character strings into factors.* 
-
-As a reminder in RStudio you can switch between your old cozy R version and the
-brand new one you just installed by clicking on Tools > Global Options > R 
-version: change.
-
+**The package requires at least R 4.0.0.** 
 
 The easiest method to install the package for now is to install it directly from
 github with the following command line (requires the package devtools).
+
+If R requests you to install some packages from source, and you are unsure what
+to do, say no: you do not need the very last version of every package to make it
+work.
 
 ``` {r install, eval = FALSE}
 install.packages("devtools")
 devtools::install_github("Farewe/invacost")
 ```
-
-However, for as long as the package is in embargo, you have to install it 
-manually from the .tar.gz file. Before you do that, install the following 
-packages:
-
-```{r i1, eval = FALSE}
-install.packages(c("dplyr", "earth", "ggplot2", "lmtest", "mgcv", "quantreg",
-                   "robustbase", "sandwich", "scales"))
-install.packages("invacost_0.3-9.tar.gz", repos = NULL, type="source")
-```
-
-Then, install the package from the .tar.gz file (do not extract it,
-install from the raw .tar.gz).
 
 # Latest changes to the package : December 2020
 

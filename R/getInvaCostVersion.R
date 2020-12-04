@@ -36,39 +36,42 @@ getInvaCostVersion <- function(
   destination_file = NULL
 )
 {
-  if(version == "3.0")
-  {
-    URL <- "https://raw.githubusercontent.com/Farewe/invacost_versions/500e42400ce748ac798b45952553b3292fae7f5e/InvaCost.csv"
-  } else if(version == "2.1")
-  {
-    URL <- "https://raw.githubusercontent.com/Farewe/invacost_versions/28e0abb20df8fafc046700943fa8ed81bd95ee57/InvaCost.csv"
-  } else if(version == "2.0")
-  {
-    URL <- "https://raw.githubusercontent.com/Farewe/invacost_versions/bc4e59a7a76eef8ea47b462b42053c67d4c3d31b/InvaCost.csv"
-  } else if(version == "1.0")
-  {
-    URL <- "https://raw.githubusercontent.com/Farewe/invacost_versions/b6d4c8607e4874e9c886cfae0de61a95ba2adf93/InvaCost.csv"
-  } else
-  {
-    stop("The version you have entered does not exist. See ?getInvaCostVersion")
-  }
   
+  URL <- paste0("https://raw.githubusercontent.com/Farewe/invacost_versions/master/InvaCost_",
+                version, ".csv")
+
   if(!is.null(destination_file))
   {
     download.file(URL, 
                   destfile = destination_file, 
-                  method = "curl")
+                  method = "auto")
     invacost <- read.csv2(destination_file, 
-                          sep = ";", header = TRUE)
+                          sep = ";", header = TRUE,
+                          na.strings = c("NA", "#N/A", "#DIV/0!", "#VALEUR!", 
+                                         "Unspecified", "Unknown", ""))
   } else
   {
     destination_file <- paste0("InvaCost_", version, "_", as.numeric(Sys.time()), ".csv")
     download.file(URL, 
                   destfile = destination_file, 
-                  method = "curl")
+                  method = "auto")
     invacost <- read.csv2(destination_file, 
-                          sep = ";", header = TRUE)
+                          sep = ";", header = TRUE,
+                          na.strings = c("NA", "#N/A", "#DIV/0!", "#VALEUR!", 
+                                         "#REF!",
+                                         "Unspecified", "Unknown", ""))
     unlink(destination_file)
   }
+
+  invacost$Cost_estimate_per_year_local_currency <- as.numeric(invacost$Cost_estimate_per_year_local_currency)
+  invacost$Cost_estimate_per_year_2017_USD_exchange_rate <- as.numeric(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)
+  invacost$Cost_estimate_per_year_2017_USD_PPP <- as.numeric(invacost$Cost_estimate_per_year_2017_USD_PPP)
+  invacost$Applicable_year <- as.numeric(invacost$Applicable_year)
+  invacost$Publication_year <- as.numeric(invacost$Publication_year)
+  invacost$Probable_starting_year <- as.numeric(invacost$Probable_starting_year)
+  invacost$Probable_ending_year <- as.numeric(invacost$Probable_ending_year)
+  invacost$Probable_starting_year_adjusted <- as.numeric(invacost$Probable_starting_year_adjusted)
+  invacost$Probable_ending_year_adjusted <- as.numeric(invacost$Probable_ending_year_adjusted)
+  
   return(invacost)
 }

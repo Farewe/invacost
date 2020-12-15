@@ -1,6 +1,6 @@
-#' Download and read a specific version of InvaCost
+#' Download and read a specific version of 'InvaCost'
 #' 
-#' This function will download the requested major release of InvaCost to
+#' This function will download the requested major release of 'InvaCost' to
 #' the specified file, then read it into R, such that analyses done on older
 #' releases of the database can be reproduced.
 #' 
@@ -14,11 +14,11 @@
 #' version.
 #' 
 #' @details
-#' The public archive for invacost releases is available here:
+#' The public archive for 'InvaCost' releases is available here:
 #' \url{https://figshare.com/articles/dataset/InvaCost_References_and_description_of_economic_cost_estimates_associated_with_biological_invasions_worldwide_/12668570}
 #' 
 #' The files used in this function correspond to official releases by the 
-#' InvaCost team and are downloaded in CSV (sep = ";") from a dedicated
+#' 'InvaCost' team and are downloaded in CSV (\code{sep = ";"}) from a dedicated
 #' GitHub repository: \url{https://github.com/Farewe/invacost_versions}
 #' 
 #' @importFrom utils download.file read.csv2

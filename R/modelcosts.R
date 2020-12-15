@@ -1,10 +1,10 @@
 #' Model the trend of invasive alien species costs over time
 #' 
-#' This function fits different models on InvaCost data expressed per year 
+#' This function fits different models on 'InvaCost' data expressed per year 
 #' in order to estimate and predict the trend of invasive alien Species costs 
 #' over time.
 #' 
-#' @param costdb The \bold{expanded InvaCost database} output from 
+#' @param costdb The \bold{expanded 'InvaCost' database} output from 
 #' \code{\link{expandYearlyCosts}},
 #' where costs occurring over several years are expanded over each year of 
 #' impact

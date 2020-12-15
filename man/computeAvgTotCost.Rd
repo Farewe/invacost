@@ -13,7 +13,7 @@ computeAvgTotCost(
 )
 }
 \arguments{
-\item{costdb}{The \bold{expanded InvaCost database} output from 
+\item{costdb}{The \bold{expanded 'InvaCost' database} output from 
 \code{\link{expandYearlyCosts}},
 where annual costs occurring over several years are repeated for each year.}
 

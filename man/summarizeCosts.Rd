@@ -16,7 +16,7 @@ summarizeCosts(
 )
 }
 \arguments{
-\item{costdb}{The \bold{expanded InvaCost database} output from 
+\item{costdb}{The \bold{expanded 'InvaCost' database} output from 
 \code{\link{expandYearlyCosts}},
 where costs occurring over several years are expanded over each year of impact.}
 
@@ -73,7 +73,7 @@ This function summarizes the cumulative costs and average annual costs of
 invasive alien species and breaks it down into regular periods of time, on 
 the basis
 of cost estimates as they appeared in the provided in the source references
-collected in the InvaCost database
+collected in the 'InvaCost' database
 }
 \details{
 Missing data are ignored. However, note that the average for each 

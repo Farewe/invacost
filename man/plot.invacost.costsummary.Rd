@@ -17,7 +17,7 @@
 \arguments{
 \item{x}{The output object from \code{\link{summarizeCosts}}}
 
-\item{plot.breaks}{aa vector of numeric values indicating the plot breaks 
+\item{plot.breaks}{a vector of numeric values indicating the plot breaks 
 for the Y axis (cost values)}
 
 \item{plot.type}{\code{"points"} or \code{"bars"}. Defines the type of plot
@@ -32,10 +32,11 @@ Specify \code{NULL} to avoid any transformation. Only useful
 for graphical representation.}
 
 \item{graphical.parameters}{set this to \code{"manual"} if you want to 
-customise ggplot2 parameters. 
-By default, the following layers are configured: ylab, xlab, scale_x_continuous,
-theme_bw and, if \code{cost.transf = "log10"}, scale_y_log10 and 
-annotation_logticks. If you specify \code{grahical.parameters = "manual"},
+customise \code{ggplot2} parameters. 
+By default, the following layers are configured: \code{ylab}, \code{xlab}, 
+\code{scale_x_continuous},
+\code{theme_bw} and, if \code{cost.transf = "log10"}, \code{scale_y_log10} and 
+\code{annotation_logticks}. If you specify \code{grahical.parameters = "manual"},
 all defaults will be ignored.}
 
 \item{...}{additional arguments, none implemented for now}

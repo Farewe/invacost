@@ -4,9 +4,9 @@
 #' invasive alien species and breaks it down into regular periods of time, on 
 #' the basis
 #' of cost estimates as they appeared in the provided in the source references
-#' collected in the InvaCost database
+#' collected in the 'InvaCost' database
 #' 
-#' @param costdb The \bold{expanded InvaCost database} output from 
+#' @param costdb The \bold{expanded 'InvaCost' database} output from 
 #' \code{\link{expandYearlyCosts}},
 #' where costs occurring over several years are expanded over each year of impact.
 #' @param cost.column Name of the cost column to use in \code{costdb} (usually, 
@@ -319,7 +319,7 @@ summarizeCosts <- function(
 #' invasive alien species over a single period of time. It is used internally
 #' by \code{\link{summarizeCosts}}.
 #' 
-#' @param costdb The \bold{expanded InvaCost database} output from 
+#' @param costdb The \bold{expanded 'InvaCost' database} output from 
 #' \code{\link{expandYearlyCosts}},
 #' where annual costs occurring over several years are repeated for each year.
 #' @param cost.column Name of the cost column to use in \code{costdb} (usually, 

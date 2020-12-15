@@ -22,7 +22,7 @@ modelCosts(
 )
 }
 \arguments{
-\item{costdb}{The \bold{expanded InvaCost database} output from 
+\item{costdb}{The \bold{expanded 'InvaCost' database} output from 
 \code{\link{expandYearlyCosts}},
 where costs occurring over several years are expanded over each year of 
 impact}
@@ -110,7 +110,7 @@ costs of invasive alien species based on all models for \code{final.year}.}
 The structure of this object can be seen using \code{str()}.
 }
 \description{
-This function fits different models on InvaCost data expressed per year 
+This function fits different models on 'InvaCost' data expressed per year 
 in order to estimate and predict the trend of invasive alien Species costs 
 over time.
 }

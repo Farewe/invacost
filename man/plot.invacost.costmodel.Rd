@@ -28,10 +28,11 @@ facet per category of model (\code{"facets"})}
 any subset of the models included in 'modelCosts'. Default is all models.}
 
 \item{graphical.parameters}{set this to \code{"manual"} if you want to 
-customise ggplot2 parameters. 
-By default, the following layers are configured: ylab, xlab, scale_x_continuous,
-theme_bw and, if \code{cost.transf = "log10"}, scale_y_log10 and 
-annotation_logticks. If you specify \code{grahical.parameters = "manual"},
+customise \code{ggplot2} parameters. 
+By default, the following layers are configured: \code{ylab}, \code{xlab}, 
+\code{scale_x_continuous},
+\code{theme_bw} and, if \code{cost.transf = "log10"}, \code{scale_y_log10} and 
+\code{annotation_logticks}. If you specify \code{grahical.parameters = "manual"},
 all defaults will be ignored.}
 
 \item{...}{additional arguments, none implemented for now}
@@ -43,7 +44,7 @@ cost of invasive species based on the temporal trend of costs.
 \note{
 Error bands represent 95% confidence intervals for OLS regression, robust
 regression, GAM and quantile regression. We cannot construct confidence 
-intervals around the mean for MARS techjniques. However, we can estimate
+intervals around the mean for MARS techniques. However, we can estimate
 prediction intervals by fitting a variance model to MARS residuals. Hence,
 the error bands for MARS model represent 95% prediction intervals estimated
 by fitting a linear model to the residuals of the MARS model. To learn more

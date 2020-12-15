@@ -1,14 +1,14 @@
-#' InvaCost database
+#' 'InvaCost' database
 #'
-#' The database compiling published values of economic costs of Invasive Alien
-#' Species.
-#'
+#' The 'InvaCost' database compiling published values of economic costs of
+#' Invasive Alien Species.
+#' 
 #'
 #' \describe{
 #'   \item{Cost_ID}{Unique identifier for the cost entry}
-#'   \item{Repository}{Literature engine (Web of Science (WoS), Google Scholar 
-#'   (GS), Google search engine (Go)) or original source (Targeted collection 
-#'   (TC)) from which the reference was collected}
+#'   \item{Repository}{Literature engine (Web of Science ('WoS'), Google Scholar 
+#'   ('GS'), Google search engine ('Go')) or original source (Targeted collection 
+#'   ('TC')) from which the reference was collected}
 #'   \item{Reference_ID}{Identifier for the reference where the cost entry is 
 #'   reported. As much as possible, this is the original source where the cost 
 #'   was first provided}
@@ -47,7 +47,7 @@
 #'   with the cost entry}
 #'   \item{Common_name}{Non-scientific (or vernacular) name(s) provided in the 
 #'   original reference, or by the International Union for Conservation of 
-#'   Nature (IUCN) when not provided}
+#'   Nature ('IUCN') when not provided}
 #'   \item{Environment}{Type of environment (aquatic, terrestrial, semi-aquatic,
 #'    diverse/unspecified) where the cost estimate occurred}
 #'   \item{Environment_IAS}{Type of environment where the invasive species lives,
@@ -55,7 +55,8 @@
 #'    association with aquatic systems at any life stage, including for 
 #'    reproduction, development and/or foraging), semi-aquatic (species with a 
 #'    looser association with aquatic systems) or terrestrial (otherwise); 
-#'    diverse/unspecified is used when there are multiple IAS pertaining to 
+#'    diverse/unspecified is used when there are multiple Invasive Alien Species
+#'    ('IAS') pertaining to 
 #'    different environments}
 #'   \item{Island}{Assessment of the geographical area where the cost occurred 
 #'   as an island (Y) or not (N); NA is used when the information is not clearly 
@@ -114,7 +115,9 @@
 #'   to one year }
 #'   \item{Probable_starting_year}{Year in which the cost is known or assumed 
 #'   to have started to occur. When not explicitly provided by the authors, we 
-#'   mentioned unspecified; in the case of a cost estimate provided for a one-year period straddling two calendar years, we mentioned the latest year of the cost occurrence}
+#'   mentioned unspecified; in the case of a cost estimate provided for a 
+#'   one-year period straddling two calendar years, we mentioned the latest year 
+#'   of the cost occurrence}
 #'   \item{Probable_ending_year}{Year in which the cost is known or assumed 
 #'   to have ended. When not explicitly provided by the authors, we mentioned 
 #'   unspecified in one and/or the other column(s); in the case of a cost 
@@ -154,7 +157,7 @@
 #'     provided by the World Bank Open Data (available at 
 #'     \url{https://data.worldbank.org/indicator/PA.NUS.FCRF?end=2017&start=1960)}}
 #'   \item{Raw_cost_estimate_2017_USD_PPP}{Raw cost estimate local currency 
-#'   standardized to 2017 US$ based on the official Purchase Power Parity (PPP; 
+#'   standardized to 2017 US$ based on the official Purchase Power Parity ('PPP'; 
 #'   local currency unit per US$) provided by the World Bank Open Data 
 #'   (available at \url{https://data.worldbank.org/indicator/PA.NUS.PPP?end=2017&start=1990}) 
 #'   and the Organisation for Economic Cooperation and Development (available at 
@@ -174,7 +177,7 @@
 #'    these two previous columns}
 #'   \item{Cost_estimate_per_year_2017_USD_PPP}{Cost estimate per year local 
 #'   currency standardized from local Currency and Applicable year to 2017 USD 
-#'   based on Purchase Power Parity (PPP; local currency unit per US$) 
+#'   based on Purchase Power Parity ('PPP'; local currency unit per US$) 
 #'   provided by the World Bank Open Data (available at 
 #'   \url{https://data.worldbank.org/indicator/PA.NUS.PPP?end=2017&start=1990})
 #'    and the Organisation for Economic Cooperation and Development (available at 
@@ -231,7 +234,7 @@
 #'    infrastructure damage, or income reduction), management (monetary 
 #'    resources allocated to mitigate the spread or impacts of invaders, such 
 #'    as prevention, control, research, long-term management, eradication) or 
-#'    mixed (when when costs included both ‘damage’ and ‘management’ 
+#'    mixed (when when costs included both damage and management 
 #'    components); every cost for which the exact nature of cost was not clearly
 #'     defined was assigned to unspecified}
 #'   \item{Management_type}{Pre-invasion management (monetary investments for 

@@ -3,12 +3,12 @@
 #' For costs that occur over several years, this function repeats the 
 #' cost value per year over each year of the relevant period of impact.
 #' 
-#' @param costdb The \bold{InvaCost database}, usually obtained with  
+#' @param costdb The \bold{'InvaCost' database}, usually obtained with  
 #' \code{data(\link{invacost})}
 #' @param startcolumn Name of the column containing starting years
 #' @param endcolumn Name of the column containing ending years
-#' @return A \code{data.frame} containing the InvaCost database where 
-#' all costs occuring over several years are repeated for each year.
+#' @return A \code{data.frame} containing the 'InvaCost' database where 
+#' all costs occurring over several years are repeated for each year.
 #' @export
 #' @note
 #' Information on the beginning and ending years was not directly provided in
@@ -16,7 +16,7 @@
 #' database (\code{Probable_starting_year} and \code{Probable_ending_year 
 #' columns}). 
 #' Therefore, for papers for which this information was not available,  
-#' educated guesses were made by the InvaCost team on the probable starting 
+#' educated guesses were made by the 'InvaCost' team on the probable starting 
 #' and ending years. These educated guesses were designed 
 #' to be conservative, and make no assumption as of whether the economic impacts 
 #' have been continued after the publication year of the material where the cost

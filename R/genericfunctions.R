@@ -169,10 +169,11 @@ str.invacost.costsummary <- function(object, ...)
 #' @param models the models the user would like to appear in the plots. Can be
 #' any subset of the models included in 'modelCosts'. Default is all models.
 #' @param graphical.parameters set this to \code{"manual"} if you want to 
-#' customise ggplot2 parameters. 
-#' By default, the following layers are configured: ylab, xlab, scale_x_continuous,
-#' theme_bw and, if \code{cost.transf = "log10"}, scale_y_log10 and 
-#' annotation_logticks. If you specify \code{grahical.parameters = "manual"},
+#' customise \code{ggplot2} parameters. 
+#' By default, the following layers are configured: \code{ylab}, \code{xlab}, 
+#' \code{scale_x_continuous},
+#' \code{theme_bw} and, if \code{cost.transf = "log10"}, \code{scale_y_log10} and 
+#' \code{annotation_logticks}. If you specify \code{grahical.parameters = "manual"},
 #' all defaults will be ignored.
 #' @param ... additional arguments, none implemented for now
 #' @export
@@ -187,7 +188,7 @@ str.invacost.costsummary <- function(object, ...)
 #' @note 
 #' Error bands represent 95% confidence intervals for OLS regression, robust
 #' regression, GAM and quantile regression. We cannot construct confidence 
-#' intervals around the mean for MARS techjniques. However, we can estimate
+#' intervals around the mean for MARS techniques. However, we can estimate
 #' prediction intervals by fitting a variance model to MARS residuals. Hence,
 #' the error bands for MARS model represent 95% prediction intervals estimated
 #' by fitting a linear model to the residuals of the MARS model. To learn more
@@ -405,7 +406,7 @@ plot.invacost.costmodel <- function(x,
 #' @param plot.type \code{"points"} or \code{"bars"}. Defines the type of plot
 #' you want to make; bars are not advised in log scale because the base value (0)
 #' is infinite in log-scale. 
-#' @param plot.breaks aa vector of numeric values indicating the plot breaks 
+#' @param plot.breaks a vector of numeric values indicating the plot breaks 
 #' for the Y axis (cost values)
 #' @param average.annual.values if \code{TRUE}, the plot will represent average
 #' annual values rather than cumulative values over the entire period
@@ -413,10 +414,11 @@ plot.invacost.costmodel <- function(x,
 #' Specify \code{NULL} to avoid any transformation. Only useful
 #' for graphical representation.
 #' @param graphical.parameters set this to \code{"manual"} if you want to 
-#' customise ggplot2 parameters. 
-#' By default, the following layers are configured: ylab, xlab, scale_x_continuous,
-#' theme_bw and, if \code{cost.transf = "log10"}, scale_y_log10 and 
-#' annotation_logticks. If you specify \code{grahical.parameters = "manual"},
+#' customise \code{ggplot2} parameters. 
+#' By default, the following layers are configured: \code{ylab}, \code{xlab}, 
+#' \code{scale_x_continuous},
+#' \code{theme_bw} and, if \code{cost.transf = "log10"}, \code{scale_y_log10} and 
+#' \code{annotation_logticks}. If you specify \code{grahical.parameters = "manual"},
 #' all defaults will be ignored.
 #' @param ... additional arguments, none implemented for now
 #' @export

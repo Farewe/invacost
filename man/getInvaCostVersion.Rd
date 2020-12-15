@@ -2,7 +2,7 @@
 % Please edit documentation in R/getInvaCostVersion.R
 \name{getInvaCostVersion}
 \alias{getInvaCostVersion}
-\title{Download and read a specific version of InvaCost}
+\title{Download and read a specific version of 'InvaCost'}
 \usage{
 getInvaCostVersion(version = "3.0", destination_file = NULL)
 }
@@ -19,16 +19,16 @@ a \code{data.frame} with dimensions variable depending on the chosen
 version.
 }
 \description{
-This function will download the requested major release of InvaCost to
+This function will download the requested major release of 'InvaCost' to
 the specified file, then read it into R, such that analyses done on older
 releases of the database can be reproduced.
 }
 \details{
-The public archive for invacost releases is available here:
+The public archive for 'InvaCost' releases is available here:
 \url{https://figshare.com/articles/dataset/InvaCost_References_and_description_of_economic_cost_estimates_associated_with_biological_invasions_worldwide_/12668570}
 
 The files used in this function correspond to official releases by the 
-InvaCost team and are downloaded in CSV (sep = ";") from a dedicated
+'InvaCost' team and are downloaded in CSV (\code{sep = ";"}) from a dedicated
 GitHub repository: \url{https://github.com/Farewe/invacost_versions}
 }
 \examples{

@@ -1,7 +1,7 @@
 citHeader("To cite invacost in publications use:")
 
 citEntry(entry = "Article",
-         title        = "Analysing economic costs of invasive alien species with the invacost R package.",
+         title        = "Analysing global economic costs of invasive alien species with the invacost R package.",
          author       = personList(as.person("Boris Leroy"),
                                    as.person("Andrew M Kramer"),
                                    as.person("Anne-Charlotte Vaissière"),
@@ -12,11 +12,11 @@ citEntry(entry = "Article",
          volume       = "",
          number       = "",
          pages        = "",
-         url          = "https://www.github.com/Farewe/invacost",
+         url          = "https://doi.org/10.1101/2020.12.10.419432",
          
          textVersion  =
            paste("Leroy Boris, Kramer Andrew M, Vaissière Anne-Charlotte, Courchamp Franck & Diagne Christophe (2020).",
-                 "Analysing economic costs of invasive alien species with the invacost R package.",
-                 "",
-                 "URL https://github.com/Farewe/invacost")
+                 "Analysing global economic costs of invasive alien species with the invacost R package.",
+                 "biorXiv.",
+                 "https://doi.org/10.1101/2020.12.10.419432")
 )

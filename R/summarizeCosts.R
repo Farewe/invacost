@@ -49,6 +49,10 @@
 #' }
 #' The structure of this object can be seen using \code{str()}.
 #' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
+#' @references \url{https://github.com/Farewe/invacost}
+#' 
+#' Leroy Boris, Kramer Andrew M, Vaissière Anne-Charlotte, Courchamp Franck & Diagne Christophe (2020). Analysing global economic costs of invasive alien species with the
+#' invacost R package. biorXiv. \url{https://doi.org/10.1101/2020.12.10.419432}
 #' @details
 #' Missing data are ignored. However, note that the average for each 
 #' interval is always calculated on the basis of the full temporal range.
@@ -351,6 +355,10 @@ summarizeCosts <- function(
 #' @author
 #' Boris Leroy \email{leroy.boris@@gmail.com}, Andrew Kramer, Anne-Charlotte
 #' Vaissière, Christophe Diagne
+#' @references \url{https://github.com/Farewe/invacost}
+#' 
+#' Leroy Boris, Kramer Andrew M, Vaissière Anne-Charlotte, Courchamp Franck & Diagne Christophe (2020). Analysing global economic costs of invasive alien species with the
+#' invacost R package. biorXiv. \url{https://doi.org/10.1101/2020.12.10.419432}
 #' @examples
 #' data(invacost)
 #' 

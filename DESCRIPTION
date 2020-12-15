@@ -2,7 +2,7 @@ Package: invacost
 Type: Package
 Title: InvaCost Database with Methods to Analyse Costs of Invasive Alien Species
 Version: 1.0
-Date: 2020-12-03
+Date: 2020-12-14
 Author: Boris Leroy [cre, aut], Andrew Kramer [aut], Anne-Charlotte Vaissière [ctb], Christophe Diagne [ctb]
 Maintainer: Boris Leroy <leroy.boris@gmail.com>
 Description: Provides an up-to-date version of the InvaCost database in R, and

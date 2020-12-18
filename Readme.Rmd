@@ -63,16 +63,12 @@ various test versions of the invacost R package!
 
 **The package requires at least R 4.0.0.** 
 
-The easiest method to install the package for now is to install it directly from
-github with the following command line (requires the package devtools).
-
-If R requests you to install some packages from source, and you are unsure what
-to do, say no: you do not need the very last version of every package to make it
-work.
+The package can now be officially installed from CRAN!!!! 
 
 ``` {r install, eval = FALSE}
-install.packages("devtools")
-devtools::install_github("Farewe/invacost")
+# install.packages("devtools")
+# devtools::install_github("Farewe/invacost")
+install.packages("invacost")
 ```
 
 # Latest changes to the package : December 2020

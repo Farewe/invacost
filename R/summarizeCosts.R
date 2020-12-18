@@ -78,7 +78,7 @@
 #' invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
 #' 
 #' ### Expansion
-#' \dontrun{
+#' \donttest{
 #' db.over.time <- expandYearlyCosts(invacost,
 #'                                   startcolumn = "Probable_starting_year_adjusted",
 #'                                   endcolumn = "Probable_ending_year_adjusted")
@@ -373,7 +373,7 @@ summarizeCosts <- function(
 #' invacost <- invacost[-which(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)), ]
 #' 
 #' ### Expansion
-#' \dontrun{
+#' \donttest{
 #' db.over.time <- expandYearlyCosts(invacost,
 #'                                   startcolumn = "Probable_starting_year_adjusted",
 #'                                   endcolumn = "Probable_ending_year_adjusted")

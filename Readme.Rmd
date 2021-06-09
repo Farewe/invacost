@@ -71,26 +71,26 @@ The package can now be officially installed from CRAN!!!!
 install.packages("invacost")
 ```
 
-# Latest changes to the package : December 2020
+# Latest changes to the package : June 2021
 
-**Major changes related to the upcoming official release of the package on the
-Comprehensive R Archive Network. Existing users PLEASE READ CAREFULLY!**
+**Updated the database version in the package to version 4.0.**
 
-- **The main functions of the package have changed names.** `calculateRawAvgCosts`
+
+*Previous changes: December 2020*
+
+- *The main functions of the package have changed names.* `calculateRawAvgCosts`
 is now `summarizeCosts`, and `costTrendOverTime` is now `modelCosts`. Older
 function names are still functional but will throw a warning, and will no longer
 be updated. Please update your scripts accordingly.
 
-- **Default values in `summarizeCosts` (formerly `calculateRawAvgCosts`) and 
-`modelCosts` (formerly `costTrendOverTime`) have changed.** First, the last 
+- *Default values in `summarizeCosts` (formerly `calculateRawAvgCosts`) and 
+`modelCosts` (formerly `costTrendOverTime`) have changed.* First, the last 
 year of analysis will, by default, be the last year of your input data. Naturally,
 you can still define it manually. Second, by default, `modelCosts` will no 
 longer exclude data from calibration (formerly, `costTrendOverTime` excluded
 by default data from 2015 and above). If you wish to keep this threshold as
 in former versions of the packages, you can still alter it by manually setting 
 `incomplete.year.threshold = 2015`.
-
-- InvaCost version 3.0 is now shipped in the package (`data(invacost)`).
 
 - A new function is available (`getInvaCostVersion`) to rollback the database to
 former major releases. Current options are: `1.0`, `2.0`, `2.1`, `3.0`. This is
@@ -134,13 +134,13 @@ As of now, we offer the possibility to roll back to version 1.0, 2.0 and 2.1.
 
 Here is an example on how to roll back to V1 or V2.1
 ```{r rollback, cache = TRUE}
-# Version 1.0
-invacost_1.0 <- getInvaCostVersion("1.0")
-dim(invacost_1.0)
-
-# Version 2.1
-invacost_2.1 <- getInvaCostVersion("2.1")
-dim(invacost_2.1)
+# # Version 1.0
+# invacost_1.0 <- getInvaCostVersion("1.0")
+# dim(invacost_1.0)
+# 
+# # Version 2.1
+# invacost_2.1 <- getInvaCostVersion("2.1")
+# dim(invacost_2.1)
 ```
 
 If you want, the database can be automatically saved on your hard drive in csv
@@ -214,8 +214,12 @@ unknown.periods <- invacost[which(is.na(invacost$Time_range)), ]
 nrow(unknown.periods) 
 
 # Applying the filter
-invacost <- invacost[-which(invacost$Cost_ID %in% c(uncertain.starts$Cost_ID,
+if(nrow(uncertain.starts) + nrow(unknown.periods) > 0)
+{
+  invacost <- invacost[-which(invacost$Cost_ID %in% c(uncertain.starts$Cost_ID,
                                                     unknown.periods$Cost_ID)), ]
+}
+
 # Number of rows after filtering
 nrow(invacost)
 ```
@@ -445,7 +449,11 @@ subset may be too incomplete to provide a decent estimation of the time lag.
 **Therefore, I would suggest to evaluate the time lag only on the global dataset, 
 as we did here.***
 
-
+Last, note that there may be a correlation between the time lag and the 
+magnitude of cost estimates. Indeed, direct reports of small costs tend to be
+aired earlier than large estimates of invasion impacts. It is an important
+issue to consider when investigating the time lag. For example, the quantiles
+of time lag for all costs above US$ 1 million annually are `r quantile(db.over.time$Publication_lag[db.over.time$Cost_estimate_per_year_2017_USD_exchange_rate > 1e6], probs = c(.25, .5, .75))` years.
 
 
 # Approach based on available estimates: cumulative and average costs of invasions
@@ -608,8 +616,9 @@ will see here. See the help here: `?plot.invacost.costsummary`
 
 - The second one is to make your own ggplot from the output object. It is 
 more difficult to implement if you are not familiar with graphs in R - but it
-will be fully customisable. Take a look at the scripts from our main paper 
-(`link to be added when available ¯\_(ツ)_/¯`) to see how to that.
+will be fully customisable. 
+[Take a look at the scripts from our main paper](http://borisleroy.com/invacost/global_invasion_costs_scripts.html) 
+to see how to that.
 
 
 There are two base plots provided with the package; you have already seen the 
@@ -887,7 +896,7 @@ we illustrate in the following sections.
 
 ## Model fitting
 
-The function called `costTrendOverTime` will fit all models automatically. We 
+The function called `modelCosts` will fit all models automatically. We 
 can also provide several parameters such as 
 
 - starting year (`minimum.year`): defaults to 1960
@@ -921,8 +930,7 @@ global.trend <- modelCosts(
   db.over.time, # The EXPANDED database
   minimum.year = 1970, 
   maximum.year = 2020,
-  incomplete.year.threshold = 2015, 
-  incomplete.year.weights = NULL)
+  incomplete.year.threshold = 2015)
 
 # Let's see the results in the console
 global.trend
@@ -1079,8 +1087,8 @@ will see here. See the help here: `?plot.invacost.costmodel`
 
 - The second one is to make your own ggplot from the output object. It is 
 more difficult to implement if you are not familiar with graphs in R - but it
-will be fully customisable. Take a look at the scripts from our main paper 
-(`link to be added when available ¯\_(ツ)_/¯`) to see how to that.
+will be fully customisable. 
+[Take a look at the scripts from our main paper](http://borisleroy.com/invacost/global_invasion_costs_scripts.html)  to see how to that.
 
 
 
@@ -1228,24 +1236,22 @@ unique(invacost$Species)[1:25]
 
 As you can see, there are many cases where multiple species are studied together.
 These cases will be difficult to implement/analyse, but we can decide to merge
-some of them together. For example, rats (genus *Rattus*) and mice (genus *Mus*)
-have been often analysed together, and we could decide to merge them in a single
-group:
+some of them together. For example, rats (genus *Rattus*) are often not
+identified at the species level, or multiple species were reported concomitantly.
+Therefore, we can decide to merge them together:
+
 
 ```{r allsp2}
-# First we create new columns in character format to avoid factor errors in R
-invacost$sp.list <- as.character(invacost$Species)
-invacost$genus.list <- as.character(invacost$Genus)
+# If we modify species we change them in a new column called sp.list
+invacost$sp.list <- invacost$Species
+# If we modify genera we change them in a new column called genus.list
+invacost$genus.list <- invacost$Genus
 
-# Second, we merge Rattus and Mus together in a single group in these columns
+# There are many species of Rattus which are sometimes together, sometimes not, 
+# and oftentimes not identified to the species level. Therefore, we can decide
+# to merge them together in a single species complex
 # Species column
-invacost$sp.list[which(invacost$Genus == "Rattus" | invacost$Genus == "Mus")] <- "Rattus spp./Mus spp."
-invacost$sp.list[which(invacost$Species %in% c("Rattus sp./Mus sp.", 
-                                               "Mus musculus/Rattus rattus",
-                                               "Mus musculus/Rattus norvegicus",
-                                               "Mus sp./Rattus sp."))] <- "Rattus spp./Mus spp."
-# Genus column
-invacost$genus.list[which(invacost$sp.list == "Rattus spp./Mus spp.")] <- "Rattus/Mus"
+invacost$sp.list[which(invacost$Genus == "Rattus")] <- "Rattus sp."
 ```
 
 We can also do that for other taxa; here are the changes we applied for the
@@ -1253,9 +1259,14 @@ Nature paper:
 
 ```{r allsp3}
 invacost$sp.list[which(invacost$Genus == "Aedes")] <- "Aedes spp."
-invacost$sp.list[which(invacost$Genus == "Felis/Rattus")] <- "Felis catus/Rattus spp."
 invacost$sp.list[which(invacost$Genus == "Canis")] <- "Canis lupus spp."
 ```
+
+Note that there are many other taxonomic peculiarities that would need *ad hoc*
+corrections. Ensure that you have analysed your list of species (`unique(invacost$Species)`) 
+and genera (`unique(invacost$Genus)`) before you proceed with the rest of the 
+analysis.
+
 
 Now that our taxon group list is set up, we still need to create a unique identifier 
 for each taxon group. Indeed, if we use directly the `Species` column, then
@@ -1327,12 +1338,13 @@ species.summary[1:10, ]
 ```
 
 Of course, many lines in this table are not interesting because they correspond 
-to all studies covering multiple taxa. Notwithstanding, we can see that the 
-winners are mosquitoes with a cumulated cost of US$ 158,622 million for 1970-
-2017, based on 208 cost estimates in total.
+to all studies covering multiple taxa. 
 
-For a more detailed example, please look at the scripts we provided with the
-main paper here: `link to be added when available ¯\_(ツ)_/¯`.
+
+
+[For a more detailed example, please look at the scripts we provided with the
+main paper here - note however that these were performed on an earlier version 
+of the database, and corrections happened since.](http://borisleroy.com/invacost/global_invasion_costs_scripts.html).
 
 
 # Improving the package
@@ -1349,6 +1361,7 @@ not hesitate to duplicate the source code and adapt the function to your needs.
 On the contrary, if you think of a new thing that could be beneficial to many
 users, please do not hesitate and become an official contributor to the
 package!
+
 
 # Citation
 

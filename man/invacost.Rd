@@ -20,286 +20,75 @@ Invasive Alien Species.
 \details{
 \describe{
   \item{Cost_ID}{Unique identifier for the cost entry}
-  \item{Repository}{Literature engine (Web of Science ('WoS'), Google Scholar 
-  ('GS'), Google search engine ('Go')) or original source (Targeted collection 
-  ('TC')) from which the reference was collected}
-  \item{Reference_ID}{Identifier for the reference where the cost entry is 
-  reported. As much as possible, this is the original source where the cost 
-  was first provided}
-  \item{Reference_title}{Title of the reference where the cost entry is 
-  reported}
+  \item{Repository}{Literature engine (Web of Science (WoS), Google Scholar (GS), Google search engine (Go)) or original source (Targeted collection (TC)) from which the reference was collected}
+  \item{Reference_ID}{Identifier for the reference where the cost entry is reported. As much as possible, this is the original source where the cost was first provided}
+  \item{Reference_title}{Title of the reference where the cost entry is reported}
   \item{Authors}{Authors of the reference where the cost entry is reported}
-  \item{Abstract}{If existing/accessible, the abstract of the reference 
-  where the cost entry is reported}
-  \item{Publication_year}{Year of publication of the reference where the 
-  cost entry is reported}
-  \item{Language}{Main language used in the original reference reporting 
-  the cost entry}
-  \item{Type_of_material}{Type of reference analyzed (i.e. scientific 
-  peer-reviewed article or grey literature); for grey literature, the exact 
-  nature of the reference was indicated (e.g., official report, press 
-  release)}
-  \item{Previous_materials}{If any, the list of successive materials checked
-   before reaching the original reference providing the cost entry}
-  \item{Availability}{The accessibility of the original reference as a 
-  searchable document (yes/no)}
-  \item{Kingdom}{Taxonomic kingdom of the invasive species associated with 
-  the cost entry}
-  \item{Phylum}{Taxonomic phylum of the invasive species associated with 
-  the cost entry}
-  \item{Class}{Taxonomic class of the invasive species associated with 
-  the cost entry}
-  \item{Order}{Taxonomic order of the invasive species associated with 
-  the cost entry}
-  \item{Family}{Taxonomic family of the invasive species associated with 
-  the cost entry}
-  \item{Genus}{Taxonomic genus of the invasive species associated with the 
-  cost entry}
-  \item{Species}{Taxonomic species of the invasive species associated with 
-  the cost entry}
-  \item{Subspecies}{Taxonomic sub-species of the invasive species associated 
-  with the cost entry}
-  \item{Common_name}{Non-scientific (or vernacular) name(s) provided in the 
-  original reference, or by the International Union for Conservation of 
-  Nature ('IUCN') when not provided}
-  \item{Environment}{Type of environment (aquatic, terrestrial, semi-aquatic,
-   diverse/unspecified) where the cost estimate occurred}
-  \item{Environment_IAS}{Type of environment where the invasive species lives,
-   independently of where the cost occurred: aquatic (species with a close 
-   association with aquatic systems at any life stage, including for 
-   reproduction, development and/or foraging), semi-aquatic (species with a 
-   looser association with aquatic systems) or terrestrial (otherwise); 
-   diverse/unspecified is used when there are multiple Invasive Alien Species
-   ('IAS') pertaining to 
-   different environments}
-  \item{Island}{Assessment of the geographical area where the cost occurred 
-  as an island (Y) or not (N); NA is used when the information is not clearly 
-  provided or unknown}
-  \item{HabitatVerbatim}{Copy from the original reference of the 
-  sentence/paragraph indicating the habitat typology of the studied area}
-  \item{Habitat}{The type of habitat where the cost occurred (1.Forests:
-   closed vegetation dominated by deciduous or evergreen trees; 2.Open 
-   forests: woodland vegetation with canopy openings created by environmental
-    stress or disturbance; 3.Scrub: shrublands maintained by environmental
-     stress (aridity) or disturbance; 4.Grasslands: open graminoid-dominated 
-     habitats maintained either by climate (steppes, prairies, savannas) or 
-     land-use (grazing, mowing) or combination of both – if possible, 
-     specified if it corresponds with 4a.Natural grasslands or 
-     4b.Human-maintained grasslands; 5.Sandy: dunes and other habitats 
-     on unstable sandy substrate, stressed by low nutrients, drought and 
-     disturbed by sand movement; 6.Rocky: cliffs and rock outcrops with very
-      shallow or no soil; 7.Dryland: habitats in which drought stress limits 
-      vegetation development; 8.Saline: habitats stressed by high soil 
-      salinity; 9.Riparian: a mosaic of wetlands, grasslands, tall-forb 
-      stands, scrub and woodlands in stream corridors; 10.Wetland: sites 
-      with permanent or seasonal influence of moisture, ranging from 
-      oligotrophic to eutrophic; 11.Aquatic: water bodies and streams with 
-      submerged and floating plant species; 12.Man-made: habitats created by 
-      humans or where human factor is the main shaping force - if possible, 
-      specified if it corresponds with 12a.Ruderal (= urban) or 
-      12b.Agricultural habitats}
-  \item{protectedArea}{Assessment of the geographical area where the cost 
-  occurred as a protected area (Y) or not (N); NA is used if the area 
-  comprises both protected and unprotected areas, or if the protection 
-  status of the place is unknown}
-  \item{Geographic_region}{Geographical region(s) where the cost occurred 
-  (Africa, Antarctic-Subantarctic, Asia, Central America, Europe, North 
-  America, Oceania, Pacific islands, South America)}
-  \item{Official_country}{Country where the cost occurred; sometimes, this 
-  is not congruent with the geographic region as some territories (e.g., 
-  overseas areas) are located in another continent than their official 
-  country of attachment}
-  \item{State|Province|Administrative_area}{The second level of geographic 
-  division (state, province or territory) for the official country where 
-  the cost occurred}
-  \item{Location}{When provided, the precise location (e.g., city, area) 
-  where the cost estimate occurred}
-  \item{Spatial_scale}{Order of magnitude of the extent, size of the 
-  land/water area where the costs incurred. Options include: global 
-  (worldwide-scale), intercontinental (areas from two or more geographic 
-  regions), continental ('Geographic region' level), regional (several 
-  countries within a single 'Geographic region'), country, site (area at 
-  intra-country level, including USA states) and unit (well-defined surface 
-  area or entity)}
-  \item{Period_of_estimation}{If provided, the exact period of time covered 
-  by the cost, otherwise the raw formulation provided in the reference 
-  analyzed (e.g. late 90s, during 5 years)}
-  \item{Time_range}{Two options: period if the cost is given for a period 
-  exceeding a year; or year if the cost is given yearly or for a period up 
-  to one year }
-  \item{Probable_starting_year}{Year in which the cost is known or assumed 
-  to have started to occur. When not explicitly provided by the authors, we 
-  mentioned unspecified; in the case of a cost estimate provided for a 
-  one-year period straddling two calendar years, we mentioned the latest year 
-  of the cost occurrence}
-  \item{Probable_ending_year}{Year in which the cost is known or assumed 
-  to have ended. When not explicitly provided by the authors, we mentioned 
-  unspecified in one and/or the other column(s); in the case of a cost 
-  estimate provided for a one-year period straddling two calendar years, 
-  we mentioned the latest year of the cost occurrence}
-  \item{Probable_starting_year_adjusted & Probable_ending_year_adjusted}{
-  Probable starting year and Probable ending year columns where the cells 
-  with unspecified information are replaced, as much as possible, by a 
-  specific year from educated guesses based on the duration time provided 
-  in the original reference (see Period of estimation column). When relevant 
-  (e.g. the authors provide a cost that occurs "since/for a well-defined 
-  number of years"), we considered the ‘Publication year’ as a reference 
-  for the probable starting/ending year from which we added or subtracted 
-  the number of years provided; when vague formulations were used (e.g., 
-  early 90s), we still translated them in probable ending/starting year 
-  (e.g., 1990–1995); when annual costs were provided, but without clear 
-  information on the temporal range, we conservatively considered the year 
-  of the cost occurrence (or the publication year, if not provided) in both 
-  columns. When no relevant approximation is feasible, we leave blank in one 
-  and/or the other column(s). These columns are those used for obtaining the 
-  number of years by which the raw cost estimates are divided to get the cot 
-  estimates per year}
-  \item{Occurrence}{Status of the cost estimate as potentially ongoing (if 
-  the cost can be expected to continue over time) or one-time (if the cost 
-  was deemed as unlikely to continue)}
-  \item{Raw_cost_estimate_local_currency}{Cost estimate directly retrieved 
-  from the analyzed reference}
-  \item{Min_Raw_cost_estimate_local_currency}{Lower boundary of the Raw cost
-   estimate local currency (if a range of estimates was provided by the 
-   authors)}
-  \item{Max_Raw_cost_estimate_local_currency}{Higher boundary of the Raw cost
-   estimate local currency (if a range of estimates was provided by the 
-   authors)}
-  \item{Raw_cost_estimate_2017_USD_exchange_rate}{Raw cost estimate local 
-  currency standardised from local Currency and Applicable year to 2017 US$
-   based on the official market exchange rate (local currency unit per US$)
-    provided by the World Bank Open Data (available at 
-    \url{https://data.worldbank.org/indicator/PA.NUS.FCRF?end=2017&start=1960)}}
-  \item{Raw_cost_estimate_2017_USD_PPP}{Raw cost estimate local currency 
-  standardized to 2017 US$ based on the official Purchase Power Parity ('PPP'; 
-  local currency unit per US$) provided by the World Bank Open Data 
-  (available at \url{https://data.worldbank.org/indicator/PA.NUS.PPP?end=2017&start=1990}) 
-  and the Organisation for Economic Cooperation and Development (available at 
-  \url{https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm})}
-  \item{Cost_estimate_per_year_local_currency}{Raw cost estimate local 
-  currency transformed to a cost estimate per year of the Period of 
-  estimation, which was obtained by dividing the raw cost estimate by the 
-  number of years between the Probable starting year_completed and Probable 
-  ending year_completed. Blank cells are those that have no information in 
-  at least one of these two previous columns}
-  \item{Cost_estimate_per_year_2017_USD_exchange_rate}{Cost estimate per year
-   local currency standardized from local Currency and Applicable year to 
-   2017 USD based on the official market exchange rate (local currency unit 
-   per US$) provided by the World Bank Open Data (available at 
-   \url{https://data.worldbank.org/indicator/PA.NUS.FCRF?end=2017&start=1960}
-   ). Blank cells are those that have no information in at least one of 
-   these two previous columns}
-  \item{Cost_estimate_per_year_2017_USD_PPP}{Cost estimate per year local 
-  currency standardized from local Currency and Applicable year to 2017 USD 
-  based on Purchase Power Parity ('PPP'; local currency unit per US$) 
-  provided by the World Bank Open Data (available at 
-  \url{https://data.worldbank.org/indicator/PA.NUS.PPP?end=2017&start=1990})
-   and the Organisation for Economic Cooperation and Development (available at 
-   \url{https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm}).
-    Blank cells are those that have no information in at least one of these 
-    two previous columns}
-  \item{Currency}{Currency of the Raw cost estimate local currency as 
-  extracted in the original reference}
-  \item{Applicable_year}{Year of the Currency value (not the year of the
-   cost occurrence) considered for the conversion/standardization of the cost
-    estimate}
-  \item{Type_of_applicable_year}{Assessment of the applicable year as 
-  effective if explicitly stated by the authors or publication year if no 
-  explicit information was provided in the reference analyzed}
-  \item{Implementation}{This states — at the time of the estimation — whether
-   the reported cost was actually observed (i.e., cost actually incurred) or 
-   potential (i.e., not incurred but expected cost)}
-  \item{Acquisition_method}{Method used to obtain the cost estimate: 
-  report/estimation directly obtained or derived (using inference methods)
-   from field-based information or extrapolation (cost predicted beyond the
-    original spatial and/or temporal observation range from computational 
-    modelling)}
-  \item{Impacted_sector}{Sector impacted by the cost estimate in our 
-  socio-ecosystems: Agriculture (considered at its broadest sense, food and 
-  other useful products produced by human activities through using natural 
-  and/plant resources from their ecosystems such as crop growing, livestock 
-  breeding, beekeeping, land management); Authorities-Stakeholders 
-  (governmental services and/or official organisations such as conservation 
-  agencies, forest services, associations) that allocate efforts for the 
-  management sensu lato of biological invasions (e.g. control programs, 
-  eradication campaigns, research funding) ; Environment (impacts on 
-  natural resources, ecological processes and/or ecosystem services that 
-  have been valued by authors such as disruption of native habitats or 
-  degradation of local habitats); Fishery (fish-based activities and services
-   such as fishing and aquaculture); Forestry (forest-based activities and 
-   services such as timber production/industries and private forests); 
-   Health (every item directly or indirectly related to the sanitary state 
-   of people such as vector control, medical care and other derived damage 
-   on human productivity and well-being); Public and social welfare 
-   (activities, goods or services contributing - directly or indirectly - to 
-   the human well-being and safety in our societies, including local 
-   infrastructures such as electric system, quality of life (e.g. income, 
-   recreational activities), personal goods (e.g. private properties, lands),
-    public services (e.g. transports, water regulation), and market 
-    activities (e.g. tourism, trade))}
-  \item{Type_of_cost}{Damage and losses incurred by an invasion (e.g. 
-  damage-loss, damage repair, medical care, crop losses) or means dedicated 
-  to understand or predict (e.g., research), prevent (e.g., education, 
-  biosecurity), detect (e.g., monitoring, surveillance) and/or manage (e.g., 
-  control, eradication) the invaders}
-  \item{Type_of_cost_merged}{Categories of the Type of cost column reassigned
-   into damage (economic losses due to direct and/or indirect impacts of 
-   invaders, such as yield loss, health injury, land alteration, 
-   infrastructure damage, or income reduction), management (monetary 
-   resources allocated to mitigate the spread or impacts of invaders, such 
-   as prevention, control, research, long-term management, eradication) or 
-   mixed (when when costs included both damage and management 
-   components); every cost for which the exact nature of cost was not clearly
-    defined was assigned to unspecified}
-  \item{Management_type}{Pre-invasion management (monetary investments for 
-  preventing successful invasions in an area - including quarantine or border
-   inspection, risk analyses, biosecurity management, etc.), post-invasion 
-   management (money  spent for managing invasions in invaded areas - 
-   including control, eradication, containment), knowledge/funding (money 
-   allocated to all actions and operations that could be of interest at all
-    steps of management at pre- and post-invasion stages - including 
-    administration, communication, education, research, etc.), or mixed was
-     assigned when costs include at least (and without possibility to 
-     disentangle the specific proportion of) two of the previous categories; 
-     every cost for which the exact nature of cost was not clearly defined 
-     was assigned to unspecified. Every entry that has partly or fully 
-     associated with damage costs was assigned to NA}
-  \item{Method_reliability}{Assessment of the methodological approach used 
-  for cost estimation as of (i) high reliability if either provided by 
-  officially pre-assessed materials (peer-reviewed articles and official 
-  reports) or the estimation method was documented, repeatable and/or 
-  traceable if provided by other grey literature, or (ii) low reliability if 
-  not}
-  \item{Method_reliability_refined}{Assessment of the methodological 
-  approach used for cost estimation as of high or low reliability based 
-  on the evaluation of the estimation methodology by expert contributors}
-  \item{Method_reliability_Explanation}{Detailed explanation why a particular
-   methodological approach used for cost estimation was deemed as of high or 
-   low reliability based on expert opinion}
-  \item{Method_reliability_Expert_Name}{Complete name and contact details of
-   the expert had deemed the reliability of the cost entry}
-  \item{Overlap}{List of cost estimates (individual Cost ID) that might 
-  overlap with other cost entry(s). It is noted like this: Z(V/W) when the 
-  overlap is known and one or more entries (V,W) are included in another 
-  entry (Z); when the overlap is not clear the quotation is Z/V/W}
-  \item{Benefit_value(s)}{Mention (if any) of the benefit value in the 
-  analyzed material (yes/no); the figure was not recorded or described as 
-  being out of the scope of InvaCost}
-  \item{Details}{When necessary, narrative elements deemed important either 
-  to understand the cost estimate or to support choices made for completing 
-  the database; this column was left unchanged from the original entries in 
-  order to allow trace-back investigations}
-  \item{Initial contributors_names}{Name of contributor(s) having collated 
-  the cost entry}
-  \item{Double-checking}{Assessment of cost information collated (by at 
-  least) two contributors; yes if it has been double checked, no if it has 
-  not. The names/contacts of each contributor are provided in the 
-  Contributors column}
+  \item{Abstract}{If existing/accessible, the abstract of the reference where the cost entry is reported}
+  \item{Publication_year}{Year of publication of the reference where the cost entry is reported}
+  \item{Language}{Main language used in the original reference reporting the cost entry}
+  \item{Type_of_material}{Type of reference analyzed (i.e. scientific peer-reviewed article or grey literature); for grey literature, the exact nature of the reference was indicated (e.g., official report, press release)}
+  \item{Previous_materials}{If any, the list of successive materials checked before reaching the original reference providing the cost entry}
+  \item{Availability}{The accessibility of the original reference as a searchable document (yes/no)}
+  \item{Kingdom}{Taxonomic kingdom of the invasive species associated with the cost entry}
+  \item{Phylum}{Taxonomic phylum of the invasive species associated with the cost entry}
+  \item{Class}{Taxonomic class of the invasive species associated with the cost entry}
+  \item{Order}{Taxonomic order of the invasive species associated with the cost entry}
+  \item{Family}{Taxonomic family of the invasive species associated with the cost entry}
+  \item{Genus}{Taxonomic genus of the invasive species associated with the cost entry}
+  \item{Species}{Taxonomic species of the invasive species associated with the cost entry}
+  \item{Subspecies}{Taxonomic sub-species of the invasive species associated with the cost entry}
+  \item{Common_name}{Non-scientific (or vernacular) name(s) provided in the original reference, or by the International Union for Conservation of Nature (IUCN) when not provided}
+  \item{Environment}{Type of environment (aquatic, terrestrial, semi-aquatic, diverse/unspecified) where the cost estimate occurred}
+  \item{Environment_IAS}{Type of environment where the invasive species lives, independently of where the cost occurred: aquatic (species with a close association with aquatic systems at any life stage, including for reproduction, development and/or foraging), semi-aquatic (species with a looser association with aquatic systems) or terrestrial (otherwise); diverse/unspecified is used when there are multiple IAS pertaining to different environments.}
+  \item{HabitatVerbatim}{Copy from the original reference of the sentence/paragraph indicating the habitat typology of the studied area}
+  \item{Habitat}{The type of habitat where the cost occurred (1.Forests: closed vegetation dominated by deciduous or evergreen trees; 2.Open forests: woodland vegetation with canopy openings created by environmental stress or disturbance; 3.Scrub: shrublands maintained by environmental stress (aridity) or disturbance; 4.Grasslands: open graminoid-dominated habitats maintained either by climate (steppes, prairies, savannas) or land-use (grazing, mowing) or combination of both – if possible, specified if it corresponds with 4a.Natural grasslands or 4b.Human-maintained grasslands; 5.Sandy: dunes and other habitats on unstable sandy substrate, stressed by low nutrients, drought and disturbed by sand movement; 6.Rocky: cliffs and rock outcrops with very shallow or no soil; 7.Dryland: habitats in which drought stress limits vegetation development; 8.Saline: habitats stressed by high soil salinity; 9.Riparian: a mosaic of wetlands, grasslands, tall-forb stands, scrub and woodlands in stream corridors; 10.Wetland: sites with permanent or seasonal influence of moisture, ranging from oligotrophic to eutrophic; 11.Aquatic: water bodies and streams with submerged and floating plant species; 12.Man-made: habitats created by humans or where human factor is the main shaping force - if possible, specified if it corresponds with 12a.Ruderal (= urban) or 12b.Agricultural habitats}
+  \item{urbanArea}{Assessment of the geographical area where the cost occurred as urban if the costs occurred in an urban area only; other if the cost occurred in a non-urban area only or in a large area where urban and non-urban areas cannot be distinguished; and both if the study compares the costs between urban and non-urban areas (i.e. urban vs. suburban, or, suburban vs. non-urban, the comparison must be explicit).}
+  \item{protectedArea}{Assessment of the geographical area where the cost occurred as a protected area (Y) or not (N); NA is used if the area comprises both protected and unprotected areas, or if the protection status of the place is unknown}
+  \item{Island}{Assessment of the geographical area where the cost occurred as an island (Y) or not (N); NA is used when the information is not clearly provided or unknown}
+  \item{Geographic_region}{Geographical region(s) where the cost occurred (Africa, Antarctic-Subantarctic, Asia, Central America, Europe, North America, Oceania, Pacific islands, South America)}
+  \item{Official_country}{Country where the cost occurred; sometimes, this is not congruent with the geographic region as some territories (e.g., overseas areas) are located in another continent than their official country of attachment}
+  \item{State|Province|Administrative_area}{The second level of geographic division (state, province or territory) for the official country where the cost occurred}
+  \item{Location}{When provided, the precise location (e.g., city, area) where the cost estimate occurred}
+  \item{Spatial_scale}{Order of magnitude of the extent, size of the land/water area where the costs incurred. Options include: global (worldwide-scale), intercontinental (areas from two or more geographic regions), continental ('Geographic region' level), regional (several countries within a single 'Geographic region'), country, site (area at intra-country level, including USA states) and unit (well-defined surface area or entity)}
+  \item{Period_of_estimation}{If provided, the exact period of time covered by the cost, otherwise the raw formulation provided in the reference analyzed (e.g. late 90s, during 5 years)}
+  \item{Time_range}{Two options: period if the cost is given for a period exceeding a year; or year if the cost is given yearly or for a period up to one year. Alternatively if no information is given in the source it can be mentioned Unspecified.}
+  \item{Probable_starting_year}{Year in which the cost is known or assumed to have started to occurred. When not explicitly provided by the authors, we mentioned unspecified; in the case of a cost estimate provided for a one-year period straddling two calendar years, we mentioned the latest year of the cost occurrence.}
+  \item{Probable_ending_year}{Year in which the cost is known or assumed to have ended. When not explicitly provided by the authors, we mentioned unspecified; in the case of a cost estimate provided for a one-year period straddling two calendar years, we mentioned the latest year of the cost occurrence.}
+  \item{Probable_starting_year_adjusted}{Probable starting year and Probable ending year columns where the cells with unspecified information are replaced, as much as possible, by a specific year from educated guesses based on the duration time provided in the original reference (see Period of estimation column). When relevant (e.g. the authors provide a cost that occurs "since/for a well-defined number of years"), we considered the ‘Publication year’ as a reference for the probable starting/ending year from which we added or subtracted the number of years provided; when vague formulations were used (e.g., early 90s), we still translated them in probable ending/starting year (e.g., 1990–1995); when annual costs were provided, but without clear information on the temporal range, we conservatively considered the year of the cost occurrence (or the publication year, if not provided) in both columns. When no relevant approximation is feasible, we leave blank in one and/or the other column(s). These columns are those used for obtaining the number of years by which the raw cost estimates are divided to get the cot estimates per year}
+  \item{Probable_ending_year_adjusted}{Probable starting year and Probable ending year columns where the cells with unspecified information are replaced, as much as possible, by a specific year from educated guesses based on the duration time provided in the original reference (see Period of estimation column). When relevant (e.g. the authors provide a cost that occurs "since/for a well-defined number of years"), we considered the ‘Publication year’ as a reference for the probable starting/ending year from which we added or subtracted the number of years provided; when vague formulations were used (e.g., early 90s), we still translated them in probable ending/starting year (e.g., 1990–1995); when annual costs were provided, but without clear information on the temporal range, we conservatively considered the year of the cost occurrence (or the publication year, if not provided) in both columns. When no relevant approximation is feasible, we leave blank in one and/or the other column(s). These columns are those used for obtaining the number of years by which the raw cost estimates are divided to get the cot estimates per year}
+  \item{Occurrence}{Status of the cost estimate as potentially ongoing (if the cost can be expected to continue over time) or one-time (if the cost was deemed as unlikely to continue)}
+  \item{Raw_cost_estimate_local_currency}{Cost estimate directly retrieved from the analyzed reference}
+  \item{Min_Raw_cost_estimate_local_currency}{Lower boundary of the Raw cost estimate local currency (if a range of estimates was provided by the authors)}
+  \item{Max_Raw_cost_estimate_local_currency}{Higher boundary of the Raw cost estimate local currency (if a range of estimates was provided by the authors)}
+  \item{Raw_cost_estimate_2017_USD_exchange_rate}{Raw cost estimate local currency standardised from local Currency and Applicable year to 2017 US$ based on the official market exchange rate (local currency unit per US$) provided by the World Bank Open Data (available at https://data.worldbank.org/indicator/PA.NUS.FCRF?end=2017&start=1960)}
+  \item{Raw_cost_estimate_2017_USD_PPP}{Raw cost estimate local currency standardized to 2017 US$ based on the official Purchase Power Parity (PPP; local currency unit per US$) provided by the World Bank Open Data (available at https://data.worldbank.org/indicator/PA.NUS.PPP?end=2017&start=1990) and the Organisation for Economic Cooperation and Development (available at https://data.oecd.org/conversion/purchasing-powerparities-ppp.htm)}
+  \item{Cost_estimate_per_year_local_currency}{Raw cost estimate local currency transformed to a cost estimate per year of the Period of estimation, which was obtained by dividing the raw cost estimate by the number of years between the Probable starting year_completed and Probable ending year_completed. Blank cells are those that have no information in at least one of these two previous columns}
+  \item{Cost_estimate_per_year_2017_USD_exchange_rate}{Cost estimate per year local currency standardized from local Currency and Applicable year to 2017 USD based on the official market exchange rate (local currency unit per US$) provided by the World Bank Open Data (available at https://data.worldbank.org/indicator/PA.NUS.FCRF?end=2017&start=1960). Blank cells are those that have no information in at least one of these two previous columns}
+  \item{Cost_estimate_per_year_2017_USD_PPP}{Cost estimate per year local currency standardized from local Currency and Applicable year to 2017 USD based on Purchase Power Parity (PPP; local currency unit per US$) provided by the World Bank Open Data (available at https://data.worldbank.org/indicator/PA.NUS.PPP?end=2017&start=1990) and the Organisation for Economic Cooperation and Development (available at https://data.oecd.org/conversion/purchasing-powerparities-ppp.htm). Blank cells are those that have no information in at least one of these two previous column}
+  \item{Currency}{Currency of the Raw cost estimate local currency as extracted in the original reference}
+  \item{Applicable_year}{Year of the Currency value (not the year of the cost occurrence) considered for the conversion/standardization of the cost estimate}
+  \item{Type_of_applicable_year}{Assessment of the applicable year as effective if explicitly stated by the authors or publication year if no explicit information was provided in the reference analyzed}
+  \item{Implementation}{This states — at the time of the estimation — whether the reported cost was actually observed (i.e., cost actually incurred) or potential (i.e., not incurred but expected cost)}
+  \item{Acquisition_method}{Method used to obtain the cost estimate: report/estimation directly obtained or derived (using inference methods) from field-based information or extrapolation (cost predicted beyond the original spatial and/or temporal observation range from computational modelling)}
+  \item{Impacted_sector}{Sector impacted by the cost estimate in our socio-ecosystems: Agriculture (considered at its broadest sense, food and other useful products produced by human activities through using natural and/plant resources from their ecosystems such as crop growing, livestock breeding, beekeeping, land management); Authorities-Stakeholders (governmental services and/or official organisations such as conservation agencies, forest services, associations) that allocate efforts for the management sensu lato of biological invasions (e.g. control programs, eradication campaigns, research funding) ; Environment (impacts on natural resources, ecological processes and/or ecosystem services that have been valued by authors such as disruption of native habitats or degradation of local habitats); Fishery (fish-based activities and services such as fishing and aquaculture); Forestry (forest-based activities and services such as timber production/industries and private forests); Health (every item directly or indirectly related to the sanitary state of people such as vector control, medical care and other derived damage on human productivity and well-being); Public and social welfare (activities, goods or services contributing - directly or indirectly - to the human well-being and safety in our societies, including local infrastructures such as electric system, quality of life (e.g. income, recreational activities), personal goods (e.g. private properties, lands), public services (e.g. transports, water regulation), and market activities (e.g. tourism, trade)); Unspecified if no information is given in the source.}
+  \item{Type_of_cost}{Damage and losses incurred by an invasion (e.g. damage-loss, damage repair, medical care, crop losses) or means dedicated to understand or predict (e.g., research), prevent (e.g., education, biosecurity), detect (e.g., monitoring, surveillance) and/or manage (e.g., control, eradication) the invaders}
+  \item{Type_of_cost_merged}{Categories of the Type of cost column reassigned into damage (economic losses due to direct and/or indirect impacts of invaders, such as yield loss, health injury, land alteration, infrastructure damage, or income reduction), management (monetary resources allocated to mitigate the spread or impacts of invaders, such as prevention, control, research, long-term management, eradication) or mixed (when when costs included both ‘damage’ and ‘management’ components); every cost for which the exact nature of cost was not clearly defined was assigned to unspecified}
+  \item{Management_type}{Pre-invasion management (monetary investments for preventing successful invasions in an area - including quarantine or border inspection, risk analyses, biosecurity management, etc.), post-invasion management (money  spent for managing invasions in invaded areas - including control, eradication, containment), knowledge/funding (money allocated to all actions and operations that could be of interest at all steps of management at pre- and post-invasion stages - including administration, communication, education, research, etc.), or mixed was assigned when costs include at least (and without possibility to disentangle the specific proportion of) two of the previous categories; every cost for which the exact nature of cost was not clearly defined was assigned to unspecified. Every entry that has partly or fully associated with damage costs was assigned to NA}
+  \item{Method_reliability}{Assessment of the methodological approach used for cost estimation as of (i) high reliability if either provided by officially pre-assessed materials (peer-reviewed articles and official reports) or the estimation method was documented, repeatable and/or traceable if provided by other grey literature, or (ii) low reliability if not}
+  \item{Method_reliability_refined}{Assessment of the methodological approach used for cost estimation as of high or low reliability based on the evaluation of the estimation methodology by expert contributors}
+  \item{Method_reliability_Explanation}{Detailed explanation why a particular methodological approach used for cost estimation was deemed as of high or low reliability based on expert opinion}
+  \item{Method_reliability_Expert_Name}{Complete name and contact details of the expert had deemed the reliability of the cost entry}
+  \item{Overlap}{List of cost estimates (individual Cost ID) that might overlap with other cost entry(s). It is noted like this: Z(V/W) when the overlap is known and one or more entries (V,W) are included in another entry (Z); when the overlap is not clear the quotation is Z/V/W}
+  \item{Benefit_value(s)}{Mention (if any) of the benefit value in the analyzed material (yes/no); the figure was not recorded or described as being out of the scope of InvaCost}
+  \item{Details}{When necessary, narrative elements deemed important either to understand the cost estimate or to support choices made for completing the database; this column was left unchanged from the original entries in order to allow trace-back investigations}
+  \item{Initial contributors_names}{Name of contributor(s) having collated the cost entry}
+  \item{Double-checking}{Assessment of cost information collated (by at least) two contributors; yes if it has been double checked, no if it has not. The names/contacts of each contributor are provided in the Contributors column}
 }
 }
 \references{
 Diagne, C., Leroy, B., Gozlan, R. E., Vaissière, A. C., Assailly, C., 
-Nuninger, L., Roiz, D., Jourdain, F., Jarić, I., & Courchamp, F. (2020). 
+Nuninger, L., Roiz, D., Jourdain, F., Jaric, I., & Courchamp, F. (2020). 
 InvaCost, a public database of the economic costs of biological invasions 
 worldwide. Scientific Data, 7(1), 1–12. 
 \url{https://doi.org/10.1038/s41597-020-00586-z}

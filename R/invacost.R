@@ -81,7 +81,7 @@
 #' Nuninger, L., Roiz, D., Jourdain, F., Jaric, I., & Courchamp, F. (2020). 
 #' InvaCost, a public database of the economic costs of biological invasions 
 #' worldwide. Scientific Data, 7(1), 1–12. 
-#' \url{https://doi.org/10.1038/s41597-020-00586-z}
+#' \doi{10.1038/s41597-020-00586-z}
 #' 
 #' \url{https://github.com/Farewe/invacost}
 #' 
@@ -89,6 +89,6 @@
 #' invacost R package. biorXiv. \url{https://doi.org/10.1101/2020.12.10.419432}
 #' 
 #' History of database releases:
-#'  \url{https://doi.org/10.6084/m9.figshare.12668570}
-#' @source \url{https://doi.org/10.6084/m9.figshare.12668570}
+#'  \doi{10.6084/m9.figshare.12668570}
+#' @source \doi{10.6084/m9.figshare.12668570}
 'invacost'

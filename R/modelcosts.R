@@ -79,7 +79,7 @@
 #' @references \url{https://github.com/Farewe/invacost}
 #' 
 #' Leroy Boris, Kramer Andrew M, Vaissière Anne-Charlotte, Courchamp Franck & Diagne Christophe (2020). Analysing global economic costs of invasive alien species with the
-#' invacost R package. biorXiv. \url{https://doi.org/10.1101/2020.12.10.419432}
+#' invacost R package. biorXiv. \doi{10.1101/2020.12.10.419432}
 #' @importFrom stats lm predict qt residuals
 #' @export
 #' @author

@@ -1,7 +1,7 @@
 ---
 title: "The invacost R Package: Global Costs of Biological Invasions"
 author: "Leroy B, Kramer A, Courchamp C, Vaissière AC & Diagne C"
-date: "03/12/2020"
+date: "10/06/2021"
 output:
   github_document:
     toc: true

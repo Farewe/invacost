@@ -1,7 +1,7 @@
 Package: invacost
 Type: Package
 Title: Analyse Biological Invasion Costs with the 'InvaCost' Database
-Version: 1.1
+Version: 1.1-1
 Date: 2021-06-09
 Author: Boris Leroy [cre, aut], Andrew Kramer [aut], Anne-Charlotte Vaissière [ctb], Christophe Diagne [ctb]
 Maintainer: Boris Leroy <leroy.boris@gmail.com>

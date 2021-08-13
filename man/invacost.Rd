@@ -5,7 +5,7 @@
 \alias{invacost}
 \title{'InvaCost' database}
 \format{
-A data frame with 9823 rows and 64 variables
+A data frame with 13123 rows and 65 variables
 }
 \source{
 \doi{10.6084/m9.figshare.12668570}

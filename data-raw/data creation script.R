@@ -46,7 +46,7 @@ cat(paste0("#' 'InvaCost' database
 #' }
 #'
 #'
-#' @format A data frame with 9823 rows and 64 variables
+#' @format A data frame with ", nrow(invacost), " rows and ", ncol(invacost), " variables
 #' 
 #' @usage data(invacost)
 #' @references 

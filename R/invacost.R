@@ -73,7 +73,7 @@
 #' }
 #'
 #'
-#' @format A data frame with 9823 rows and 64 variables
+#' @format A data frame with 13123 rows and 65 variables
 #' 
 #' @usage data(invacost)
 #' @references 

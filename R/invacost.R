@@ -1,7 +1,7 @@
 #' 'InvaCost' database
 #'
 #' The 'InvaCost' database compiling published values of economic costs of
-#' Invasive Alien Species.
+#' Invasive Alien Species. Current version of the database: \bold{4.0}
 #' 
 #'
 #' \describe{

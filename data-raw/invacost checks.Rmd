@@ -7,16 +7,18 @@ output:
     toc_float: true
 ---
 
+Load here the database file
 
 ```{r}
-# library(readxl)
-# invacost <- as.data.frame(read_xlsx("./data-raw/InvaCost_4_For_PublishingFinal.xlsx",
-#                                     na = c("NA", "#N/A", "#DIV/0!", "#VALEUR!", 
-#                                            "Unspecified", "Unknown",
-#                                            "unspecified"),
-#                                     guess_max = 10000))
 library(invacost)
-data(invacost)
+library(readxl)
+invacost <- as.data.frame(read_xlsx("c:/r/projects/invacost/data-raw/InvaCost_4_For_PublishingFinal.xlsx",
+                                    na = c("NA", "#N/A", "#DIV/0!", "#VALEUR!",
+                                           "Unspecified", "Unknown",
+                                           "unspecified"),
+                                    guess_max = 10000))
+
+# data(invacost)
 ```
 
 
@@ -167,14 +169,19 @@ test_taxo[order(test_taxo$Phylum), ]
 
 ## Comparison with GBIF taxonomy
 
+The gbif check occurrs with the command line `taxize::classification()`. For a complete analysis,
+the script should be run interactively, with the argument `ask = TRUE`, such that
+in case of multiple matches in gbif, the user can decide which one to choose.
 
 ```{r}
 invacost_sp <- unique(invacost$Species)
+# Exclude multiple species and sp. / spp.
 invacost_sp <- invacost_sp[-grep("/", invacost_sp)]
 invacost_sp <- invacost_sp[-grep("sp\\.", invacost_sp)]
 invacost_sp <- invacost_sp[-grep("spp\\.", invacost_sp)]
 for(sp in invacost_sp)
 {
+  sp <- "Mytilopsis sallei"
   taxocheck <- unique(invacost[which(invacost$Species == sp), c("Kingdom",
                                                                 "Phylum",
                                                                 "Class",
@@ -272,5 +279,3 @@ invacost.countries$renamed[which(invacost.countries$original.name %in% c("Africa
 invacost.countries[!invacost.countries$valid & invacost.countries$renamed != "Multiple countries", ]
 ```
 
-
-invacost.countries[!invacost.countries$valid, ]

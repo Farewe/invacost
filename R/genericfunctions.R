@@ -219,7 +219,9 @@ str.invacost.costsummary <- function(object, ...)
 #'                                   endcolumn = "Probable_ending_year_adjusted")
 #' 
 #' ### Analysis
-#' res <- modelCosts(db.over.time)
+#' res <- modelCosts(db.over.time,
+#'                   minimum.year = 1970,
+#'                   maximum.year = 2020)
 #' 
 #' ### Visualisation
 #' plot(res)
@@ -447,11 +449,14 @@ plot.invacost.costmodel <- function(x,
 #'                                   endcolumn = "Probable_ending_year_adjusted")
 #'                                   
 #' ### Analysis
-#' res <- summarizeCosts(db.over.time)
+#' res <- summarizeCosts(db.over.time,
+#'                       minimum.year = 1970,
+#'                       maximum.year = 2020)
 #' 
 #' ### Visualisation
 #' plot(res)
-#' plot(res, plot.type = "bars")}
+#' plot(res, plot.type = "bars")
+#' }
 #' @method plot invacost.costsummary
 plot.invacost.costsummary <- function(x,
                                   plot.breaks = 10^(-15:15),

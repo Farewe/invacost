@@ -238,6 +238,7 @@ plot.invacost.costmodel <- function(x,
                                                "gam",
                                                "mars",
                                                "quantile"),
+                                    evaluation.metric = FALSE,
                                     graphical.parameters = NULL,
                                     ...)
 {
@@ -301,6 +302,8 @@ plot.invacost.costmodel <- function(x,
     paste0(model.preds$Details[model.preds$model == "Quantile regression"],
            " regression")
   
+  
+  
   # Ordering model names
   model.preds$Model <- factor(model.preds$Model,
                               levels = c("OLS linear regression", 
@@ -326,7 +329,7 @@ plot.invacost.costmodel <- function(x,
   models[models=="robust.quadratic"] <- "Robust quadratic regression"
   model.preds <- model.preds[model.preds$Model %in% models,]
   
-  
+
   # Creating a colourblind palette (Wong 2011)
   # to best distinguish models
   alpha <- round(.8 * 255)
@@ -347,6 +350,21 @@ plot.invacost.costmodel <- function(x,
             `Quantile 0.9 regression` = grey(0, alpha = alpha / 255)
   )
   
+
+  if(evaluation.metric)
+  {
+    model.rmse <- x$RMSE[, 1]
+    
+    #Relabel models parameter to match plot labeling from above
+    names(model.rmse)[names(model.rmse) == "ols.linear"] <- "OLS linear"
+    names(model.rmse)[names(model.rmse) == "ols.quadratic"] <- "OLS quadratic"
+    names(model.rmse)[names(model.rmse) == "gam"] <- "GAM"
+    names(model.rmse)[names(model.rmse) == "mars"] <- "MARS"
+    names(model.rmse)[names(model.rmse) == "robust.linear"] <- "Robust linear"
+    names(model.rmse)[names(model.rmse) == "robust.quadratic"] <- "Robust quadratic"
+    
+    model.rmse <- model.rmse[-grep("qt", names(model.rmse))]
+  }
   
   if(plot.type == "single")
   {
@@ -365,10 +383,21 @@ plot.invacost.costmodel <- function(x,
                 size = 1) +
       scale_discrete_manual(aesthetics = "col",
                             values = cols)
+    
+    if(evaluation.metric)
+    {
+      p <-
+        p + labs(tag = paste0("RMSE\n",
+                              paste(names(model.rmse), "/", round(model.rmse, 3), collapse = "\n"))) +
+        theme(plot.tag = element_text(hjust = 1, vjust = 0),
+              plot.tag.position = c(1, 0.05))
+    }
+    
       
   } else if(plot.type == "facets")
   { 
     # 6. Facet plot --------------------
+
     p <-
       p +
       geom_point(data = x$cost.data, 
@@ -393,9 +422,20 @@ plot.invacost.costmodel <- function(x,
                             values = cols)
     message("Note that MARS error bands are prediction intervals and not confidence interval (see ?plot.invacost.costmodel)\n")
     
+    
+    if(evaluation.metric)
+    {
+      p <-
+        p + labs(tag = paste0("RMSE\n",
+                              paste(names(model.rmse), "/", round(model.rmse, 3), collapse = "\n"))) +
+        theme(plot.tag = element_text(hjust = 1, vjust = 0),
+              plot.tag.position = c(0.95, 0.05))
+    }
   }
-  
+    
+    
 
+  
   return(p)
 }
 

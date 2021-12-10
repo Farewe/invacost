@@ -10,6 +10,7 @@
   plot.type = "facets",
   models = c("ols.linear", "ols.quadratic", "robust.linear", "robust.quadratic", "gam",
     "mars", "quantile"),
+  evaluation.metric = FALSE,
   graphical.parameters = NULL,
   ...
 )
@@ -26,6 +27,12 @@ facet per category of model (\code{"facets"})}
 
 \item{models}{the models the user would like to appear in the plots. Can be
 any subset of the models included in 'modelCosts'. Default is all models.}
+
+\item{evaluation.metric}{\code{TRUE} or \code{FALSE}. If \code{TRUE}, the
+Root Mean Square Error evaluation metric will be displayed on bottom right of
+the graph (except for quantile regressions, for which it not relevant). The
+displayed RMSE is the one based on calibration data only (see the slot
+\code{RMSE} in your \code{\link{modelCosts}} object)}
 
 \item{graphical.parameters}{set this to \code{"manual"} if you want to 
 customise \code{ggplot2} parameters. 
@@ -76,7 +83,9 @@ db.over.time <- expandYearlyCosts(invacost,
                                   endcolumn = "Probable_ending_year_adjusted")
 
 ### Analysis
-res <- modelCosts(db.over.time)
+res <- modelCosts(db.over.time,
+                  minimum.year = 1970,
+                  maximum.year = 2020)
 
 ### Visualisation
 plot(res)

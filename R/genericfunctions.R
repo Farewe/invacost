@@ -168,6 +168,11 @@ str.invacost.costsummary <- function(object, ...)
 #' for the Y axis (cost values)
 #' @param models the models the user would like to appear in the plots. Can be
 #' any subset of the models included in 'modelCosts'. Default is all models.
+#' @param evaluation.metric \code{TRUE} or \code{FALSE}. If \code{TRUE}, the
+#' Root Mean Square Error evaluation metric will be displayed on bottom right of
+#' the graph (except for quantile regressions, for which it not relevant). The
+#' displayed RMSE is the one based on calibration data only (see the slot
+#' \code{RMSE} in your \code{\link{modelCosts}} object)
 #' @param graphical.parameters set this to \code{"manual"} if you want to 
 #' customise \code{ggplot2} parameters. 
 #' By default, the following layers are configured: \code{ylab}, \code{xlab}, 

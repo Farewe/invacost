@@ -1,7 +1,7 @@
 ---
 title: "The invacost R Package: Global Costs of Biological Invasions"
 author: "Leroy B, Kramer A, Courchamp C, Vaissière AC & Diagne C"
-date: "10/06/2021"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   github_document:
     toc: true
@@ -63,7 +63,7 @@ various test versions of the invacost R package!
 
 **The package requires at least R 4.0.0.** 
 
-The package can now be officially installed from CRAN!!!! 
+The package can now be officially installed from CRAN.
 
 ``` {r install, eval = FALSE}
 # install.packages("devtools")
@@ -71,12 +71,23 @@ The package can now be officially installed from CRAN!!!!
 install.packages("invacost")
 ```
 
-# Latest changes to the package : June 2021
+# Recent changes:
 
-**Updated the database version in the package to version 4.0.**
+For more detailed information about invacost versions, see the file "NEWS" in
+the invacost R package.
+
+*February 2022*
+
+- Updated to invacost *version 4.1*
+- Added new data integrity tests / checks in the package. These checks
+were used to build invacost version 4.1.
+
+*June 2021*
+
+- Updated the database version in the package to *version 4.0*.
 
 
-*Previous changes: December 2020*
+*December 2020*
 
 - *The main functions of the package have changed names.* `calculateRawAvgCosts`
 is now `summarizeCosts`, and `costTrendOverTime` is now `modelCosts`. Older
@@ -93,7 +104,8 @@ in former versions of the packages, you can still alter it by manually setting
 `incomplete.year.threshold = 2015`.
 
 - A new function is available (`getInvaCostVersion`) to rollback the database to
-former major releases. Current options are: `1.0`, `2.0`, `2.1`, `3.0`. This is
+former major releases. Current options are: `1.0`, `2.0`, `2.1`, `3.0`, `4.0` &
+`4.1`. This is
 to ensure reproducibility of analyses performed on former versions of the 
 database. Naturally, any new analysis should be done on the the latest version
 shipped with the package (`data(invacost)`).
@@ -186,7 +198,8 @@ if(any(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)))
 nrow(invacost)
 ```
 
-Likewise, there are costs for which we have **inadequate time 
+
+In addition, there can be costs for which we have **inadequate time 
 period information**: some studies omitted to provide time 
 periods, which can cause tremendous biases when analysing the temporal trends of
 costs. Sometimes, this is not problematic as we can safely guess when costs 
@@ -195,11 +208,19 @@ However, other times, costs spread over 10+ and
 sometimes 100+ years can be presented
 as occurring over a single year or require highly speculative guesses about when 
 they occurred. As a general rule, it is much easier and safer to estimate the
-ending year than the starting year. Therefore, we recommend to remove all 
-estimates that are known to occur over more than 1 year with no information on
-the starting date whatsoever, and also remove the remaining estimates for which
-it is not possible to safely estimate if they occurred over a single or multiple 
+ending year than the starting year. 
+
+Therefore, it is useful to verify if there are estimates that are known to occur
+over more than 1 year with no information on
+the starting date whatsoever in your subset of
+invacost. **Note: we have progressively corrected the database such that they
+should no longer occur from invacost v4.1**. If you find such 
+estimates, we recommend to remove them, as it is not possible to safely estimate 
+if they occurred over a single or multiple 
 years. 
+
+The following block of code does all of that automatically, but will do nothing 
+if there are no such cases ;)
 
 ```{r filter2}
 # Uncertain starting periods

@@ -4,12 +4,12 @@
 \alias{getInvaCostVersion}
 \title{Download and read a specific version of 'InvaCost'}
 \usage{
-getInvaCostVersion(version = "4.0", destination_file = NULL)
+getInvaCostVersion(version = "4.1", destination_file = NULL)
 }
 \arguments{
 \item{version}{\code{character} indicating the major release to download.
 Current versions include: \code{"1.0"}, \code{"2.0"}, \code{"2.1"}, 
-\code{"3.0"}}
+\code{"3.0"}, \code{"4.0"} and \code{"4.1"},}
 
 \item{destination_file}{\code{character} indicating the name of the saved
 file}

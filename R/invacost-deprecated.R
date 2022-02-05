@@ -1,4 +1,4 @@
-## ourPkg-deprecated.r
+## invacost-deprecated.r
 #' @title Deprecated functions in package \pkg{invacost}.
 #' @description The functions listed below are deprecated and will be defunct in
 #'   the near future. Alternative functions with similar

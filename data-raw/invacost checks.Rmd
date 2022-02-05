@@ -12,7 +12,7 @@ Load here the database file
 ```{r}
 library(invacost)
 library(readxl)
-invacost <- as.data.frame(read_xlsx("c:/r/projects/invacost/data-raw/InvaCost_4_For_PublishingFinal.xlsx",
+invacost <- as.data.frame(read_xlsx("d:/r/projects/invacost/data-raw/InvaCost_database_v4.1.xlsx",
                                     na = c("NA", "#N/A", "#DIV/0!", "#VALEUR!",
                                            "Unspecified", "Unknown",
                                            "unspecified"),
@@ -41,6 +41,7 @@ invacost$unique.t.id <- do.call("paste",
                                  invacost[, c("Kingdom", 
                                               "Phylum", 
                                               "Class", 
+                                              "Order",
                                               "Family", 
                                               "Genus", 
                                               "Species")])
@@ -51,13 +52,14 @@ dupe_t <- test_taxo$Species[which(duplicated(test_taxo$Species))]
 dupe_t <- dupe_t[-which(dupe_t %in% c(NA, "Diverse/Unspecified"))]
 
 
-test_taxo <- test_taxo[test_taxo$Species %in% dupe_t, c("Cost_ID", "Kingdom", "Phylum", "Class",
+test_taxo <- test_taxo[test_taxo$Species %in% dupe_t, c("Cost_ID", "Kingdom", "Phylum", "Class", "Order",
                                                  "Family", "Genus", "Species")]
 
 records_to_check <- test_taxo$Cost_ID[order(test_taxo$Species)]
 
 # Errors to correct
 test_taxo[order(test_taxo$Species), ]
+records_to_check
 
 ```
 
@@ -70,6 +72,7 @@ invacost$unique.t.id <- do.call("paste",
                                  invacost[, c("Kingdom", 
                                               "Phylum", 
                                               "Class", 
+                                              "Order",
                                               "Family", 
                                               "Genus")])
 
@@ -79,7 +82,7 @@ dupe_t <- test_taxo$Genus[which(duplicated(test_taxo$Genus))]
 dupe_t <- dupe_t[-which(dupe_t %in% c(NA, "Diverse/Unspecified"))]
 
 
-test_taxo <- test_taxo[test_taxo$Genus %in% dupe_t, c("Cost_ID", "Kingdom", "Phylum", "Class",
+test_taxo <- test_taxo[test_taxo$Genus %in% dupe_t, c("Cost_ID", "Kingdom", "Phylum", "Class", "Order",
                                                  "Family", "Genus", "Species")]
 
 
@@ -88,6 +91,7 @@ records_to_check <- unique(c(records_to_check,
 
 # Errors to correct
 test_taxo[order(test_taxo$Genus), ]
+records_to_check 
 ```
 
 
@@ -97,6 +101,7 @@ invacost$unique.t.id <- do.call("paste",
                                  invacost[, c("Kingdom", 
                                               "Phylum", 
                                               "Class", 
+                                              "Order",
                                               "Family")])
 
 test_taxo <- invacost[-which(duplicated(invacost[, c("unique.t.id", "Family")])), ]
@@ -106,7 +111,7 @@ dupe_t <- dupe_t[-which(dupe_t %in% c(NA, "Diverse/Unspecified"))]
 
 
 
-test_taxo <- test_taxo[test_taxo$Family %in% dupe_t, c("Cost_ID", "Kingdom", "Phylum", "Class",
+test_taxo <- test_taxo[test_taxo$Family %in% dupe_t, c("Cost_ID", "Kingdom", "Phylum", "Class", "Order",
                                                  "Family", "Genus", "Species")]
 
 records_to_check <- unique(c(records_to_check,
@@ -114,6 +119,33 @@ records_to_check <- unique(c(records_to_check,
 
 # Errors to correct
 test_taxo[order(test_taxo$Family), ]
+records_to_check
+```
+
+## Order
+```{r}
+invacost$unique.t.id <- do.call("paste", 
+                                 invacost[, c("Kingdom", 
+                                              "Phylum", 
+                                              "Class", 
+                                              "Order")])
+
+test_taxo <- invacost[-which(duplicated(invacost[, c("unique.t.id", "Family")])), ]
+
+dupe_t <- test_taxo$Family[which(duplicated(test_taxo$Family))]
+dupe_t <- dupe_t[-which(dupe_t %in% c(NA, "Diverse/Unspecified"))]
+
+
+
+test_taxo <- test_taxo[test_taxo$Family %in% dupe_t, c("Cost_ID", "Kingdom", "Phylum", "Class", "Order",
+                                                 "Family", "Genus", "Species")]
+
+records_to_check <- unique(c(records_to_check,
+                             test_taxo$Cost_ID[order(test_taxo$Family)]))
+
+# Errors to correct
+test_taxo[order(test_taxo$Family), ]
+records_to_check
 ```
 
 
@@ -131,7 +163,7 @@ dupe_t <- dupe_t[-which(dupe_t %in% c(NA, "Diverse/Unspecified"))]
 
 
 
-test_taxo <- test_taxo[test_taxo$Class %in% dupe_t, c("Cost_ID", "Kingdom", "Phylum", "Class",
+test_taxo <- test_taxo[test_taxo$Class %in% dupe_t, c("Cost_ID", "Kingdom", "Phylum", "Class", "Order",
                                                  "Family", "Genus", "Species")]
 
 
@@ -140,6 +172,7 @@ records_to_check <- unique(c(records_to_check,
 
 # Errors to correct
 test_taxo[order(test_taxo$Class), ]
+records_to_check 
 ```
 
 ## Phylum
@@ -155,7 +188,7 @@ dupe_t <- dupe_t[-which(dupe_t %in% c(NA, "Diverse/Unspecified"))]
 
 
 
-test_taxo <- test_taxo[test_taxo$Phylum %in% dupe_t, c("Cost_ID", "Kingdom", "Phylum", "Class",
+test_taxo <- test_taxo[test_taxo$Phylum %in% dupe_t, c("Cost_ID", "Kingdom", "Phylum", "Class", "Order",
                                                  "Family", "Genus", "Species")]
 
 
@@ -164,6 +197,7 @@ records_to_check <- unique(c(records_to_check,
 
 # Errors to correct
 test_taxo[order(test_taxo$Phylum), ]
+records_to_check 
 ```
 
 
@@ -181,17 +215,17 @@ invacost_sp <- invacost_sp[-grep("sp\\.", invacost_sp)]
 invacost_sp <- invacost_sp[-grep("spp\\.", invacost_sp)]
 for(sp in invacost_sp)
 {
-  sp <- "Mytilopsis sallei"
   taxocheck <- unique(invacost[which(invacost$Species == sp), c("Kingdom",
                                                                 "Phylum",
                                                                 "Class",
+                                                                "Order",
                                                                 "Family", 
                                                                 "Genus",
                                                                 "Species")])
   
   # Next line is set to ask = FALSE for generating the Rmarkdown.
   # For a more detailed check, it should be set to ask = TRUE, and the analysis should be performed interactively
-  taxo_correct <- try(taxize::classification(sp, db = "gbif", messages = FALSE, ask = FALSE))
+  taxo_correct <- try(taxize::classification(sp, db = "gbif", messages = FALSE, ask = TRUE))
   if (inherits(taxo_correct, "try-error"))
   {
     message("--> ", sp, " could not be resolved with the gbif database,
@@ -206,7 +240,7 @@ for(sp in invacost_sp)
     next
   }
   
-  if(nrow(taxocheck) > 1)
+ if(nrow(taxocheck) > 1)
   {
     message("--> ", sp)
     message(paste0("Species ", sp, " has different taxonomies in invacost: \n\n"))
@@ -224,6 +258,7 @@ for(sp in invacost_sp)
                      c(taxo_correct[[1]]$name[which(taxo_correct[[1]]$rank == "kingdom")],
                        taxo_correct[[1]]$name[which(taxo_correct[[1]]$rank == "phylum")],
                        taxo_correct[[1]]$name[which(taxo_correct[[1]]$rank == "class")],
+                       taxo_correct[[1]]$name[which(taxo_correct[[1]]$rank == "order")],
                        taxo_correct[[1]]$name[which(taxo_correct[[1]]$rank == "family")],
                        taxo_correct[[1]]$name[which(taxo_correct[[1]]$rank == "genus")],
                        taxo_correct[[1]]$name[which(taxo_correct[[1]]$rank == "species")]
@@ -243,6 +278,7 @@ for(sp in invacost_sp)
                    sep = "\n"))
   }
 }
+taxocheck
 ```
 
 

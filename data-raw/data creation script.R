@@ -4,7 +4,11 @@
 #                      dec = ".",
 #                      fileEncoding = "UTF-8")
 library(readxl)
-invacost <- as.data.frame(read_xlsx("./data-raw/InvaCost_4_For_PublishingFinal.xlsx",
+
+ic_version <- "4.1"
+
+invacost <- as.data.frame(read_xlsx(paste0("./data-raw/InvaCost_database_v",
+                                           ic_version, ".xlsx"),
                                      na = c("NA", "#N/A", "#DIV/0!", "#VALEUR!", 
                                             "Unspecified", "Unknown",
                                             "unspecified"),
@@ -20,11 +24,21 @@ invacost$Probable_ending_year <- as.numeric(invacost$Probable_ending_year)
 invacost$Probable_starting_year_adjusted <- as.numeric(invacost$Probable_starting_year_adjusted)
 invacost$Probable_ending_year_adjusted <- as.numeric(invacost$Probable_ending_year_adjusted)
 
+
+# Correction in v4.1, missing a few ending dates
+invacost[invacost$Reference_ID == "Gouldthorpe2009" &
+           invacost$Time_range == "Year", "Probable_ending_year"] <- 
+  invacost[invacost$Reference_ID == "Gouldthorpe2009" &
+             invacost$Time_range == "Year", "Probable_ending_year_adjusted"] <- 
+  invacost[invacost$Reference_ID == "Gouldthorpe2009" &
+             invacost$Time_range == "Year", "Probable_starting_year_adjusted"]
+
 usethis::use_data(invacost, overwrite = TRUE)
 
 
-description <- as.data.frame(read_xlsx("./data-raw/Descriptors_4.0.xlsx",
-                                    skip = 3))
+description <- as.data.frame(read_xlsx(paste0("./data-raw/Descriptors ",
+                                              ic_version, ".xlsx"),
+                                       skip = 3))
 
 Encoding(description$Column_name) <- "UTF-8"
 Encoding(description$Definition) <- "UTF-8"
@@ -32,7 +46,7 @@ Encoding(description$Definition) <- "UTF-8"
 cat(paste0("#' 'InvaCost' database
 #'
 #' The 'InvaCost' database compiling published values of economic costs of
-#' Invasive Alien Species.
+#' Invasive Alien Species. Version ", ic_version, "
 #' 
 #'
 #' \\describe{

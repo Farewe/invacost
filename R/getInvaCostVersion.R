@@ -6,7 +6,7 @@
 #' 
 #' @param version \code{character} indicating the major release to download.
 #' Current versions include: \code{"1.0"}, \code{"2.0"}, \code{"2.1"}, 
-#' \code{"3.0"}
+#' \code{"3.0"}, \code{"4.0"} and \code{"4.1"}, 
 #' @param destination_file \code{character} indicating the name of the saved
 #' file
 #' 
@@ -36,7 +36,7 @@
 
 
 getInvaCostVersion <- function(
-  version = "4.0",
+  version = "4.1",
   destination_file = NULL
 )
 {
@@ -69,7 +69,13 @@ getInvaCostVersion <- function(
     unlink(destination_file)
   }
 
-  invacost$Cost_estimate_per_year_local_currency <- as.numeric(invacost$Cost_estimate_per_year_local_currency)
+  if(as.numeric(version < 4.1))
+  {
+    invacost$Cost_estimate_per_year_local_currency <- as.numeric(invacost$Cost_estimate_per_year_local_currency)
+  } else
+  {
+    invacost$Cost_estimate_per_year_original_currency <- as.numeric(invacost$Cost_estimate_per_year_original_currency)
+  }
   invacost$Cost_estimate_per_year_2017_USD_exchange_rate <- as.numeric(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)
   invacost$Cost_estimate_per_year_2017_USD_PPP <- as.numeric(invacost$Cost_estimate_per_year_2017_USD_PPP)
   invacost$Applicable_year <- as.numeric(invacost$Applicable_year)

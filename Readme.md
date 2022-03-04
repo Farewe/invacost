@@ -1,23 +1,23 @@
 The invacost R Package: Global Costs of Biological Invasions
 ================
-Leroy B, Kramer A, Courchamp C, Vaissière AC & Diagne C
-`R Sys.Date()`
+Leroy B, Kramer A, Courchamp C, Kourantidou M, Vaissière AC & Diagne C
+04 March, 2022
 
 -   [Introduction](#introduction)
 -   [Acknowledgements](#acknowledgements)
 -   [Installation](#installation)
--   [Recent changes:](#recent-changes)
+-   [Recent changes](#recent-changes)
 -   [Basic steps to get started](#basic-steps-to-get-started)
     -   [How to load the data in R?](#how-to-load-the-data-in-r)
     -   [How to distinguish between invacost v1 and subsequent
         versions?](#how-to-distinguish-between-invacost-v1-and-subsequent-versions)
-    -   [Where are the economic values I should
-        use?](#where-are-the-economic-values-i-should-use)
+    -   [Where are the monetary values I should
+        use?](#where-are-the-monetary-values-i-should-use)
     -   [How do we filter out unreliable
         costs?](#how-do-we-filter-out-unreliable-costs)
     -   [How do I know when costs occurred?](#costtime)
-    -   [How complete is our economic
-        data?](#how-complete-is-our-economic-data)
+    -   [How complete are our monetary
+        data?](#how-complete-are-our-monetary-data)
 -   [Approach based on available estimates: cumulative and average costs
     of
     invasions](#approach-based-on-available-estimates-cumulative-and-average-costs-of-invasions)
@@ -48,7 +48,7 @@ Leroy B, Kramer A, Courchamp C, Vaissière AC & Diagne C
 # Introduction
 
 The invacost R package provides the InvaCost database in R with several
-functions to analyse economic costs of invasive species.
+functions to analyse monetary costs of invasive species.
 
 There are two main methods developed in this package to estimate the
 costs associated to biological invasions.
@@ -95,10 +95,12 @@ The package can now be officially installed from CRAN.
 install.packages("invacost")
 ```
 
-# Recent changes:
+# Recent changes
 
-For more detailed information about invacost versions, see the file
-“NEWS” in the invacost R package.
+<details>
+<summary>
+<b>Click here</b> to see a summary of recent changes
+</summary>
 
 *February 2022*
 
@@ -131,10 +133,15 @@ For more detailed information about invacost versions, see the file
 
 -   A new function is available (`getInvaCostVersion`) to rollback the
     database to former major releases. Current options are: `1.0`,
-    `2.0`, `2.1`, `3.0`. This is to ensure reproducibility of analyses
-    performed on former versions of the database. Naturally, any new
-    analysis should be done on the the latest version shipped with the
-    package (`data(invacost)`).
+    `2.0`, `2.1`, `3.0`, `4.0` & `4.1`. This is to ensure
+    reproducibility of analyses performed on former versions of the
+    database. Naturally, any new analysis should be done on the the
+    latest version shipped with the package (`data(invacost)`).
+
+</details>
+
+For more detailed information about version of the invacost R package,
+see the file “NEWS” in the package files.
 
 # Basic steps to get started
 
@@ -153,16 +160,16 @@ The database is now loaded in R memory under a very original name:
 nrow(invacost)
 ```
 
-    ## [1] 10013
+    ## [1] 13553
 
 ``` r
-# Number of columns (database fields)
+# Number of columns (database descriptors)
 ncol(invacost)
 ```
 
     ## [1] 66
 
-There are 66 fields in the INVACOST database, and I strongly recommend
+There are 66 columns in the INVACOST database, and I strongly recommend
 you get familiarised with them by inspecting them individually and
 reading the \[paper describing the database (and its fields) available
 here\] (<https://doi.org/10.1038/s41597-020-00586-z>). The updated
@@ -182,7 +189,10 @@ with new additions and corrections to this living database.
 As of now, we offer the possibility to roll back to version 1.0, 2.0 and
 2.1.
 
-Here is an example on how to roll back to V1 or V2.1
+<details>
+<summary>
+<b>Click here</b> for an example on how to roll back to V1 or V2.1
+</summary>
 
 ``` r
 # # Version 1.0
@@ -194,34 +204,109 @@ Here is an example on how to roll back to V1 or V2.1
 # dim(invacost_2.1)
 ```
 
+</details>
+
 If you want, the database can be automatically saved on your hard drive
 in csv format, by specifying a file name with argument
 `destination_file`.
 
-## Where are the economic values I should use?
+## Where are the monetary values I should use?
 
-There are several fields that contain economic values (they generally
-contain `cost` in their names), but you probably won’t need most of
-them. Indeed, we stored raw information from the papers, but this raw
-information is often difficult to compare because of different
-currencies, different years (inflation) and different periods of time
-(e.g. 1 year vs 10 years). Therefore, we standardised economic values
-into annual cost values in 2017 US$ with two different methods. We
-recommend you use one of these two standardised cost columns:
+There are several columns that contain monetary values (they generally
+contain `cost` in their names). We stored raw information from the
+papers that is often difficult to compare because of different
+currencies, different years and different periods of time over which
+costs or expenditure occurred (e.g. 1 year vs 10 years). Therefore, **to
+be able to choose which monetary values to use, you need to understand
+some of the basic concepts about the conversion of monetary values**
+(raw costs or costs per year) into a standard currency (i.e. US$ for the
+year 2017). **Hereafter, we explain the process and provide
+recommendations on which monetary values to use.**
+
+The conversion is based on two main steps. The first includes conversion
+of the cost estimates from local currencies to US$. The second includes
+conversion the cost estimate (previously converted to US$) from the year
+it was estimated to 2017 US$.
+
+### Step 1: Currency conversion
+
+For the currency conversion step (from local currency to US$), it is
+possible to use two conversion factors:
+
+-   [The official market exchange
+    rate](https://data.worldbank.org/indicator/PA.NUS.FCRF?end=2017&start=1960).
+
+-   The Purchasing Power Parity (PPP, local currency unit per US$,
+    calculated as an annual average), that allows to take into account
+    the differences in price levels between countries. We used data
+    provided [by the World
+    Bank](https://data.worldbank.org/indicator/PA.NUS.PPP?end=2017&start=1990),
+    or [by the
+    OECD](https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm)
+    when information was not retrievable through the World Bank
+    database. Occasionally, we had to deal with published costs that
+    were expressed in currency that was different from the country where
+    the costs were estimated (e.g. published cost in African countries
+    expressed in US or Canadian $). Thus, prior to using PPP as a
+    conversion index, we had to perform a retro-conversion by
+    multiplying the original cost estimate by the official market
+    exchange rate (local currency unit per currency unit used). Note
+    that, it was not possible to perform the PPP-based standardisation
+    for all cost estimates as PPP data do not exist for all countries
+    and/or specific periods (we mentioned NA in the database when such
+    information was missing).
+
+### Step 2: Conversion of the year of currency
+
+For the **year of currency conversion step (from US$ from a given year
+to 2017 US$)**, we use an inflation factor that reflects the evolution
+of the value of the US$ since the year of cost estimation. The inflation
+factor is computed by dividing the [Consumer Price
+Index](https://data.worldbank.org/indicator/FP.CPI.TOTL?end=2017&start=1960)
+(CPI, which is a measure of the average change over time in the prices
+paid by consumers for a market basket of consumer goods and services) of
+the USA for 2017 by the CPI of the USA for the year of the cost
+estimation.
+
+The standardization of the cost estimates into 2017 $US is thus a
+multi-step procedure for which the following formula is used:
+**C<sub>e</sub> = (M<sub>V</sub> /C<sub>F</sub>) x I<sub>F</sub>**
+
+with **C<sub>e</sub>** = Converted cost estimate (to 2017 US dollars
+based on exchange rate or Purchase Power Parity), **M<sub>V</sub>** =
+Cost estimate (either the `Raw_cost_estimate_original_currency`
+extracted from analysed paper or the
+`Cost_estimate_per_year_original_currency` transformed by us),
+**C<sub>F</sub>** = Conversion factor (either the official market
+exchange rate or the purchasing power parity, in US dollars),
+**I<sub>F</sub>** = Inflation factor since the year of cost estimation,
+calculated as CPI<sub>2017</sub> / CPI<sub>y</sub> with CPI
+corresponding to the Consumer Price Index and **y** corresponding to the
+year of the cost estimation (`Applicable_year`).
+
+### Choosing monetary values in InvaCost
+
+In InvaCost, we provide several columns with monetary values expressed
+in 2017 USD based on the exchange rate or PPP - they contain either
+`exchange_rate` or `PPP` in their names.
+
+We recommend you use one of these two standardised cost columns:
 
 -   `Cost_estimate_per_year_2017_USD_exchange_rate`: Cost estimate per
     year expressed in USD 2017 based on exchange rate
 -   `Cost_estimate_per_year_2017_USD_PPP`: Cost estimate per year
     expressed in USD 2017 based on purchasing power parity (PPP)
 
-The second method is probably more robust to provide equitable
-estimations between countries, but PPP was not available for all
-countries and all years, so oftentimes it could not be estimated.
-Therefore, to avoid data exclusion, we generally tend to focus on
-exchange rate since it is available for most countries after 1960.
+As previously explained, the second method is likely more robust to
+provide fair comparisons between costs occurring in different countries,
+but PPP was not available for all countries and all years, so oftentimes
+it could not be estimated. Therefore, to avoid data exclusion, when
+considering global trends, we generally tend to use the exchange rate
+since it is available for most countries in InvaCost after 1960.
 
-Therefore, in the following sections we will always use the same column
-for cost values: `Cost_estimate_per_year_2017_USD_exchange_rate`.
+Therefore, based on the aforementioned reasoning, onwards, in the
+sections that follow, we use exclusively the same column:
+`Cost_estimate_per_year_2017_USD_exchange_rate`.
 
 There is a small number of costs for which we could not derive these
 estimates (e.g. studies that lacked useful information of the periods
@@ -237,7 +322,7 @@ if(any(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)))
 nrow(invacost)
 ```
 
-    ## [1] 10013
+    ## [1] 13344
 
 In addition, there can be costs for which we have **inadequate time
 period information**: some studies omitted to provide time periods,
@@ -252,11 +337,11 @@ than the starting year.
 
 Therefore, it is useful to verify if there are estimates that are known
 to occur over more than 1 year with no information on the starting date
-whatsoever in your subset of invacost. **Note: we have progressively
-corrected the database such that they should no longer occur from
-invacost v4.1**. If you find such estimates, we recommend to remove
-them, as it is not possible to safely estimate if they occurred over a
-single or multiple years.
+whatsoever in your subset of InvaCost. **Note: we have progressively
+corrected the database such such entries should no longer occur in
+InvaCost version 4.1 and later.**. If you find such estimates, we
+recommend to remove them, as it is not possible to safely estimate if
+they occurred over a single or multiple years.
 
 The following block of code does all of that automatically, but will do
 nothing if there are no such cases ;)
@@ -269,7 +354,7 @@ uncertain.starts <- invacost[which(invacost$Time_range == "Period" &
 nrow(uncertain.starts)
 ```
 
-    ## [1] 0
+    ## [1] 100
 
 ``` r
 # No info about whether cost was annual or over a period
@@ -292,32 +377,37 @@ if(nrow(uncertain.starts) + nrow(unknown.periods) > 0)
 nrow(invacost)
 ```
 
-    ## [1] 10013
+    ## [1] 13244
 
 ## How do we filter out unreliable costs?
 
 You have to be aware of the limitations of such a database. This
 database is the most up-to-date and comprehensive compilation of both
-the published and grey literature on the economic costs of biological
-invasions. Therefore, it includes sound estimations of economic costs of
+the published and grey literature on the monetary costs of biological
+invasions. Therefore, it includes sound estimations of monetary costs of
 invasive species, with detailed sources and reproducible methodology;
-but it also includes unsourced and irreproducible “*guestimates*”.
-Therefore, we want to apply filters on the database to avoid as much as
-possible the unreliable economic cost estimates. Furthermore, the
-database also includes observed and potential costs, so depending on our
-objectives we may or may not want to filter out potential costs.
+but it also includes unsourced and irreproducible “*guestimates*”, as
+those are reported in the literature. Therefore, we want to apply
+filters on the database to avoid as much as possible any such unreliable
+cost estimates that can not easily be reproduced or originate from
+non-peer reviewed sources. Furthermore, the database also includes
+observed and potential costs, so depending on our objectives we may or
+may not want to filter out potential costs.
 
 -   **Reliability**: There is a standard field in the database called
     `Method_reliability`, which provides a simple yet objective
     evaluation of the reliability of cost estimates. It uses the
     following decision tree:
-    <img src="./Readme_files/figure-html/reliability.png" width="1700" />
-    Red means categorised as unreliable, green means categorised as
-    reliable. This `Method_reliability` descriptor has some limitations.
-    The most important one is that we decided to not evaluate the
-    methodology for peer-reviewed articles and official reports. This
-    choice was based on experiments where we identified strong
-    divergence in reliability decisions between different members of the
+    ![](./Readme_files/figure-html/reliability.png)<!-- --> Red means
+    categorised as unreliable source, green means categorised as
+    reliable source. This `Method_reliability` descriptor has some
+    limitations. The most important one is that we decided to not
+    evaluate the methodology for peer-reviewed articles and official
+    reports, assuming that this was done at an earlier stage (i.e. 
+    peer-review, prior to publication). We chose such an objective
+    criterion, rather than assessing the reliability of methods during
+    the process of filling the database, because we observed divergence
+    in reliability decisions during experiments among members of the
     INVACOST team. We also identified that depending on the study
     objective, different decisions about reliability could be made.
     Therefore, this `Method_reliability` descriptor should be considered
@@ -339,7 +429,7 @@ objectives we may or may not want to filter out potential costs.
 unique(invacost$Method_reliability)
 ```
 
-    ## [1] "High"
+    ## [1] "High" "Low"
 
 -   **Observed vs. Potential costs**: The `Implementation` field in the
     database documents whether the costs correspond to *Observed* or
@@ -360,9 +450,9 @@ table(invacost$Acquisition_method, invacost$Implementation)
 ```
 
     ##                    
-    ##                     Observed
-    ##   Extrapolation         1053
-    ##   Report/Estimation     8960
+    ##                     Observed Potential
+    ##   Extrapolation         1065      1353
+    ##   Report/Estimation     9754      1072
 
 For the rest of this tutorial, we will be working only on costs
 categorised as *High* in `Method_reliability` and “Observed” in
@@ -385,7 +475,7 @@ over which costs have occurred. Indeed, knowing the period over which a
 cost occurred allows to derive cumulative costs and to estimate average
 annual costs; it also enables temporal analyses of costs.  
 We have stored information on the periods of time over which cost
-occurred in two fields: `Probable_starting_year` and
+occurred in two columns: `Probable_starting_year` and
 `Probable_ending_year`.
 
 However, this information was not readily available in a substantial
@@ -398,7 +488,7 @@ guesses on the probable starting and ending years. These educated
 guesses were based on conservative rules (e.g., if no duration
 information was provided, then the impact was reported of one year
 only). These estimated starting and ending years are available in two
-new fields in the database called `Probable_starting_year_adjusted` and
+new columns in the database called `Probable_starting_year_adjusted` and
 `Probable_ending_year_adjusted`.
 
 As it stands now, each cost has a starting and an ending year, and
@@ -426,7 +516,7 @@ However, to properly analyse the temporal trends of costs, we need to
 
 To do this, we use the function `expandYearlyCosts`, to which we provide
 the starting and ending year columns. It will store the years over which
-economic costs have occurred in a column named `Impact_year`. In this
+monetary costs have occurred in a column named `Impact_year`. In this
 example, expanded database is here stored in an object called
 `db.over.time`.
 
@@ -456,19 +546,21 @@ head(db.over.time[, c("Cost_ID", "Species",
     ## ...5                                      84091037        2004
     ## ...6                                      46096891        2004
 
-## How complete is our economic data?
+## How complete are our monetary data?
 
 It is impossible to evaluate the absolute degree of completeness of our
-InvaCost - we know that we lack data for many taxonomic groups
-(e.g. plants are currently underrepresented) and many places around the
-earth (most cost data are located in North America and Europe). You have
-to be aware of these potential biases and remember them when
-interpreting data/analyses.
+InvaCost datbase - we know that we lack data for many taxonomic groups
+and so are data from many places around the globe (most cost data
+available in InvaCost are located in North America and Europe and are
+cost data primarily available in English and to a lesser extent in other
+languages). You have to be aware of these potential biases and remember
+them when interpreting data/analyses.
 
 There is, however, a temporal bias that we can at least evaluate.
-Indeed, we can expect that there is delay between the economic impact of
-an invasive species, and the time at which people will start estimating
-the value of the impact, and then publish it in a report or journal.
+Indeed, we can expect that there is delay between the timing at which
+the economic impact of an invasive species occurs, and the timing at
+which people will start estimating the cost of the impact, which will
+later be followed by publication in a report or journal.
 
 We can grasp an idea of this delay by looking at the difference between
 `Impact_year` and `Publication_year` in the expanded database,
@@ -523,8 +615,7 @@ years**. In other words, **for the last 3 years, we can expect to have
 less than 50% of the economic impacts**.
 
 Likewise, we can say it takes approximately 1 year to have 25% of the
-economic data for any year, and 7 years to reach at least 75% of
-economic data.
+cost data for any year, and 7 years to reach at least 75% of cost data.
 
 Hence, any analysis on recent years will be based on incomplete data and
 is highly likely to provide an underestimation of actual costs.
@@ -537,7 +628,7 @@ One question that may arise for people working on specific subsets of
 the database (e.g., only one taxon or one country) is whether you should
 evaluate the time lag on your subset. *I would recommend to avoid that,
 because your subset may be too incomplete to provide a decent estimation
-of the time lag. **Therefore, I would suggest to evaluate the time lag
+of the time lag. **Therefore, we would suggest to evaluate the time lag
 only on the global dataset, as we did here.***
 
 Last, note that there may be a correlation between the time lag and the
@@ -551,7 +642,7 @@ annually are 1, 3, 9 years.
 
 ## Basic usage
 
-The first method to analyse economic costs of invasive species consists
+The first method to analyse monetary costs of invasive species consists
 in calculating the observed cumulative and average costs - as they
 appear in the collected materials - over a specific period of time, or
 at different time intervals.
@@ -640,7 +731,7 @@ ggplot(obs.costs$cost.per.year,
 ![](Readme_files/figure-gfm/raw3.-1.png)<!-- -->
 
 We can see that the number of estimates increases exponentially, but
-this increase seems to slow down/drop after 2013.
+this increase seems to slow down/drop after 2015.
 
 We can refine this graph to add the relationship with annual costs:
 
@@ -664,14 +755,16 @@ small localized costs from grey litterature, and altogether still
 represent an incomplete picture of overall costs.** Notably, recent
 years have been characterized by a high number of direct reports from
 the grey literature, which can result in a false sense of completeness
-when only looking at the number estimates.
+when only looking at the number estimates (e.g., [Angulo et
+al. 2021](https://doi.org/10.1016/j.scitotenv.2020.144441), [Renault et
+al. 2021](https://doi.org/10.3897/neobiota.67.59134)).
 
 Use this information, in combination with the quantiles of completeness
 calculated above, to decide how you want to interpret the last years,
 and whether or not you want to omit them in further analyses. Remember
 that no choice will be objective here, but also that objectivity does
 not emerge from the absence of choice (keeping biased data is a choice
-in itself). I would recommend a transparently explained choice, along
+in itself). We would recommend a transparently explained choice, along
 with e.g. a sensitivity analysis.
 
 We can access the content of the output object with
@@ -826,9 +919,10 @@ obs.costs$average.cost.per.period
 There are two main parameters to customize:
 
 -   **beginning** (`minimum.year`) and **ending year** (`maximum.year`)
-    of the entire time period. For example in our analyses for the main
-    paper we chose to start in 1970, because data for the 1960s are
-    scarce and uncertain.
+    of the entire time period. For example in our analyses for the
+    Nature paper ([Diagne et
+    al. 2021](https://doi.org/10.1038/s41586-021-03405-6)) we chose to
+    start in 1970, because data for the 1960s are scarce and uncertain.
 
 ``` r
 obs.costs2 <- summarizeCosts(db.over.time,
@@ -984,7 +1078,7 @@ results.
 
 ## Correction for data incompleteness due to publication lag
 
-Because the average annual economic cost of invasive species will be
+Because the average annual monetary cost of invasive species will be
 determined by the trend over time, we should consider applying a
 correction to ‘incomplete’ years.
 
@@ -995,7 +1089,7 @@ or in combination.
 
 -   The first method consists in applying a threshold of incompleteness
     to remove the most incomplete years. For example, remove from
-    calibration all years with &lt; 75% of data; threshold = 7 years.
+    calibration all years with \< 75% of data; threshold = 7 years.
 
 -   Another possibility includes weighting incomplete years to reduce
     their importance in the estimation of average annual costs of
@@ -1010,9 +1104,9 @@ or in combination.
 An example to reduce the negative impact of the incompleteness of recent
 years would be to apply weights proportional to their degree of
 incompleteness. For example, apply the following set of rules: •
-completeness ≤ 25%: exclusion • 25% &lt; completeness ≤ 50%: weight =
-0.25 • 50% &lt; completeness ≤ 75%: weight = 0.50 • completeness &gt;
-75%: weight = 1
+completeness ≤ 25%: exclusion • 25% \< completeness ≤ 50%: weight = 0.25
+• 50% \< completeness ≤ 75%: weight = 0.50 • completeness \> 75%: weight
+= 1
 
 Remember that we stored quantiles in the beginning of this tutorial, so
 we can access them now to know to what years they correspond:
@@ -1084,7 +1178,7 @@ Here are examples of rules:
 
 There are several models included in the function. All models are
 calibrated with cost data as the response variable and time as
-predictive variable. Note that the economic data have statistical issues
+predictive variable. Note that the monetary data have statistical issues
 typical to *econometric* data: heteroskedasticity, temporal
 autocorrelation and outliers. Therefore, our choice of modelling methods
 was driven by methods relatively robust to such issues.
@@ -1494,6 +1588,11 @@ Now, some models may seem to have good fit but may not be significant.
 This is highly critical especially for data-poor subsets of InvaCost To
 verify this, inspect the model summaries:
 
+<details>
+<summary>
+<b> Click here to see the model summary</b>
+</summary>
+
 ``` r
 global.trend$model.summary
 ```
@@ -1550,7 +1649,7 @@ global.trend$model.summary
     ## 
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept) -97.892418   9.175960  -10.67 1.17e-13 ***
+    ## (Intercept) -97.892418   9.175962  -10.67 1.17e-13 ***
     ## Year          0.051115   0.004617   11.07 3.59e-14 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
@@ -1637,9 +1736,9 @@ global.trend$model.summary
     ## 
     ## Formula:
     ## transf.cost ~ s(Year, k = gam.k)
-    ## <environment: 0x00000000229869c8>
+    ## <environment: 0x000000002244db88>
     ## ~s(Year, k = gam.k)
-    ## <environment: 0x00000000229869c8>
+    ## <environment: 0x000000002244db88>
     ## 
     ## Parametric coefficients:
     ##               Estimate Std. Error z value Pr(>|z|)    
@@ -1678,24 +1777,24 @@ global.trend$model.summary
     ## Termination condition: RSq changed by less than 0.001 at 7 terms
     ## Importance: Year
     ## Number of terms at each degree of interaction: 1 5 (additive model)
-    ## GCV 0.1267195  RSS 3.255282  GRSq 0.8060323  RSq 0.8841804  CVRSq 0.6511111
+    ## GCV 0.1267195  RSS 3.255282  GRSq 0.8060323  RSq 0.8841804  CVRSq 0.688831
     ## 
     ## Note: the cross-validation sd's below are standard deviations across folds
     ## 
-    ## Cross validation:   nterms 2.53 sd 1.11    nvars 1.00 sd 0.00
+    ## Cross validation:   nterms 2.72 sd 1.28    nvars 1.00 sd 0.00
     ## 
     ##      CVRSq    sd     MaxErr    sd
-    ##      0.651 0.355       1.34 0.817
+    ##      0.689 0.181       1.34 0.818
     ## 
-    ## varmod: method "lm"    min.sd 0.0334    iter.rsq 0.026
+    ## varmod: method "lm"    min.sd 0.0342    iter.rsq 0.021
     ## 
     ## stddev of predictions:
     ##             coefficients iter.stderr iter.stderr%
-    ## (Intercept)   0.13599873    0.182367          134
-    ## transf.cost   0.05009515   0.0471958           94
+    ## (Intercept)   0.16355825    0.182468          112
+    ## transf.cost   0.04511133   0.0469654          104
     ## 
     ##                               mean   smallest    largest      ratio
-    ## 95% prediction interval   1.310858   1.021766   1.616399   1.581966
+    ## 95% prediction interval   1.341513   1.081182   1.616656   1.495268
     ## 
     ##                                          68%    80%    90%    95% 
     ## response values in prediction interval   80     87     98     98  
@@ -1746,6 +1845,8 @@ global.trend$model.summary
     ## Year           0.07063      0.04678    0.08315
     ## ------------------------------------------------------------------------------------------------------------
 
+</details>
+
 This is quite long because of the many models we fitted! Inspecting
 these outputs requires some statistical knowledge, so do not hesitate to
 read the help files and papers mentioned in the **Models included**
@@ -1787,6 +1888,11 @@ important aspects of model summaries into a single table. You can then
 write this table as a CSV file for example, and format it to include in
 your paper.
 
+<details>
+<summary>
+<b> Click here to see the pretty summary</b>
+</summary>
+
 ``` r
 summarized.summary <- prettySummary(global.trend)
 
@@ -1812,29 +1918,29 @@ summarized.summary
     ## 16                            _________________           _________________
     ## 17                   Robust regression - Linear                            
     ## 18                                                                 Estimate
-    ## 19                                    Intercept            -97.892418337235
-    ## 20                                         Year          0.0511148045828313
+    ## 19                                    Intercept           -97.8924183372332
+    ## 20                                         Year          0.0511148045828304
     ## 21                                                                         
     ## 22                                                              Adjusted R²
-    ## 23                                                        0.760853846899689
+    ## 23                                                        0.760853846899685
     ## 24                                                                         
     ## 25                     Summary of model weights                            
     ## 26                                                                      Min
-    ## 27                                                        0.335498458617567
+    ## 27                                                        0.335498458617593
     ## 28                                                       Number of outliers
     ## 29                                                                        0
     ## 30                            _________________           _________________
     ## 31                Robust regression - Quadratic                            
     ## 32                                                                 Estimate
-    ## 33                                    Intercept           -3184.16167792446
-    ## 34                                         Year            3.15003560213571
+    ## 33                                    Intercept           -3184.16168300262
+    ## 34                                         Year            3.15003560720469
     ## 35                                                                         
     ## 36                                                              Adjusted R²
-    ## 37                                                        0.801667183117471
+    ## 37                                                        0.801667181892389
     ## 38                                                                         
     ## 39                     Summary of model weights                            
     ## 40                                                                      Min
-    ## 41                                                        0.177658962035951
+    ## 41                                                        0.177658971484977
     ## 42                                                       Number of outliers
     ## 43                                                                        0
     ## 44                            _________________           _________________
@@ -1852,11 +1958,11 @@ summarized.summary
     ## 56                                                                         
     ## 57                               Variance model                            
     ## 58                                                                 Estimate
-    ## 59                                    Intercept           0.135998726683555
-    ## 60                                    Intercept          0.0500951508614313
+    ## 59                                    Intercept           0.163558245615466
+    ## 60                                    Intercept          0.0451113252764222
     ## 61                                                                         
     ## 62                                                    R² for last iteration
-    ## 63                                                       0.0255319319669592
+    ## 63                                                       0.0210051644339175
     ## 64                            _________________           _________________
     ## 65                  Generalized Additive Models                            
     ## 66                      Parametric coefficients                            
@@ -1896,29 +2002,29 @@ summarized.summary
     ## 16               _________________            _________________
     ## 17                                                             
     ## 18                  Standard error                      t value
-    ## 19                9.17595970473264            -10.6683574783731
-    ## 20             0.00461676911281598             11.0715531432877
+    ## 19                9.17596176980086            -10.6683550774381
+    ## 20             0.00461677015526334             11.0715506433772
     ## 21                                                             
     ## 22                              R²                             
-    ## 23               0.766288986742877                             
+    ## 23               0.766288986742874                             
     ## 24                                                             
     ## 25                                                             
     ## 26                             25%                          50%
-    ## 27               0.895670373377729            0.956019636074709
+    ## 27               0.895670373377707            0.956019636074724
     ## 28                                                             
     ## 29                                                             
     ## 30               _________________            _________________
     ## 31                                                             
     ## 32                  Standard error                      t value
-    ## 33                1363.27362867534            -2.33567319938436
-    ## 34                1.36871457033293             2.30145544616325
+    ## 33                 1363.2736296768            -2.33567320139355
+    ## 34                1.36871457133968             2.30145544817389
     ## 35                                                             
     ## 36                              R²                             
-    ## 37               0.810682311157586                             
+    ## 37               0.810682309988189                             
     ## 38                                                             
     ## 39                                                             
     ## 40                             25%                          50%
-    ## 41               0.886348161511449            0.959271809487294
+    ## 41               0.886348162657816            0.959271810598456
     ## 42                                                             
     ## 43                                                             
     ## 44               _________________            _________________
@@ -1936,8 +2042,8 @@ summarized.summary
     ## 56                                                             
     ## 57                                                             
     ## 58 Standard error (last iteration) Standard error/coefficient %
-    ## 59               0.182366978362852             134.094621920386
-    ## 60              0.0471958082514846             94.2123288180794
+    ## 59               0.182467732824653             111.561316971842
+    ## 60              0.0469654530107381             104.110115858833
     ## 61                                                             
     ## 62                                                             
     ## 63                                                             
@@ -1980,29 +2086,29 @@ summarized.summary
     ## 16    _________________ _________________
     ## 17                                       
     ## 18              p-value                  
-    ## 19 1.16817059441308e-13                  
-    ## 20 3.59412414675924e-14                  
+    ## 19 1.16817886708963e-13                  
+    ## 20 3.59415017921318e-14                  
     ## 21                                       
     ## 22                                       
     ## 23                                       
     ## 24                                       
     ## 25                                       
     ## 26                  75%               Max
-    ## 27    0.994641723534297 0.999854194997375
+    ## 27    0.994641723534304 0.999854194997377
     ## 28                                       
     ## 29                                       
     ## 30    _________________ _________________
     ## 31                                       
     ## 32              p-value                  
-    ## 33   0.0243578367857056                  
-    ## 34   0.0263953065108513                  
+    ## 33   0.0243578366703332                  
+    ## 34   0.0263953063867756                  
     ## 35                                       
     ## 36                                       
     ## 37                                       
     ## 38                                       
     ## 39                                       
     ## 40                  75%               Max
-    ## 41    0.982954510181173 0.999977209663273
+    ## 41    0.982954510421784 0.999977209656318
     ## 42                                       
     ## 43                                       
     ## 44    _________________ _________________
@@ -2045,6 +2151,8 @@ summarized.summary
     ## 81                                       
     ## 82                                       
     ## 83    _________________ _________________
+
+</details>
 
 ## Customising graphs
 
@@ -2277,8 +2385,8 @@ focus on the cumulative cost over time, which in our case amounts to US$
 This is a more complex situation where we want to derive a single
 estimate for all species/taxon in the database.
 
-First, we need to inspect the taxonomic fields of the database to decide
-whether we want to apply changes before running the script.
+First, we need to inspect the taxonomic columns of the database to
+decide whether we want to apply changes before running the script.
 
 ``` r
 # Here we just show the first 25
@@ -2332,7 +2440,8 @@ invacost$sp.list[which(invacost$Genus == "Rattus")] <- "Rattus sp."
 ```
 
 We can also do that for other taxa; here are the changes we applied for
-the Nature paper:
+the Nature paper ([Diagne et
+al. 2021](https://doi.org/10.1038/s41586-021-03405-6)):
 
 ``` r
 invacost$sp.list[which(invacost$Genus == "Aedes")] <- "Aedes spp."

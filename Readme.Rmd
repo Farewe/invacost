@@ -1,6 +1,6 @@
 ---
 title: "The invacost R Package: Global Costs of Biological Invasions"
-author: "Leroy B, Kramer A, Courchamp C, Kourantidou M, Vaissière AC & Diagne C"
+author: "Leroy B, Kramer AM, Vaissière AC, Kourantidou M, Courchamp F & Diagne C"
 date: "`r Sys.setlocale('LC_TIME', 'C');format(Sys.time(), '%d %B, %Y')`"
 output:
   github_document:

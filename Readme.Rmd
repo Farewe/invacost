@@ -237,24 +237,23 @@ In InvaCost, we provide several columns with monetary values expressed in
 2017 USD based on the exchange rate or PPP - they contain either `exchange_rate`
 or `PPP` in their names.
 
-We recommend you 
-use one of these two standardised cost columns:
 
- - `Cost_estimate_per_year_2017_USD_exchange_rate`: Cost estimate per year 
- expressed in USD 2017 based on exchange rate
- - `Cost_estimate_per_year_2017_USD_PPP`: Cost estimate per year 
- expressed in USD 2017 based on purchasing power parity (PPP)
+|                           | Purchase Power Parity (PPP)                                                                                                                                                                                                                                                                        | Exchange Rate (ER)                                                                                                                                                                                                                                                                                                                                               |
+|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Advantages                | Comparisons more robust and fair between countries than ER                                                                                                                                                                                                                                         | Comparisons less robust than PPP                                                                                                                                                                                                                                                                                                                                 |
+| Inconvenients             | Not available for all countries and all years                                                                                                                                                                                                                                                      | Available for most countries and years after 1960                                                                                                                                                                                                                                                                                                                |
+| Recommendations           | **Generally prefer PPP when possible, because it provides a fairer   conversation rate especially for developing countries, and values are less   volatile over time compared to exchange rates. Choosing PPP is especially   important when comparing rich and poor countries at the same time.** | **ER is less appropriate than PPP to compare living standards across   countries, and as such may be inappropriate when considering certain   categories of damage costs pertaining to wellbeing.  However, ER has a much greater data   coverage, so it can be preferred when the aim is to compare values at the   global scale and over large time periods.** |
+| Column to use in invacost | `Cost_estimate_per_year_2017_USD_PPP`                                                                                                                                                                                                                                                              | `Cost_estimate_per_year_2017_USD_exchange_rate`                                                                                                                                                                                                                                                                                                                  |
 
-As previously explained, the second method is likely more robust to provide fair 
-comparisons between costs occurring in different countries, but PPP was not 
-available for all countries and all years, so oftentimes it could not be 
-estimated. Therefore, to avoid data exclusion, when considering global trends, 
-we generally tend to use the exchange rate since it is available for most 
-countries in InvaCost after 1960.
+Therefore, because our objective here is to illustrate the costs of biological 
+invasions at the global scale, we will, onwards, in the sections that
+follow, use exclusively the column: `Cost_estimate_per_year_2017_USD_exchange_rate`.
 
-Therefore, based on the aforementioned reasoning, onwards, in the sections that
-follow, we use exclusively  the same column: `Cost_estimate_per_year_2017_USD_exchange_rate`.
+Replace the code with `Cost_estimate_per_year_2017_USD_PPP` if your study
+requires using Purchase Power Parity instead of Exchange Rates.
 
+
+### Filtering out estimates with missing information
 
 There is a small number of costs for which we could not derive these estimates
 (e.g. studies that lacked useful information of the periods over which

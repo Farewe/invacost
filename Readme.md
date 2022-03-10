@@ -1,7 +1,7 @@
 The invacost R Package: Global Costs of Biological Invasions
 ================
 Leroy B, Kramer AM, Vaissière AC, Kourantidou M, Courchamp F & Diagne C
-07 March, 2022
+10 March, 2022
 
 -   [Introduction](#introduction)
 -   [Acknowledgements](#acknowledgements)
@@ -290,23 +290,22 @@ In InvaCost, we provide several columns with monetary values expressed
 in 2017 USD based on the exchange rate or PPP - they contain either
 `exchange_rate` or `PPP` in their names.
 
-We recommend you use one of these two standardised cost columns:
+|                           | Purchase Power Parity (PPP)                                                                                                                                                                                                                                                                  | Exchange Rate (ER)                                                                                                                                                                                                                                                                                                                                      |
+|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Advantages                | Comparisons more robust and fair between countries than ER                                                                                                                                                                                                                                   | Comparisons less robust than PPP                                                                                                                                                                                                                                                                                                                        |
+| Inconvenients             | Not available for all countries and all years                                                                                                                                                                                                                                                | Available for most countries and years after 1960                                                                                                                                                                                                                                                                                                       |
+| Recommendations           | **Generally prefer PPP when possible, because it provides a fairer conversation rate especially for developing countries, and values are less volatile over time compared to exchange rates. Choosing PPP is especially important when comparing rich and poor countries at the same time.** | **ER is less appropriate than PPP to compare living standards across countries, and as such may be inappropriate when considering certain categories of damage costs pertaining to wellbeing. However, ER has a much greater data coverage, so it can be preferred when the aim is to compare values at the global scale and over large time periods.** |
+| Column to use in invacost | `Cost_estimate_per_year_2017_USD_PPP`                                                                                                                                                                                                                                                        | `Cost_estimate_per_year_2017_USD_exchange_rate`                                                                                                                                                                                                                                                                                                         |
 
--   `Cost_estimate_per_year_2017_USD_exchange_rate`: Cost estimate per
-    year expressed in USD 2017 based on exchange rate
--   `Cost_estimate_per_year_2017_USD_PPP`: Cost estimate per year
-    expressed in USD 2017 based on purchasing power parity (PPP)
-
-As previously explained, the second method is likely more robust to
-provide fair comparisons between costs occurring in different countries,
-but PPP was not available for all countries and all years, so oftentimes
-it could not be estimated. Therefore, to avoid data exclusion, when
-considering global trends, we generally tend to use the exchange rate
-since it is available for most countries in InvaCost after 1960.
-
-Therefore, based on the aforementioned reasoning, onwards, in the
-sections that follow, we use exclusively the same column:
+Therefore, because our objective here is to illustrate the costs of
+biological invasions at the global scale, we will, onwards, in the
+sections that follow, use exclusively the column:
 `Cost_estimate_per_year_2017_USD_exchange_rate`.
+
+Replace the code with `Cost_estimate_per_year_2017_USD_PPP` if your
+study requires using Purchase Power Parity instead of Exchange Rates.
+
+### Filtering out estimates with missing information
 
 There is a small number of costs for which we could not derive these
 estimates (e.g. studies that lacked useful information of the periods
@@ -322,7 +321,7 @@ if(any(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)))
 nrow(invacost)
 ```
 
-    ## [1] 13344
+    ## [1] 10013
 
 In addition, there can be costs for which we have **inadequate time
 period information**: some studies omitted to provide time periods,
@@ -354,7 +353,7 @@ uncertain.starts <- invacost[which(invacost$Time_range == "Period" &
 nrow(uncertain.starts)
 ```
 
-    ## [1] 100
+    ## [1] 0
 
 ``` r
 # No info about whether cost was annual or over a period
@@ -377,7 +376,7 @@ if(nrow(uncertain.starts) + nrow(unknown.periods) > 0)
 nrow(invacost)
 ```
 
-    ## [1] 13244
+    ## [1] 10013
 
 ## How do we filter out unreliable costs?
 
@@ -398,9 +397,9 @@ may not want to filter out potential costs.
     `Method_reliability`, which provides a simple yet objective
     evaluation of the reliability of cost estimates. It uses the
     following decision tree:
-    ![](./Readme_files/figure-html/reliability.png)<!-- --> Red means
-    categorised as unreliable source, green means categorised as
-    reliable source. This `Method_reliability` descriptor has some
+    <img src="./Readme_files/figure-html/reliability.png" width="1700" />
+    Red means categorised as unreliable source, green means categorised
+    as reliable source. This `Method_reliability` descriptor has some
     limitations. The most important one is that we decided to not
     evaluate the methodology for peer-reviewed articles and official
     reports, assuming that this was done at an earlier stage (i.e. 
@@ -429,7 +428,7 @@ may not want to filter out potential costs.
 unique(invacost$Method_reliability)
 ```
 
-    ## [1] "High" "Low"
+    ## [1] "High"
 
 -   **Observed vs. Potential costs**: The `Implementation` field in the
     database documents whether the costs correspond to *Observed* or
@@ -450,9 +449,9 @@ table(invacost$Acquisition_method, invacost$Implementation)
 ```
 
     ##                    
-    ##                     Observed Potential
-    ##   Extrapolation         1065      1353
-    ##   Report/Estimation     9754      1072
+    ##                     Observed
+    ##   Extrapolation         1053
+    ##   Report/Estimation     8960
 
 For the rest of this tutorial, we will be working only on costs
 categorised as *High* in `Method_reliability` and “Observed” in
@@ -1089,7 +1088,7 @@ or in combination.
 
 -   The first method consists in applying a threshold of incompleteness
     to remove the most incomplete years. For example, remove from
-    calibration all years with \< 75% of data; threshold = 7 years.
+    calibration all years with &lt; 75% of data; threshold = 7 years.
 
 -   Another possibility includes weighting incomplete years to reduce
     their importance in the estimation of average annual costs of
@@ -1104,9 +1103,9 @@ or in combination.
 An example to reduce the negative impact of the incompleteness of recent
 years would be to apply weights proportional to their degree of
 incompleteness. For example, apply the following set of rules: •
-completeness ≤ 25%: exclusion • 25% \< completeness ≤ 50%: weight = 0.25
-• 50% \< completeness ≤ 75%: weight = 0.50 • completeness \> 75%: weight
-= 1
+completeness ≤ 25%: exclusion • 25% &lt; completeness ≤ 50%: weight =
+0.25 • 50% &lt; completeness ≤ 75%: weight = 0.50 • completeness &gt;
+75%: weight = 1
 
 Remember that we stored quantiles in the beginning of this tutorial, so
 we can access them now to know to what years they correspond:
@@ -1736,9 +1735,9 @@ global.trend$model.summary
     ## 
     ## Formula:
     ## transf.cost ~ s(Year, k = gam.k)
-    ## <environment: 0x000000002244faa8>
+    ## <environment: 0x0000000018b32400>
     ## ~s(Year, k = gam.k)
-    ## <environment: 0x000000002244faa8>
+    ## <environment: 0x0000000018b32400>
     ## 
     ## Parametric coefficients:
     ##               Estimate Std. Error z value Pr(>|z|)    
@@ -1777,24 +1776,24 @@ global.trend$model.summary
     ## Termination condition: RSq changed by less than 0.001 at 7 terms
     ## Importance: Year
     ## Number of terms at each degree of interaction: 1 5 (additive model)
-    ## GCV 0.1267195  RSS 3.255282  GRSq 0.8060323  RSq 0.8841804  CVRSq 0.6630538
+    ## GCV 0.1267195  RSS 3.255282  GRSq 0.8060323  RSq 0.8841804  CVRSq 0.6635105
     ## 
     ## Note: the cross-validation sd's below are standard deviations across folds
     ## 
-    ## Cross validation:   nterms 2.63 sd 1.14    nvars 1.00 sd 0.00
+    ## Cross validation:   nterms 2.64 sd 1.22    nvars 1.00 sd 0.00
     ## 
-    ##      CVRSq    sd     MaxErr    sd
-    ##      0.663 0.288       1.33 0.801
+    ##      CVRSq    sd     MaxErr   sd
+    ##      0.664 0.265       1.37 0.81
     ## 
-    ## varmod: method "lm"    min.sd 0.034    iter.rsq 0.015
+    ## varmod: method "lm"    min.sd 0.0338    iter.rsq 0.016
     ## 
     ## stddev of predictions:
     ##             coefficients iter.stderr iter.stderr%
-    ## (Intercept)   0.18949847    0.184692           97
-    ## transf.cost   0.03797834   0.0472889          125
+    ## (Intercept)   0.17888490     0.18474          103
+    ## transf.cost   0.04025214   0.0473997          118
     ## 
     ##                               mean   smallest    largest      ratio
-    ## 95% prediction interval   1.332454   1.113286   1.564091   1.404933
+    ## 95% prediction interval   1.326151   1.093861   1.571657   1.436798
     ## 
     ##                                          68%    80%    90%    95% 
     ## response values in prediction interval   80     87     98     98  
@@ -1918,29 +1917,29 @@ summarized.summary
     ## 16                            _________________           _________________
     ## 17                   Robust regression - Linear                            
     ## 18                                                                 Estimate
-    ## 19                                    Intercept           -97.8924184105278
-    ## 20                                         Year          0.0511148046199673
+    ## 19                                    Intercept            -97.892418337235
+    ## 20                                         Year          0.0511148045828313
     ## 21                                                                         
     ## 22                                                              Adjusted R²
-    ## 23                                                        0.760853845866438
+    ## 23                                                        0.760853846899689
     ## 24                                                                         
     ## 25                     Summary of model weights                            
     ## 26                                                                      Min
-    ## 27                                                        0.335498468663771
+    ## 27                                                        0.335498458617567
     ## 28                                                       Number of outliers
     ## 29                                                                        0
     ## 30                            _________________           _________________
     ## 31                Robust regression - Quadratic                            
     ## 32                                                                 Estimate
-    ## 33                                    Intercept           -3184.16168296679
-    ## 34                                         Year            3.15003560716874
+    ## 33                                    Intercept           -3184.16168274805
+    ## 34                                         Year            3.15003560695028
     ## 35                                                                         
     ## 36                                                              Adjusted R²
-    ## 37                                                        0.801667181892256
+    ## 37                                                        0.801667181938515
     ## 38                                                                         
     ## 39                     Summary of model weights                            
     ## 40                                                                      Min
-    ## 41                                                        0.177658971486039
+    ## 41                                                        0.177658971129729
     ## 42                                                       Number of outliers
     ## 43                                                                        0
     ## 44                            _________________           _________________
@@ -1958,11 +1957,11 @@ summarized.summary
     ## 56                                                                         
     ## 57                               Variance model                            
     ## 58                                                                 Estimate
-    ## 59                                    Intercept           0.189498472142452
-    ## 60                                    Intercept          0.0379783354165587
+    ## 59                                    Intercept           0.178884902931826
+    ## 60                                    Intercept          0.0402521397487317
     ## 61                                                                         
     ## 62                                                    R² for last iteration
-    ## 63                                                       0.0147781129463719
+    ## 63                                                       0.0164943513174668
     ## 64                            _________________           _________________
     ## 65                  Generalized Additive Models                            
     ## 66                      Parametric coefficients                            
@@ -2002,29 +2001,29 @@ summarized.summary
     ## 16               _________________            _________________
     ## 17                                                             
     ## 18                  Standard error                      t value
-    ## 19                9.17596003719246            -10.6683570998288
-    ## 20             0.00461676927858572             11.0715527537962
+    ## 19                9.17595970473261            -10.6683574783732
+    ## 20             0.00461676911281595             11.0715531432878
     ## 21                                                             
     ## 22                              R²                             
-    ## 23               0.766288985733109                             
+    ## 23               0.766288986742877                             
     ## 24                                                             
     ## 25                                                             
     ## 26                             25%                          50%
-    ## 27               0.895670374503898            0.956019637206151
+    ## 27               0.895670373377729            0.956019636074709
     ## 28                                                             
     ## 29                                                             
     ## 30               _________________            _________________
     ## 31                                                             
     ## 32                  Standard error                      t value
-    ## 33                1363.27362967016            -2.33567320137864
-    ## 34                1.36871457133303              2.3014554481588
+    ## 33                1363.27362962939            -2.33567320128804
+    ## 34                1.36871457129206             2.30145544806808
     ## 35                                                             
     ## 36                              R²                             
-    ## 37               0.810682309988062                             
+    ## 37               0.810682310032219                             
     ## 38                                                             
     ## 39                                                             
     ## 40                             25%                          50%
-    ## 41               0.886348162656636            0.959271810599681
+    ## 41               0.886348162612004            0.959271810559078
     ## 42                                                             
     ## 43                                                             
     ## 44               _________________            _________________
@@ -2042,8 +2041,8 @@ summarized.summary
     ## 56                                                             
     ## 57                                                             
     ## 58 Standard error (last iteration) Standard error/coefficient %
-    ## 59               0.184692298102468             97.4637399522825
-    ## 60              0.0472889022863019             124.515468536527
+    ## 59               0.184740133715553              103.27318330824
+    ## 60              0.0473996956477221             117.756958868791
     ## 61                                                             
     ## 62                                                             
     ## 63                                                             
@@ -2086,29 +2085,29 @@ summarized.summary
     ## 16    _________________ _________________
     ## 17                                       
     ## 18              p-value                  
-    ## 19 1.16817189872375e-13                  
-    ## 20 3.59412820266004e-14                  
+    ## 19 1.16817059441292e-13                  
+    ## 20  3.5941241467586e-14                  
     ## 21                                       
     ## 22                                       
     ## 23                                       
     ## 24                                       
     ## 25                                       
     ## 26                  75%               Max
-    ## 27    0.994641723689848 0.999854195010966
+    ## 27    0.994641723534297 0.999854194997375
     ## 28                                       
     ## 29                                       
     ## 30    _________________ _________________
     ## 31                                       
     ## 32              p-value                  
-    ## 33   0.0243578366711894                  
-    ## 34   0.0263953063877065                  
+    ## 33   0.0243578366763918                  
+    ## 34    0.026395306393305                  
     ## 35                                       
     ## 36                                       
     ## 37                                       
     ## 38                                       
     ## 39                                       
     ## 40                  75%               Max
-    ## 41    0.982954510421202 0.999977209656314
+    ## 41     0.98295451041129 0.999977209656567
     ## 42                                       
     ## 43                                       
     ## 44    _________________ _________________

@@ -238,11 +238,50 @@ In InvaCost, we provide several columns with monetary values expressed in
 or `PPP` in their names.
 
 
-|                           | Purchase Power Parity (PPP)                                                                                                                                                                                                                                                                        | Exchange Rate (ER)                                                                                                                                                                                                                                                                                                                                               |
-|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Useful resources                | To be added soon                                                                                                                                                                                                                                         | To be added soon                                                                                                                                                                                                                                                                                                                                 |
-| Column to use in invacost | `Cost_estimate_per_year_2017_USD_PPP`                                                                                                                                                                                                                                                              | `Cost_estimate_per_year_2017_USD_exchange_rate`                                                                                                                                                                                                                                                                                                                  |
-| Examples           | PPP are more robust when performing multiple-country comparisons, as long as all the investigated countries have available PPP data (e.g., [Schaffner et al. 2020](https://doi.org/10.1038/s41467-020-15586-1)) | To analyse the economic impacts of invasive alien species at the global scale, the absence of PPP information for many countries and time periods requires to rely on exchange rates (e.g., [Diagne et al. 2020](https://doi.org/10.1038/s41586-021-03405-6)) |
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-5pln{background-color:#efefef;border-color:inherit;font-style:italic;text-align:left;vertical-align:top}
+.tg .tg-y698{background-color:#efefef;border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-jq0u{background-color:#ffffff;border-color:inherit;font-style:italic;text-align:left;vertical-align:top}
+.tg .tg-c6of{background-color:#ffffff;border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-qoao{background-color:#efefef;border-color:inherit;color:#905;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-0pky"></th>
+    <th class="tg-fymr">Purchase Power Parity (PPP)</th>
+    <th class="tg-fymr">Exchange Rate (ER)</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-5pln">Definitions</td>
+    <td class="tg-y698"><a href="https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm" target="_blank" rel="noopener noreferrer">OECD definition of PPP</a></td>
+    <td class="tg-y698"><a href="https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm" target="_blank" rel="noopener noreferrer">OECD definition of PPP</a></td>
+  </tr>
+  <tr>
+    <td class="tg-jq0u">Useful resources to choose between PPP and ER</td>
+    <td class="tg-c6of" colspan="2"><a href="https://doi.org/10.1017/CBO9780511754159.005" target="_blank" rel="noopener noreferrer">- Sarno, L., Taylor, M., &amp; Frankel, J. (2003). Purchasing power parity and the real exchange rate</a>. In The Economics of Exchange Rates (pp. 51-96). Cambridge: Cambridge University Press<br><a href="https://doi.org/10.1257/0895330042632744" target="_blank" rel="noopener noreferrer">- Taylor, A. M., &amp; Taylor, M. P. (2004). The purchasing power parity debate.</a> Journal of economic perspectives, 18(4), 135-158. <br>- <a href="https://doi.org/10.1787/oecd_papers-v6-art9-en" target="_blank" rel="noopener noreferrer">OECD. (2006). A Contribution to the "Purchase Power Parity vs. Market Exchange Rates for Use in Long-Term Scenarios" Discussion.</a> OECD papers, 19pp.<br><a href="https://www.imf.org/external/pubs/ft/fandd/2007/03/basics.htm" target="_blank" rel="noopener noreferrer">- Callen T. (2007) PPP Versus the Market: Which Weight Matters? Finance and Development 44:1 </a><br><a href="https://www.worldbank.org/en/programs/icp/brief/VC_Uses" target="_blank" rel="noopener noreferrer">- PPPs for policy making: a visual guide to using data from the ICP - Uses and limitations of PPPs</a><br><a href="https://doi.org/10.1596/978-1-4648-1530-0" target="_blank" rel="noopener noreferrer">- World Bank. (2020) Purchasing Power Parities and the Size of World Economies: Results from the 2017 International Comparison Program.</a>Washington, DC: World Bank.<br><a href="https://thedocs.worldbank.org/en/doc/872661487091786258-0050022017/original/19Chapter18.pdf" target="_blank" rel="noopener noreferrer">- McCarthy, P. (2013) Extrapolating PPPs and comparing ICP benchmark results</a>. Measuring the Real Size of the World Economy, Chapter 18, 473-506<br></td>
+  </tr>
+  <tr>
+    <td class="tg-5pln">Column to use in invacost</td>
+    <td class="tg-qoao"><span style="color:#905">`Cost_estimate_per_year_2017_USD_PPP`</span></td>
+    <td class="tg-qoao"><span style="color:#905">`Cost_estimate_per_year_2017_USD_exchange_rate`</span></td>
+  </tr>
+  <tr>
+    <td class="tg-jq0u">Examples</td>
+    <td class="tg-c6of">PPP are more robust when performing multiple-country comparisons, as long as all the investigated countries have available PPP data (e.g., <a href="https://doi.org/10.1038/s41467-020-15586-1" target="_blank" rel="noopener noreferrer">Schaffner et al. 2020</a>)</td>
+    <td class="tg-c6of">To analyse the economic impacts of invasive alien species at the global scale, the absence of PPP information for many countries and time periods requires to rely on exchange rates (e.g., <a href="https://doi.org/10.1038/s41586-021-03405-6" target="_blank" rel="noopener noreferrer">Diagne et al. 2020</a>)</td>
+  </tr>
+</tbody>
+</table>
 
 Therefore, because our objective here is to illustrate the costs of biological 
 invasions at the global scale, we will, onwards, in the sections that

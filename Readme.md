@@ -1,7 +1,7 @@
 The invacost R Package: Global Costs of Biological Invasions
 ================
 Leroy B, Kramer AM, Vaissière AC, Kourantidou M, Courchamp F & Diagne C
-11 March, 2022
+08 April, 2022
 
 -   [Introduction](#introduction)
 -   [Acknowledgements](#acknowledgements)
@@ -290,11 +290,110 @@ In InvaCost, we provide several columns with monetary values expressed
 in 2017 USD based on the exchange rate or PPP - they contain either
 `exchange_rate` or `PPP` in their names.
 
-|                           | Purchase Power Parity (PPP)                                                                                                                                                                                     | Exchange Rate (ER)                                                                                                                                                                                                                                            |
-|---------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Useful resources          | To be added soon                                                                                                                                                                                                | To be added soon                                                                                                                                                                                                                                              |
-| Column to use in invacost | `Cost_estimate_per_year_2017_USD_PPP`                                                                                                                                                                           | `Cost_estimate_per_year_2017_USD_exchange_rate`                                                                                                                                                                                                               |
-| Examples                  | PPP are more robust when performing multiple-country comparisons, as long as all the investigated countries have available PPP data (e.g., [Schaffner et al. 2020](https://doi.org/10.1038/s41467-020-15586-1)) | To analyse the economic impacts of invasive alien species at the global scale, the absence of PPP information for many countries and time periods requires to rely on exchange rates (e.g., [Diagne et al. 2020](https://doi.org/10.1038/s41586-021-03405-6)) |
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
+.tg .tg-5pln{background-color:#efefef;border-color:inherit;font-style:italic;text-align:left;vertical-align:top}
+.tg .tg-y698{background-color:#efefef;border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-jq0u{background-color:#ffffff;border-color:inherit;font-style:italic;text-align:left;vertical-align:top}
+.tg .tg-c6of{background-color:#ffffff;border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-qoao{background-color:#efefef;border-color:inherit;color:#905;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+<tr>
+<th class="tg-0pky">
+</th>
+<th class="tg-fymr">
+Purchase Power Parity (PPP)
+</th>
+<th class="tg-fymr">
+Exchange Rate (ER)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tg-5pln">
+Definitions
+</td>
+<td class="tg-y698">
+<a href="https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm" target="_blank" rel="noopener noreferrer">OECD
+definition of PPP</a>
+</td>
+<td class="tg-y698">
+<a href="https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm" target="_blank" rel="noopener noreferrer">OECD
+definition of PPP</a>
+</td>
+</tr>
+<tr>
+<td class="tg-jq0u">
+Useful resources to choose between PPP and ER
+</td>
+<td class="tg-c6of" colspan="2">
+<a href="https://doi.org/10.1017/CBO9780511754159.005" target="_blank" rel="noopener noreferrer">-
+Sarno, L., Taylor, M., & Frankel, J. (2003). Purchasing power parity and
+the real exchange rate</a>. In The Economics of Exchange Rates
+(pp. 51-96). Cambridge: Cambridge University
+Press<br><a href="https://doi.org/10.1257/0895330042632744" target="_blank" rel="noopener noreferrer">-
+Taylor, A. M., & Taylor, M. P. (2004). The purchasing power parity
+debate.</a> Journal of economic perspectives, 18(4), 135-158. <br>-
+<a href="https://doi.org/10.1787/oecd_papers-v6-art9-en" target="_blank" rel="noopener noreferrer">OECD.
+(2006). A Contribution to the “Purchase Power Parity vs. Market Exchange
+Rates for Use in Long-Term Scenarios” Discussion.</a> OECD papers,
+19pp.<br><a href="https://www.imf.org/external/pubs/ft/fandd/2007/03/basics.htm" target="_blank" rel="noopener noreferrer">-
+Callen T. (2007) PPP Versus the Market: Which Weight Matters? Finance
+and Development 44:1
+</a><br><a href="https://www.worldbank.org/en/programs/icp/brief/VC_Uses" target="_blank" rel="noopener noreferrer">-
+PPPs for policy making: a visual guide to using data from the ICP - Uses
+and limitations of
+PPPs</a><br><a href="https://doi.org/10.1596/978-1-4648-1530-0" target="_blank" rel="noopener noreferrer">-
+World Bank. (2020) Purchasing Power Parities and the Size of World
+Economies: Results from the 2017 International Comparison
+Program.</a>Washington, DC: World
+Bank.<br><a href="https://thedocs.worldbank.org/en/doc/872661487091786258-0050022017/original/19Chapter18.pdf" target="_blank" rel="noopener noreferrer">-
+McCarthy, P. (2013) Extrapolating PPPs and comparing ICP benchmark
+results</a>. Measuring the Real Size of the World Economy, Chapter 18,
+473-506<br>
+</td>
+</tr>
+<tr>
+<td class="tg-5pln">
+Column to use in invacost
+</td>
+<td class="tg-qoao">
+<span style="color:#905">`Cost_estimate_per_year_2017_USD_PPP`</span>
+</td>
+<td class="tg-qoao">
+<span
+style="color:#905">`Cost_estimate_per_year_2017_USD_exchange_rate`</span>
+</td>
+</tr>
+<tr>
+<td class="tg-jq0u">
+Examples
+</td>
+<td class="tg-c6of">
+PPP are more robust when performing multiple-country comparisons, as
+long as all the investigated countries have available PPP data (e.g.,
+<a href="https://doi.org/10.1038/s41467-020-15586-1" target="_blank" rel="noopener noreferrer">Schaffner
+et al. 2020</a>)
+</td>
+<td class="tg-c6of">
+To analyse the economic impacts of invasive alien species at the global
+scale, the absence of PPP information for many countries and time
+periods requires to rely on exchange rates (e.g.,
+<a href="https://doi.org/10.1038/s41586-021-03405-6" target="_blank" rel="noopener noreferrer">Diagne
+et al. 2020</a>)
+</td>
+</tr>
+</tbody>
+</table>
 
 Therefore, because our objective here is to illustrate the costs of
 biological invasions at the global scale, we will, onwards, in the
@@ -320,7 +419,7 @@ if(any(is.na(invacost$Cost_estimate_per_year_2017_USD_exchange_rate)))
 nrow(invacost)
 ```
 
-    ## [1] 13344
+    ## [1] 10013
 
 In addition, there can be costs for which we have **inadequate time
 period information**: some studies omitted to provide time periods,
@@ -352,7 +451,7 @@ uncertain.starts <- invacost[which(invacost$Time_range == "Period" &
 nrow(uncertain.starts)
 ```
 
-    ## [1] 100
+    ## [1] 0
 
 ``` r
 # No info about whether cost was annual or over a period
@@ -375,7 +474,7 @@ if(nrow(uncertain.starts) + nrow(unknown.periods) > 0)
 nrow(invacost)
 ```
 
-    ## [1] 13244
+    ## [1] 10013
 
 ## How do we filter out unreliable costs?
 
@@ -396,9 +495,9 @@ may not want to filter out potential costs.
     `Method_reliability`, which provides a simple yet objective
     evaluation of the reliability of cost estimates. It uses the
     following decision tree:
-    ![](./Readme_files/figure-html/reliability.png)<!-- --> Red means
-    categorised as unreliable source, green means categorised as
-    reliable source. This `Method_reliability` descriptor has some
+    <img src="./Readme_files/figure-html/reliability.png" width="1700" />
+    Red means categorised as unreliable source, green means categorised
+    as reliable source. This `Method_reliability` descriptor has some
     limitations. The most important one is that we decided to not
     evaluate the methodology for peer-reviewed articles and official
     reports, assuming that this was done at an earlier stage (i.e. 
@@ -427,7 +526,7 @@ may not want to filter out potential costs.
 unique(invacost$Method_reliability)
 ```
 
-    ## [1] "High" "Low"
+    ## [1] "High"
 
 -   **Observed vs. Potential costs**: The `Implementation` field in the
     database documents whether the costs correspond to *Observed* or
@@ -448,9 +547,9 @@ table(invacost$Acquisition_method, invacost$Implementation)
 ```
 
     ##                    
-    ##                     Observed Potential
-    ##   Extrapolation         1065      1353
-    ##   Report/Estimation     9754      1072
+    ##                     Observed
+    ##   Extrapolation         1053
+    ##   Report/Estimation     8960
 
 For the rest of this tutorial, we will be working only on costs
 categorised as *High* in `Method_reliability` and “Observed” in
@@ -1087,7 +1186,7 @@ or in combination.
 
 -   The first method consists in applying a threshold of incompleteness
     to remove the most incomplete years. For example, remove from
-    calibration all years with \< 75% of data; threshold = 7 years.
+    calibration all years with &lt; 75% of data; threshold = 7 years.
 
 -   Another possibility includes weighting incomplete years to reduce
     their importance in the estimation of average annual costs of
@@ -1102,9 +1201,9 @@ or in combination.
 An example to reduce the negative impact of the incompleteness of recent
 years would be to apply weights proportional to their degree of
 incompleteness. For example, apply the following set of rules: •
-completeness ≤ 25%: exclusion • 25% \< completeness ≤ 50%: weight = 0.25
-• 50% \< completeness ≤ 75%: weight = 0.50 • completeness \> 75%: weight
-= 1
+completeness ≤ 25%: exclusion • 25% &lt; completeness ≤ 50%: weight =
+0.25 • 50% &lt; completeness ≤ 75%: weight = 0.50 • completeness &gt;
+75%: weight = 1
 
 Remember that we stored quantiles in the beginning of this tutorial, so
 we can access them now to know to what years they correspond:
@@ -1647,7 +1746,7 @@ global.trend$model.summary
     ## 
     ## Coefficients:
     ##               Estimate Std. Error t value Pr(>|t|)    
-    ## (Intercept) -97.892419   9.175960  -10.67 1.17e-13 ***
+    ## (Intercept) -97.892418   9.175960  -10.67 1.17e-13 ***
     ## Year          0.051115   0.004617   11.07 3.59e-14 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
@@ -1734,9 +1833,9 @@ global.trend$model.summary
     ## 
     ## Formula:
     ## transf.cost ~ s(Year, k = gam.k)
-    ## <environment: 0x000000002244db88>
+    ## <environment: 0x00000000190d3fd8>
     ## ~s(Year, k = gam.k)
-    ## <environment: 0x000000002244db88>
+    ## <environment: 0x00000000190d3fd8>
     ## 
     ## Parametric coefficients:
     ##               Estimate Std. Error z value Pr(>|z|)    
@@ -1775,27 +1874,27 @@ global.trend$model.summary
     ## Termination condition: RSq changed by less than 0.001 at 7 terms
     ## Importance: Year
     ## Number of terms at each degree of interaction: 1 5 (additive model)
-    ## GCV 0.1267195  RSS 3.255282  GRSq 0.8060323  RSq 0.8841804  CVRSq 0.6745681
+    ## GCV 0.1267195  RSS 3.255282  GRSq 0.8060323  RSq 0.8841804  CVRSq 0.643618
     ## 
     ## Note: the cross-validation sd's below are standard deviations across folds
     ## 
-    ## Cross validation:   nterms 2.72 sd 1.35    nvars 1.00 sd 0.00
+    ## Cross validation:   nterms 2.74 sd 1.33    nvars 1.00 sd 0.00
     ## 
-    ##      CVRSq    sd     MaxErr    sd
-    ##      0.675 0.258       1.36 0.809
+    ##      CVRSq   sd     MaxErr   sd
+    ##      0.644 0.37       1.33 0.81
     ## 
-    ## varmod: method "lm"    min.sd 0.0342    iter.rsq 0.022
+    ## varmod: method "lm"    min.sd 0.0348    iter.rsq 0.021
     ## 
     ## stddev of predictions:
     ##             coefficients iter.stderr iter.stderr%
-    ## (Intercept)   0.15817966    0.181812          115
-    ## transf.cost   0.04649068   0.0468843          101
+    ## (Intercept)   0.16986950     0.18176          107
+    ## transf.cost   0.04487061   0.0467456          104
     ## 
-    ##                               mean   smallest    largest      ratio
-    ## 95% prediction interval   1.341845   1.073553   1.625401   1.514039
+    ##                               mean   smallest    largest     ratio
+    ## 95% prediction interval   1.362516   1.103573   1.636191   1.48263
     ## 
     ##                                          68%    80%    90%    95% 
-    ## response values in prediction interval   80     87     98     98  
+    ## response values in prediction interval   80     89     98     98  
     ## ------------------------------------------------------------------------------------------------------------
     ## 
     ## ______________________________            Quantile regressions               _______________________________
@@ -1916,29 +2015,29 @@ summarized.summary
     ## 16                            _________________           _________________
     ## 17                   Robust regression - Linear                            
     ## 18                                                                 Estimate
-    ## 19                                    Intercept           -97.8924185208146
-    ## 20                                         Year          0.0511148046758474
+    ## 19                                    Intercept           -97.8924183372332
+    ## 20                                         Year          0.0511148045828304
     ## 21                                                                         
     ## 22                                                              Adjusted R²
-    ## 23                                                        0.760853844311982
+    ## 23                                                        0.760853846899685
     ## 24                                                                         
     ## 25                     Summary of model weights                            
     ## 26                                                                      Min
-    ## 27                                                        0.335498483777819
+    ## 27                                                        0.335498458617593
     ## 28                                                       Number of outliers
     ## 29                                                                        0
     ## 30                            _________________           _________________
     ## 31                Robust regression - Quadratic                            
     ## 32                                                                 Estimate
-    ## 33                                    Intercept           -3184.16168570593
-    ## 34                                         Year            3.15003560990308
+    ## 33                                    Intercept           -3184.16167657334
+    ## 34                                         Year            3.15003560078633
     ## 35                                                                         
     ## 36                                                              Adjusted R²
-    ## 37                                                        0.801667181239117
+    ## 37                                                        0.801667183408283
     ## 38                                                                         
     ## 39                     Summary of model weights                            
     ## 40                                                                      Min
-    ## 41                                                        0.177658976524764
+    ## 41                                                        0.177658959792565
     ## 42                                                       Number of outliers
     ## 43                                                                        0
     ## 44                            _________________           _________________
@@ -1956,11 +2055,11 @@ summarized.summary
     ## 56                                                                         
     ## 57                               Variance model                            
     ## 58                                                                 Estimate
-    ## 59                                    Intercept            0.15817966212688
-    ## 60                                    Intercept          0.0464906782885625
+    ## 59                                    Intercept           0.169869500067038
+    ## 60                                    Intercept          0.0448706129847374
     ## 61                                                                         
     ## 62                                                    R² for last iteration
-    ## 63                                                       0.0223557440534341
+    ## 63                                                        0.020978141609606
     ## 64                            _________________           _________________
     ## 65                  Generalized Additive Models                            
     ## 66                      Parametric coefficients                            
@@ -2000,29 +2099,29 @@ summarized.summary
     ## 16               _________________            _________________
     ## 17                                                             
     ## 18                  Standard error                      t value
-    ## 19                9.17596025150327            -10.6683568626812
-    ## 20             0.00461676938537733             11.0715525098011
+    ## 19                9.17595970487391            -10.6683574782087
+    ## 20             0.00461676911289358             11.0715531431014
     ## 21                                                             
     ## 22                              R²                             
-    ## 23               0.766288984213982                             
+    ## 23               0.766288986742874                             
     ## 24                                                             
     ## 25                                                             
     ## 26                             25%                          50%
-    ## 27               0.895670376198041            0.956019638908362
+    ## 27               0.895670373377707            0.956019636074724
     ## 28                                                             
     ## 29                                                             
     ## 30               _________________            _________________
     ## 31                                                             
     ## 32                  Standard error                      t value
-    ## 33                1363.27363020014            -2.33567320247987
-    ## 34                1.36871457186583             2.30145544926066
+    ## 33                1363.27362843849            -2.33567319879908
+    ## 34                1.36871457009483             2.30145544557773
     ## 35                                                             
     ## 36                              R²                             
-    ## 37               0.810682309364611                             
+    ## 37               0.810682311435179                             
     ## 38                                                             
     ## 39                                                             
     ## 40                             25%                          50%
-    ## 41               0.886348163268721            0.959271811191255
+    ## 41               0.886348161233568             0.95927180922917
     ## 42                                                             
     ## 43                                                             
     ## 44               _________________            _________________
@@ -2040,8 +2139,8 @@ summarized.summary
     ## 56                                                             
     ## 57                                                             
     ## 58 Standard error (last iteration) Standard error/coefficient %
-    ## 59               0.181811632006284              114.93995470824
-    ## 60              0.0468843086963653             100.846686738704
+    ## 59               0.181760102486301             106.999845419319
+    ## 60              0.0467455702959492             104.178586354168
     ## 61                                                             
     ## 62                                                             
     ## 63                                                             
@@ -2084,29 +2183,29 @@ summarized.summary
     ## 16    _________________ _________________
     ## 17                                       
     ## 18              p-value                  
-    ## 19 1.16817271583945e-13                  
-    ## 20 3.59413074346135e-14                  
+    ## 19  1.1681705949797e-13                  
+    ## 20 3.59412414869921e-14                  
     ## 21                                       
     ## 22                                       
     ## 23                                       
     ## 24                                       
     ## 25                                       
     ## 26                  75%               Max
-    ## 27    0.994641723923857 0.999854195031411
+    ## 27    0.994641723534304 0.999854194997377
     ## 28                                       
     ## 29                                       
     ## 30    _________________ _________________
     ## 31                                       
     ## 32              p-value                  
-    ## 33   0.0243578366079544                  
-    ## 34   0.0263953063197113                  
+    ## 33   0.0243578368193137                  
+    ## 34   0.0263953065469831                  
     ## 35                                       
     ## 36                                       
     ## 37                                       
     ## 38                                       
     ## 39                                       
     ## 40                  75%               Max
-    ## 41    0.982954510550189 0.999977209652618
+    ## 41     0.98295451012038 0.999977209664879
     ## 42                                       
     ## 43                                       
     ## 44    _________________ _________________

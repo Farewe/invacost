@@ -250,7 +250,7 @@ or `PPP` in their names.
   <tr>
     <td class="tg-5pln">Definitions</td>
     <td class="tg-y698"><a href="https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm" target="_blank" rel="noopener noreferrer">OECD definition of PPP</a></td>
-    <td class="tg-y698"><a href="https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm" target="_blank" rel="noopener noreferrer">OECD definition of PPP</a></td>
+    <td class="tg-y698"><a href="https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm" target="_blank" rel="noopener noreferrer">OECD definition of ER</a></td>
   </tr>
   <tr>
     <td class="tg-jq0u">Useful resources to choose between PPP and ER</td>

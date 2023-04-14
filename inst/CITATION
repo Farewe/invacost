@@ -1,22 +1,23 @@
 citHeader("To cite invacost in publications use:")
 
 citEntry(entry = "Article",
-         title        = "Analysing global economic costs of invasive alien species with the invacost R package.",
+         title        = "Analysing economic costs of invasive alien species with the invacost R package.",
          author       = personList(as.person("Boris Leroy"),
                                    as.person("Andrew M Kramer"),
                                    as.person("Anne-Charlotte Vaissière"),
+                                   as.person("Melina Kourantidou"),
                                    as.person("Franck Courchamp"),
                                    as.person("Christophe Diagne")),
-         journal      = "biorXiv",
-         year         = "2020",
-         volume       = "",
-         number       = "",
-         pages        = "",
-         url          = "https://doi.org/10.1101/2020.12.10.419432",
+         journal      = "Methods in Ecology and Evolution",
+         year         = "2022",
+         volume       = "13",
+         number       = "9",
+         pages        = "1930-1937",
+         url          = "https://doi.org/10.1111/2041-210X.13929",
          
          textVersion  =
-           paste("Leroy Boris, Kramer Andrew M, Vaissière Anne-Charlotte, Courchamp Franck & Diagne Christophe (2020).",
-                 "Analysing global economic costs of invasive alien species with the invacost R package.",
-                 "biorXiv.",
-                 "https://doi.org/10.1101/2020.12.10.419432")
+           paste("Leroy Boris, Kramer Andrew M, Vaissière Anne-Charlotte, Kourantidou Melina Courchamp Franck & Diagne Christophe (2022).",
+                 "Analysing economic costs of invasive alien species with the invacost R package.",
+                 "Methods in Ecology and Evolution 13(9), 1930-1937",
+                 "https://doi.org/10.1111/2041-210X.13929")
 )

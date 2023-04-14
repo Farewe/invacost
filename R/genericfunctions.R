@@ -186,10 +186,10 @@ str.invacost.costsummary <- function(object, ...)
 #' @importFrom grDevices grey rgb
 #' @references \url{https://github.com/Farewe/invacost}
 #' 
-#' Leroy Boris, Kramer Andrew M, Vaissière Anne-Charlotte, Courchamp Franck & 
-#' Diagne Christophe (2020). Analysing global economic costs of invasive alien 
-#' species with the
-#' invacost R package. biorXiv. \doi{10.1101/2020.12.10.419432}
+#' Leroy Boris, Kramer Andrew M, Vaissière Anne-Charlotte, Kourantidou Melina,
+#' Courchamp Franck & Diagne Christophe (2022). Analysing economic costs 
+#' of invasive alien species with the invacost R package. Methods in Ecology
+#' and Evolution. \doi{10.1111/2041-210X.13929}
 #' @note 
 #' Error bands represent 95% confidence intervals for OLS regression, robust
 #' regression, GAM and quantile regression. We cannot construct confidence 
@@ -472,8 +472,10 @@ plot.invacost.costmodel <- function(x,
 #' @import ggplot2
 #' @references \url{https://github.com/Farewe/invacost}
 #' 
-#' Leroy Boris, Kramer Andrew M, Vaissière Anne-Charlotte, Courchamp Franck & Diagne Christophe (2020). Analysing global economic costs of invasive alien species with the
-#' invacost R package. biorXiv. \doi{10.1101/2020.12.10.419432}
+#' Leroy Boris, Kramer Andrew M, Vaissière Anne-Charlotte, Kourantidou Melina,
+#' Courchamp Franck & Diagne Christophe (2022). Analysing economic costs 
+#' of invasive alien species with the invacost R package. Methods in Ecology
+#' and Evolution. \doi{10.1111/2041-210X.13929}
 #' @examples
 #' data(invacost)
 #' 

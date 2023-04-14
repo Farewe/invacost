@@ -109,8 +109,10 @@ res}
 \references{
 \url{https://github.com/Farewe/invacost}
 
-Leroy Boris, Kramer Andrew M, Vaissière Anne-Charlotte, Courchamp Franck & Diagne Christophe (2020). Analysing global economic costs of invasive alien species with the
-invacost R package. biorXiv. \doi{10.1101/2020.12.10.419432}
+Leroy Boris, Kramer Andrew M, Vaissière Anne-Charlotte, Kourantidou Melina,
+Courchamp Franck & Diagne Christophe (2022). Analysing economic costs 
+of invasive alien species with the invacost R package. Methods in Ecology
+and Evolution. \doi{10.1111/2041-210X.13929}
 }
 \seealso{
 \code{\link{expandYearlyCosts}} to get the database in appropriate format.

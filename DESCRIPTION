@@ -1,13 +1,13 @@
 Package: invacost
 Type: Package
 Title: Analyse Biological Invasion Costs with the 'InvaCost' Database
-Version: 1.1-4
-Date: 2022-02-05
+Version: 1.1-5
 Author: Boris Leroy [cre, aut], Andrew Kramer [aut], Anne-Charlotte Vaissière [ctb], Christophe Diagne [ctb]
 Maintainer: Boris Leroy <leroy.boris@gmail.com>
 Description: Provides an up-to-date version of the 'InvaCost' database 
     (<doi:10.6084/m9.figshare.12668570>) in R, and
-    several functions to analyse the costs of invasive alien species. 
+    several functions to analyse the costs of invasive alien species 
+    (<doi:10.1111/2041-210X.13929>). 
 License: GPL (>=2.0)
 Encoding: UTF-8
 Depends:
@@ -25,4 +25,4 @@ Imports:
     scales,
     stats,
     utils
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3

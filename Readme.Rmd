@@ -1502,7 +1502,7 @@ If you found the package and/or the tutorial useful, please do not hesitate to
 cite the package (in addition to the papers) as an acknowledgement for the
 time spent in writing the package and this tutorial. Like all R packages, 
 to know how to cite it, type:
-```{r i4, cache = TRUE}
+```{r i4}
 citation("invacost")
 ```
 

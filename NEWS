@@ -1,3 +1,11 @@
+invacost v1.1-6 (Release date: 10 February 2024)
+==============
+* Removed deprecated functions from the package
+
+invacost v1.1-5 (Release date: 14 April 2023)
+==============
+* Updated citation format
+
 invacost v1.1-4 (Release date: 5 February 2022)
 ==============
 * Update to invacost v4.1

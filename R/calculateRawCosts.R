@@ -3,18 +3,18 @@
 #' This function calculates the raw average annual cost of invasive species
 #' over different periods of time
 #' 
-#' @param costdb The \bold{expanded INVACOST database} output from 
+#' @param costdb The \bold{expanded INVACOST database} output from
 #' \code{\link{expandYearlyCosts}},
 #' where annual costs occurring over several years are repeated for each year.
-#' @param cost.column Name of the cost column to use in \code{costdb} (usually, 
+#' @param cost.column Name of the cost column to use in \code{costdb} (usually,
 #' choose between the exchange rate (default) or PPP annualised cost)
-#' @param year.column Name of the year column to use in \code{costdb}( usually, 
-#' "Impact_year" from \code{\link{expandYearlyCosts}} 
-#' @param in.millions If \code{TRUE}, cost values will be transformed in 
+#' @param year.column Name of the year column to use in \code{costdb}( usually,
+#' "Impact_year" from \code{\link{expandYearlyCosts}}
+#' @param in.millions If \code{TRUE}, cost values will be transformed in
 #' millions (to make graphs easier to read), else if \code{}, cost values will
 #' not be transformed.
-#' @param minimum.year the starting year of this analysis. By default, 
-#' 1960 was chosen because it marks the period from which world bank data is 
+#' @param minimum.year the starting year of this analysis. By default,
+#' 1960 was chosen because it marks the period from which world bank data is
 #' available for exchange rates and inflation values.
 #' @param maximum.year the ending year for this analysis. By default, 2017
 #' was chosen as it is the last year for which we have data in INVACOST.
@@ -25,27 +25,27 @@
 #' considered as an interval of its own (\code{FALSE}). Generally only useful
 #' if the last year is at the limit of an interval.
 #' @return a \code{list} with 6 elements:
-#'
+#' 
 #' \itemize{
 #' \item{\code{cost.data}: the input data.}
-#' \item{\code{parameters}: parameters used to run the function. The 
+#' \item{\code{parameters}: parameters used to run the function. The
 #' \code{minimum.year} and \code{maximum.year} are based on the input data
 #' (i.e., the user may specify \code{minimum.year = 1960} but the input data may
 #' only have data starting from 1970, hence the \code{minimum.year} will be
 #'  1970.)}
 #' \item{\code{year.breaks}: the years used to define year intervals over which costs were calculated.}
-#' \item{\code{cost.per.year}: the annualised costs of invasions, as sums of all 
+#' \item{\code{cost.per.year}: the annualised costs of invasions, as sums of all
 #' costs for each year.}
 #' \item{\code{average.total.cost}: the average annual cost of IAS calculated
 #' over the entire time period}
-#' \item{\code{average.cost.per.period}: a data.frame containing the the average 
+#' \item{\code{average.cost.per.period}: a data.frame containing the the average
 #' annual cost of IAS calculated over each time interval}
 #' }
 #' The structure of this object can be seen using \code{str()}
-#'
+#' 
 #' @templateVar fun calculateRawAvgCosts
 #' @template template-depr_fun
-NULL
+# NULL
 
 #' @templateVar old calculateRawAvgCosts
 #' @templateVar new summarizeCosts

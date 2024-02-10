@@ -10,3 +10,6 @@ InvaCost_2.1
 InvaCost_2.1.csv
 InvaCost_3.0
 ^man-roxygen
+calculateRawCosts.R
+costTrendOverTime.R
+invacost-deprecated.R

@@ -340,9 +340,9 @@ summarizeCosts <- function(
 #'  \item{\code{total_cost}: total cost.}
 #'  \item{\code{annual.cost}: cost per year}
 #'  \item{\code{number_estimates}: the number of cost estimates before expansion 
-#' via \code{\link{expandYearlyCosts}}
+#' via \code{\link{expandYearlyCosts}}}
 #'  \item{\code{number_year_values}: the number of costs per year included}
-#' }}
+#' }
 #' @seealso \code{\link{expandYearlyCosts}} to get the database in appropriate format.
 #' @export
 #' @note

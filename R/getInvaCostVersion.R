@@ -46,29 +46,43 @@ getInvaCostVersion <- function(
   URL <- paste0("https://raw.githubusercontent.com/Farewe/invacost_versions/master/InvaCost_",
                 version, ".csv")
 
-  if(!is.null(destination_file))
-  {
-    download.file(URL, 
-                  destfile = destination_file, 
-                  method = "auto")
-    invacost <- read.csv2(destination_file, 
-                          sep = ";", header = TRUE,
-                          na.strings = c("NA", "#N/A", "#DIV/0!", "#VALEUR!", 
-                                         "Unspecified", "Unknown", "unknown",
-                                         ""))
-  } else
-  {
-    destination_file <- paste0("InvaCost_", version, "_", as.numeric(Sys.time()), ".csv")
-    download.file(URL, 
-                  destfile = destination_file, 
-                  method = "auto")
-    invacost <- read.csv2(destination_file, 
+  invacost <- tryCatch({
+    if(!is.null(destination_file))
+    {
+      download.file(URL, 
+                    destfile = destination_file, 
+                    method = "auto")
+      read.csv2(destination_file, 
+                sep = ";", header = TRUE,
+                na.strings = c("NA", "#N/A", "#DIV/0!", "#VALEUR!", 
+                               "Unspecified", "Unknown", "unknown",
+                               ""))
+    } else
+    {
+      destination_file <- paste0("InvaCost_", version, "_", as.numeric(Sys.time()), ".csv")
+      download.file(URL, 
+                    destfile = destination_file, 
+                    method = "auto")
+      result <- read.csv2(destination_file, 
                           sep = ";", header = TRUE,
                           na.strings = c("NA", "#N/A", "#DIV/0!", "#VALEUR!", 
                                          "#REF!",
                                          "Unspecified", "Unknown",  "unknown",
                                          ""))
-    unlink(destination_file)
+      unlink(destination_file)
+      result
+    }
+  }, error = function(e) {
+    message("Failed to download InvaCost version ", version, ".\n",
+            "Please check your internet connection and verify that version '", version, "' exists.\n",
+            "Available versions: 1.0, 2.0, 2.1, 3.0, 4.0, 4.1\n",
+            "Error details: ", e$message)
+    return(NULL)
+  })
+  
+  if(is.null(invacost))
+  {
+    return(NULL)
   }
 
   if(as.numeric(version < 4.1))

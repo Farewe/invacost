@@ -1,9 +1,20 @@
 Package: invacost
 Type: Package
 Title: Analyse Biological Invasion Costs with the 'InvaCost' Database
-Version: 1.1-6
-Author: Boris Leroy [cre, aut], Andrew Kramer [aut], Anne-Charlotte Vaissière [ctb], Christophe Diagne [ctb]
-Maintainer: Boris Leroy <leroy.boris@gmail.com>
+Version: 1.1-7
+Authors@R: c(person(given = "Boris",
+                    family = "Leroy",
+                    role = c("cre", "aut"),
+                    email = "leroy.boris@gmail.com"),
+             person(given = "Andrew",
+                    family = "Kramer",
+                    role = "aut"),
+             person(given = "Anne-Charlotte",
+                    family = "Vaissière",
+                    role = "ctb"),
+             person(given = "Christophe",
+                    family = "Diagne",
+                    role = "ctb"))
 Description: Provides an up-to-date version of the 'InvaCost' database 
     (<doi:10.6084/m9.figshare.12668570>) in R, and
     several functions to analyse the costs of invasive alien species 
@@ -25,4 +36,4 @@ Imports:
     scales,
     stats,
     utils
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3

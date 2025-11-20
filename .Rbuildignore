@@ -13,3 +13,5 @@ InvaCost_3.0
 calculateRawCosts.R
 costTrendOverTime.R
 invacost-deprecated.R
+^.vscode
+^dev
